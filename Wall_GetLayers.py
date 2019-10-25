@@ -9,26 +9,40 @@ from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 
+def _Concat(name,count):
+	listName = []
+	for i in range(1, count + 1):
+		listName.append(name + str(i))
+	return listName
+	
 dataEnteringNode = IN
 
-str = []
+strWall = []
 wallTypes = []
 
 elements = FilteredElementCollector(doc).OfClass(Wall)
 
 for i in elements:
-	str.append(i.WallType.GetCompoundStructure().GetLayers())
+	strWall.append(i.WallType.GetCompoundStructure().GetLayers())
 	wallTypes.append(i.WallType)
+	
+t = Transaction(doc, 'Обнуление')
+t.Start()
+paramNanes = _Concat('00_Слой', 5)
+for w in wallTypes:
+	for pn in paramNanes:
+		w.LookupParameter(pn).Set('')
+t.Commit()
 
-listWidthFinalMat = []
-listWidthFinalWidth = []
+listFinal_Mat = []
+listFinal_Width = []
 
-for s in str:
+for s in strWall:
 	listMat = []
 	listWidth = []
 	for l in s:
 		listMat.append(doc.GetElement(l.MaterialId))
-		listWidth.append(l.Width * 304.8)
-	listWidthFinalMat.append(listMat)
-	listWidthFinalWidth.append(listWidth)
-OUT = listWidthFinalMat,listWidthFinalWidth,wallTypes
+		listWidth.append((l.Width * 304.8).ToString())
+	listFinal_Mat.append(listMat)
+	listFinal_Width.append(listWidth)
+OUT = listFinal_Mat,listFinal_Width,wallTypes

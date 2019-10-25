@@ -26,13 +26,12 @@ for i in elements:
 	strWall.append(i.WallType.GetCompoundStructure().GetLayers())
 	wallTypes.append(i.WallType)
 	
-t = Transaction(doc, 'Обнуление')
-t.Start()
+TransactionManager.Instance.EnsureInTransaction(doc)
 paramNanes = _Concat('00_Слой', 5)
 for w in wallTypes:
 	for pn in paramNanes:
 		w.LookupParameter(pn).Set('')
-t.Commit()
+TransactionManager.Instance.TransactionTaskDone()
 
 listFinal_Mat = []
 listFinal_Width = []

@@ -1,15 +1,19 @@
 import clr
 clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import *
-from Autodesk.Revit.DB.Electrical import *
-
+from Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory
 clr.AddReference('RevitServices')
 from RevitServices.Persistence import DocumentManager
 
+
+def create_elevation(param_name):
+    return [int(i.LookupParameter(param_name).AsValueString()) for i in lightItems]
+
+
 doc = DocumentManager.Instance.CurrentDBDocument
-lightItems = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_LightingFixtures).WhereElementIsNotElementType().ToElements()
+lightItems = FilteredElementCollector(doc) \
+    .OfCategory(BuiltInCategory.OST_LightingFixtures) \
+    .WhereElementIsNotElementType() \
+    .ToElements()
 
-lightFixture = [i for i in lightItems]
-elivation = [int(i.LookupParameter('О_Отметка').AsValueString()) for i in lightItems]
 
-OUT = lightItems, elivation
+OUT = lightItems, create_elevation('О_Отметка')

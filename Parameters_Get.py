@@ -12,8 +12,7 @@ def create_elevation(param_name):
 doc = DocumentManager.Instance.CurrentDBDocument
 lightItems = FilteredElementCollector(doc) \
     .OfCategory(BuiltInCategory.OST_LightingFixtures) \
-    .WhereElementIsNotElementType() \
-    .ToElements()
+    .WhereElementIsNotElementType()
 
 
 OUT = lightItems, create_elevation('О_Отметка')

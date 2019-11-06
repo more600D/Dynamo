@@ -7,10 +7,12 @@ from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 
+
 def DeleteParams(params, name):
     for p in params:
         if p.Name == name:
             doc.Delete(p.Id)
+
 
 name_param = IN[0]
 

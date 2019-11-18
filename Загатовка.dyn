@@ -1,0 +1,219 @@
+{
+  "Uuid": "fc514dec-fee3-49ae-a5a9-d9f6bb855eb2",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "Загатовка",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.IO.FileSystem.ReadText@var",
+      "Id": "0f9891ee6acb46478587c9a24f163bd7",
+      "Inputs": [
+        {
+          "Id": "14e9cacf1f914b4092e8b7b32fc2eff6",
+          "Name": "file",
+          "Description": "var",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5a6012d89be9438cbae50034e689a0a8",
+          "Name": "str",
+          "Description": "Содержимое текстового файла.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Чтение текстового файла с выводом содержимого в виде строки.\n\nFileSystem.ReadText (file: var): string"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
+      "HintPath": "C:\\Dynamo\\Schedule_Create",
+      "InputValue": "C:\\Dynamo\\Schedule_Create",
+      "NodeType": "ExtensionNode",
+      "Id": "b8a25290ef734173a01a9c30652f6ae0",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "edae32db225a42eabdad3000fba317f6",
+          "Name": "",
+          "Description": "Filename",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Позволяет выбрать файл в системе и получить его имя"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.FileObject, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "017d3c6760a7478f865655f255706eca",
+      "Inputs": [
+        {
+          "Id": "d6d02568340a4b6c9b689ab9fd942231",
+          "Name": "path",
+          "Description": "Путь к файлу.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "19b6624213824ccea80ba8a6621c3c82",
+          "Name": "file",
+          "Description": "Файловый объект",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Создание нового объекта на основе пути."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonStringNode, PythonNodeModels",
+      "VariableInputPorts": true,
+      "NodeType": "ExtensionNode",
+      "Id": "7466d1048a5744e99a5c0fe43ba2edcc",
+      "Inputs": [
+        {
+          "Id": "e13f64b4d7fc4f31a100f75d8a836fb6",
+          "Name": "script",
+          "Description": "Сценарий Python для запуска.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "efb75d593b1e4e10a19425983add523e",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b00c330cf0ef4c6188b266c1acc18cd5",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение сценария IronPython из строки."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "5a6012d89be9438cbae50034e689a0a8",
+      "End": "e13f64b4d7fc4f31a100f75d8a836fb6",
+      "Id": "b2ccc67426f8493bae8165e29c8e2e95"
+    },
+    {
+      "Start": "edae32db225a42eabdad3000fba317f6",
+      "End": "d6d02568340a4b6c9b689ab9fd942231",
+      "Id": "89ecf3181cbf4cbeb7bafe751a498823"
+    },
+    {
+      "Start": "19b6624213824ccea80ba8a6621c3c82",
+      "End": "14e9cacf1f914b4092e8b7b32fc2eff6",
+      "Id": "bf812a662b214901b4909183f52a720c"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.2.6826",
+      "RunType": "Automatic",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "FileSystem.ReadText",
+        "Id": "0f9891ee6acb46478587c9a24f163bd7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 666.5,
+        "Y": 286.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "File Path",
+        "Id": "b8a25290ef734173a01a9c30652f6ae0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 236.5,
+        "Y": 286.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "File From Path",
+        "Id": "017d3c6760a7478f865655f255706eca",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 474.5,
+        "Y": 286.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script From String",
+        "Id": "7466d1048a5744e99a5c0fe43ba2edcc",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 919.5,
+        "Y": 285.0
+      }
+    ],
+    "Annotations": [],
+    "X": -67.0,
+    "Y": -7.0,
+    "Zoom": 1.0
+  }
+}

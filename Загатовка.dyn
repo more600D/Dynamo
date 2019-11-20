@@ -112,6 +112,15 @@
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
+        },
+        {
+          "Id": "afe1365a347b443c975f63d93e91a5af",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
         }
       ],
       "Outputs": [
@@ -127,6 +136,76 @@
       ],
       "Replication": "Disabled",
       "Description": "Выполнение сценария IronPython из строки."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.Object.Type@var",
+      "Id": "2d17937986a14b26a7252fbc0123fb4b",
+      "Inputs": [
+        {
+          "Id": "c55816f258b24c3eb14035c07cc70f83",
+          "Name": "obj",
+          "Description": "Объект.\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 1,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6a3765a0ed1546f6a398dc6076e25a68",
+          "Name": "string",
+          "Description": "Тип объекта.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Возврат типа объекта, представленного в виде строки.\n\nObject.Type (obj: var): string"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Окна\";",
+      "Id": "8a8e194101a748ab9c13be4f1fa60925",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "522c2af1a81d4c99b236a1af406087af",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "[\"Высота\", \"Ширина\", \"Тип\"];",
+      "Id": "6df9cae86ca34340a4f7473e36c6f420",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "fcbc37f356984f38b37cdb874f2658bb",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
     }
   ],
   "Connectors": [
@@ -144,6 +223,21 @@
       "Start": "19b6624213824ccea80ba8a6621c3c82",
       "End": "14e9cacf1f914b4092e8b7b32fc2eff6",
       "Id": "bf812a662b214901b4909183f52a720c"
+    },
+    {
+      "Start": "b00c330cf0ef4c6188b266c1acc18cd5",
+      "End": "c55816f258b24c3eb14035c07cc70f83",
+      "Id": "050f68d3443b41edae745cbba8db37ef"
+    },
+    {
+      "Start": "522c2af1a81d4c99b236a1af406087af",
+      "End": "efb75d593b1e4e10a19425983add523e",
+      "Id": "103240d0f59346a8b224ba114e1b4ea9"
+    },
+    {
+      "Start": "fcbc37f356984f38b37cdb874f2658bb",
+      "End": "afe1365a347b443c975f63d93e91a5af",
+      "Id": "a2fb210336eb4099b196a50a3d7f31c4"
     }
   ],
   "Dependencies": [],
@@ -207,13 +301,43 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 919.5,
-        "Y": 285.0
+        "X": 905.46945881506736,
+        "Y": 343.29334744060128
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Object.Type",
+        "Id": "2d17937986a14b26a7252fbc0123fb4b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1179.5029318152881,
+        "Y": 312.21283119785693
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Категория",
+        "Id": "8a8e194101a748ab9c13be4f1fa60925",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 725.51273721601854,
+        "Y": 378.15116168714047
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "6df9cae86ca34340a4f7473e36c6f420",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 551.57159779573283,
+        "Y": 465.68760080104835
       }
     ],
     "Annotations": [],
-    "X": -67.0,
-    "Y": -7.0,
-    "Zoom": 1.0
+    "X": -286.08125925760589,
+    "Y": -111.54435636270341,
+    "Zoom": 1.0797879652236366
   }
 }

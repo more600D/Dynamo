@@ -41,8 +41,8 @@
     },
     {
       "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
-      "HintPath": "C:\\Users\\user\\OneDrive - repurpose collaborative experiences\\09_GitHub\\Dynamo-1\\Application_DocumentsSet.py",
-      "InputValue": ".\\Application_DocumentsSet.py",
+      "HintPath": "C:\\Users\\user\\OneDrive - repurpose collaborative experiences\\09_GitHub\\Dynamo-1\\Schedule_Create.py",
+      "InputValue": ".\\Schedule_Create.py",
       "NodeType": "ExtensionNode",
       "Id": "b8a25290ef734173a01a9c30652f6ae0",
       "Inputs": [],
@@ -103,6 +103,33 @@
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
+        },
+        {
+          "Id": "43c6dccc434c47dbb57c684761b73308",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d9a35dd7fcf64e0eb1a409a747fe4755",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "27a8bf5f661848f18731e4fd60f4ccc2",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
         }
       ],
       "Outputs": [
@@ -148,6 +175,66 @@
       ],
       "Replication": "Auto",
       "Description": "Возврат типа объекта, представленного в виде строки.\n\nObject.Type (obj: var): string"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Окна\";",
+      "Id": "a89058f4436444e598aa482d97fdd9bd",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "72282257c64b4df3924349d899c413b0",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "[\"Ширина\", \"Высота\"];",
+      "Id": "1e5f591e5169409598c91902880ab019",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f275115d611d4474bd0bdfeb38c7492f",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "113e604687e74a099f05bd26fea581c2",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8049341d16da4862b8707b28192120d1",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
     }
   ],
   "Connectors": [
@@ -170,6 +257,21 @@
       "Start": "b00c330cf0ef4c6188b266c1acc18cd5",
       "End": "c55816f258b24c3eb14035c07cc70f83",
       "Id": "050f68d3443b41edae745cbba8db37ef"
+    },
+    {
+      "Start": "72282257c64b4df3924349d899c413b0",
+      "End": "43c6dccc434c47dbb57c684761b73308",
+      "Id": "b7be5f09154f4f9887e92fea3556d0c3"
+    },
+    {
+      "Start": "f275115d611d4474bd0bdfeb38c7492f",
+      "End": "d9a35dd7fcf64e0eb1a409a747fe4755",
+      "Id": "dde2960a13db4d458a8854f90b07b1ad"
+    },
+    {
+      "Start": "8049341d16da4862b8707b28192120d1",
+      "End": "27a8bf5f661848f18731e4fd60f4ccc2",
+      "Id": "6b402e9c7e8b42d1849d3d751bc95fb7"
     }
   ],
   "Dependencies": [],
@@ -203,8 +305,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 644.52068338960316,
-        "Y": 288.12703063971583
+        "X": 638.84860168369426,
+        "Y": 286.0
       },
       {
         "ShowGeometry": true,
@@ -233,8 +335,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 869.30993793989842,
-        "Y": 288.69956102122865
+        "X": 934.33012384533163,
+        "Y": 412.68559569412264
       },
       {
         "ShowGeometry": true,
@@ -243,13 +345,43 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1179.5029318152881,
-        "Y": 312.21283119785693
+        "X": 1195.7453282391016,
+        "Y": 285.16097460227292
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "a89058f4436444e598aa482d97fdd9bd",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 700.78748954499554,
+        "Y": 371.120776428588
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "1e5f591e5169409598c91902880ab019",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 586.75937529038288,
+        "Y": 458.50499363154194
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "113e604687e74a099f05bd26fea581c2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 680.18211152174331,
+        "Y": 624.78261419985984
       }
     ],
     "Annotations": [],
-    "X": -41.096383391051972,
-    "Y": -46.068678299912676,
-    "Zoom": 1.4104169183011015
+    "X": 289.15628128268588,
+    "Y": -268.53512239409361,
+    "Zoom": 1.1788662258749822
   }
 }

@@ -28,12 +28,12 @@ for i in app.Documents:
     if not i.IsFamilyDocument and not i.IsLinked:
         docs.append(i)
 
-
+comment = "Создание спецификации " + IN[0]  # noqa
 for d in docs:
-    t = Transaction(d, "Создание спецификации окон")
+    t = Transaction(d, comment)
     t.Start()
     a = ViewSchedule.CreateSchedule(d, getCategoryId())
     b = AddRegularFieldToSchedule(a, d, IN[1])  # noqa
     t.Commit()
 
-OUT = [d.Title for d in docs]
+OUT = [d.Title for d in docs], comment

@@ -1,7 +1,6 @@
+# -*- coding: utf-8 -*-
 import clr
 clr.AddReference('RevitAPI')
-from Autodesk.Revit.ApplicationServices import Application
-from Autodesk.Revit.DB import Document
 clr.AddReference('RevitServices')
 from RevitServices.Persistence import DocumentManager
 
@@ -11,4 +10,9 @@ uiapp = DocumentManager.Instance.CurrentUIApplication
 app = uiapp.Application
 
 
-OUT = [i.Title for i in app.Documents]
+docs = []
+for i in app.Documents:
+    if not i.IsFamilyDocument:
+        docs.append(i)
+
+OUT = [i.Title for i in docs]

@@ -1,6 +1,6 @@
 import clr
 clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import ViewSchedule, BuiltInCategory, ElementId, SchedulableField
+from Autodesk.Revit.DB import ViewSchedule
 
 clr.AddReference('RevitServices')
 from RevitServices.Persistence import DocumentManager
@@ -10,7 +10,8 @@ doc = DocumentManager.Instance.CurrentDBDocument
 
 
 def getCategoryId():
-    return doc.Settings.Categories.get_Item(IN[0]).Id
+    return doc.Settings.Categories.get_Item(IN[0]).Id  # noqa
+
 
 def AddRegularFieldToSchedule(schedule, names):
     sch_definition = schedule.Definition
@@ -22,7 +23,7 @@ def AddRegularFieldToSchedule(schedule, names):
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 a = ViewSchedule.CreateSchedule(doc, getCategoryId())
-b = AddRegularFieldToSchedule(a, IN[1])
+b = AddRegularFieldToSchedule(a, IN[1])  # noqa
 TransactionManager.Instance.TransactionTaskDone()
 
 OUT = getCategoryId(), b

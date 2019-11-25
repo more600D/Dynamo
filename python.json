@@ -1,0 +1,38 @@
+{
+	"AddRevitServicesDocumentAndTransactionManager": {
+		"prefix": "addserv",
+		"body": [
+			"clr.AddReference(\"RevitServices\")",
+			"from RevitServices.Persistence import DocumentManager",
+			"from RevitServices.Transactions import TransactionManager",
+			"",
+			"",
+			"doc = DocumentManager.Instance.CurrentDBDocument",
+			"uiapp = DocumentManager.Instance.CurrentUIApplication",
+			"app = uiapp.Application"
+		],
+		"description": "Добавление RevitServices"
+	},
+	"AddRevitAPI": {
+		"prefix": "addapi",
+		"body": [
+			"import clr",
+			"clr.AddReference(\"RevitAPI\")",
+			"from Autodesk.Revit.DB import "
+		],
+		"description": "Добавление RevitAPI"
+	},
+	"FirstRowInIronPythonProject": {
+		"prefix": "!",
+		"body": "# -*- coding: utf-8 -*-"
+	},
+
+	"uiapp" : {
+		"prefix": "uiapp",
+		"body": [
+			"uiapp = DocumentManager.Instance.CurrentUIApplication",
+			"app = uiapp.Application"
+		]
+	}
+
+}

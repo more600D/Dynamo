@@ -1,10 +1,8 @@
 import clr
 clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import *
-import Autodesk
+from Autodesk.Revit.DB import FilteredWorksetCollector, WorksetKind
 
 clr.AddReference("RevitServices")
-import RevitServices
 from RevitServices.Persistence import DocumentManager
 
 DataEnteringNode = IN
@@ -18,13 +16,14 @@ for i in LinkedFiles:
 docs = []
 
 for inputdoc in Files:
-	if inputdoc == None:
+	if inputdoc is None:
 		doc = DocumentManager.Instance.CurrentDBDocument
 	elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.RevitLinkInstance":
 		doc = inputdoc.GetLinkDocument()
 	elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document":
 		doc = inputdoc
-	else: doc = None
+	else:
+		doc = None
 	docs.append(doc)
 colWorkSets = []
 for colWorkSet in docs:

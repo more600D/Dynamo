@@ -16,13 +16,13 @@ rvtLinks = FilteredElementCollector(doc).OfClass(RevitLinkInstance).ToElements()
 rvtDocs = [d.GetLinkDocument() for d in rvtLinks]
 rvtNames = [d.Title for d in rvtDocs]
 
-files = []
+listWorksetNames = []
 for d in rvtDocs:
     file_item = []
     workset_doc = FilteredWorksetCollector(d).OfKind(WorksetKind.UserWorkset).ToWorksets()
     for w in workset_doc:
         file_item.append(w.Name)
-    files.append(file_item)
+    listWorksetNames.append(file_item)
 
 
-OUT = rvtNames, files
+OUT = rvtNames, listWorksetNames

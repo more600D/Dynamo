@@ -112,24 +112,6 @@
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
-        },
-        {
-          "Id": "d9a35dd7fcf64e0eb1a409a747fe4755",
-          "Name": "IN[1]",
-          "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "27a8bf5f661848f18731e4fd60f4ccc2",
-          "Name": "IN[2]",
-          "Description": "Input #2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
         }
       ],
       "Outputs": [
@@ -177,46 +159,6 @@
       "Description": "Возврат типа объекта, представленного в виде строки.\n\nObject.Type (obj: var): string"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
-      "NodeType": "CodeBlockNode",
-      "Code": "\"Окна\";",
-      "Id": "a89058f4436444e598aa482d97fdd9bd",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "72282257c64b4df3924349d899c413b0",
-          "Name": "",
-          "Description": "Значение выражения в строке 1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
-      "NodeType": "CodeBlockNode",
-      "Code": "[\"Ширина\", \"Высота\"];",
-      "Id": "1e5f591e5169409598c91902880ab019",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "f275115d611d4474bd0bdfeb38c7492f",
-          "Name": "",
-          "Description": "Значение выражения в строке 1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
-    },
-    {
       "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
       "NodeType": "BooleanInputNode",
       "InputValue": false,
@@ -224,7 +166,7 @@
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "8049341d16da4862b8707b28192120d1",
+          "Id": "ed0777bb845e4abaa970d0da9117db7f",
           "Name": "",
           "Description": "Boolean",
           "UsingDefaultValue": false,
@@ -259,19 +201,9 @@
       "Id": "050f68d3443b41edae745cbba8db37ef"
     },
     {
-      "Start": "72282257c64b4df3924349d899c413b0",
+      "Start": "ed0777bb845e4abaa970d0da9117db7f",
       "End": "43c6dccc434c47dbb57c684761b73308",
-      "Id": "b7be5f09154f4f9887e92fea3556d0c3"
-    },
-    {
-      "Start": "f275115d611d4474bd0bdfeb38c7492f",
-      "End": "d9a35dd7fcf64e0eb1a409a747fe4755",
-      "Id": "dde2960a13db4d458a8854f90b07b1ad"
-    },
-    {
-      "Start": "8049341d16da4862b8707b28192120d1",
-      "End": "27a8bf5f661848f18731e4fd60f4ccc2",
-      "Id": "6b402e9c7e8b42d1849d3d751bc95fb7"
+      "Id": "c3ae23745b334593a38427d08bcd3b4f"
     }
   ],
   "Dependencies": [],
@@ -299,89 +231,69 @@
     },
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "FileSystem.ReadText",
         "Id": "0f9891ee6acb46478587c9a24f163bd7",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "FileSystem.ReadText",
+        "ShowGeometry": true,
         "Excluded": false,
         "X": 638.84860168369426,
         "Y": 286.0
       },
       {
-        "ShowGeometry": true,
-        "Name": "File Path",
         "Id": "b8a25290ef734173a01a9c30652f6ae0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "File Path",
+        "ShowGeometry": true,
         "Excluded": false,
         "X": 215.93870381608042,
-        "Y": 285.29098978676143
+        "Y": 284.44271711760615
       },
       {
-        "ShowGeometry": true,
-        "Name": "File From Path",
         "Id": "017d3c6760a7478f865655f255706eca",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "File From Path",
+        "ShowGeometry": true,
         "Excluded": false,
         "X": 464.57385701465955,
         "Y": 286.0
       },
       {
-        "ShowGeometry": true,
-        "Name": "Python Script From String",
         "Id": "7466d1048a5744e99a5c0fe43ba2edcc",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "Python Script From String",
+        "ShowGeometry": true,
         "Excluded": false,
-        "X": 934.33012384533163,
-        "Y": 412.68559569412264
+        "X": 869.01312832037388,
+        "Y": 318.52732941788491
       },
       {
-        "ShowGeometry": true,
-        "Name": "Object.Type",
         "Id": "2d17937986a14b26a7252fbc0123fb4b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "Object.Type",
+        "ShowGeometry": true,
         "Excluded": false,
-        "X": 1195.7453282391016,
-        "Y": 285.16097460227292
+        "X": 1122.7938786917462,
+        "Y": 319.09188136848474
       },
       {
-        "ShowGeometry": true,
-        "Name": "Code Block",
-        "Id": "a89058f4436444e598aa482d97fdd9bd",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 700.78748954499554,
-        "Y": 371.120776428588
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Code Block",
-        "Id": "1e5f591e5169409598c91902880ab019",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 586.75937529038288,
-        "Y": 458.50499363154194
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Boolean",
         "Id": "113e604687e74a099f05bd26fea581c2",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "Boolean",
+        "ShowGeometry": true,
         "Excluded": false,
-        "X": 680.18211152174331,
-        "Y": 624.78261419985984
+        "X": 600.4444806211452,
+        "Y": 390.65935751299855
       }
     ],
     "Annotations": [],
-    "X": 289.15628128268588,
-    "Y": -268.53512239409361,
+    "X": -71.843718717314118,
+    "Y": -145.53512239409361,
     "Zoom": 1.1788662258749822
   }
 }

@@ -5,26 +5,20 @@ from Autodesk.Revit.DB.ExtensibleStorage import Schema
 clr.AddReference("RevitServices")
 from RevitServices.Persistence import DocumentManager
 
+doc = DocumentManager.Instance.CurrentDBDocument
 
-def flat_list(lists):
-    flat = []
+
+def __flatten__(lists):
+    flat_list = []
     for sublist in lists:
         for item in sublist:
-            flat.append(item)
-    return flat
+            flat_list.append(item)
+    return flat_list
 
-
-doc = DocumentManager.Instance.CurrentDBDocument
 
 info = FilteredElementCollector(doc).OfClass(ProjectInfo).ToElements()
 item_guid = [i.GetEntitySchemaGuids() for i in info]
 
-sc = Schema.ListSchemas()
+sch = [Schema.Lookup(i) for i in __flatten__(item_guid)]
 
-for s in sc:
-    if s.GUID == flat_list(item_guid)[0]:
-        project_schema = s
-
-en = [i.GetEntity(project_schema) for i in info]
-
-OUT = en
+OUT = sch

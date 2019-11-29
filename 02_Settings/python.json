@@ -33,6 +33,17 @@
 			"uiapp = DocumentManager.Instance.CurrentUIApplication",
 			"app = uiapp.Application"
 		]
+	},
+
+	"Transaction": {
+		"prefix": "trans",
+		"body": [
+			"TransactionManager.Instance.EnsureInTransaction(doc)",
+			"",
+			"",
+			"",
+			"TransactionManager.Instance.TransactionTaskDone()"
+		]
 	}
 
 }

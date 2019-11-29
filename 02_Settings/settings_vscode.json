@@ -1,0 +1,53 @@
+{
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "python.pythonPath": "C:\\Python27\\python.exe",
+    "python.autoComplete.extraPaths": [
+        "C:\\ironpython-stubs-master\\release\\stubs.min"
+    ],
+    "python.jediEnabled": false,
+    "workbench.colorTheme": "One Dark Pro",
+    "workbench.iconTheme": "material-icon-theme",
+    "python.linting.flake8Enabled": true,
+    "python.linting.enabled": true,
+    "workbench.settings.useSplitJSON": true,
+    "workbench.settings.editor": "json",
+    "editor.renderWhitespace": "boundary",
+    "editor.rulers": [120],
+    "editor.wordWrapColumn": 120,
+    "editor.wordWrap": "wordWrapColumn",
+    "indentRainbow.ignoreErrorLanguages": ["*"],
+    "python.linting.flake8Args": [
+        "--max-line-length=120",
+        "--ignore=E402"
+    ],
+    "editor.insertSpaces": true,
+    "git.enableSmartCommit": true,
+    "editor.tokenColorCustomizations": 
+    {
+        "textMateRules": 
+        [
+            {
+                "scope": "meta.function-call",
+                "settings": {
+                    "foreground": "#ffdf9b",
+                    "fontStyle": "italic"
+                }
+            },
+            {
+                "scope": "entity.name.function",
+                "settings": {
+                    "foreground": "#b9c07b",
+                    "fontStyle": ""
+                }
+            },
+            {
+                "scope": "meta.type.annotation",
+                "settings": {
+                    "foreground": "#FF0000",
+                    "fontStyle": "bold"
+                }
+            }
+        ]
+    }
+}

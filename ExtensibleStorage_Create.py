@@ -8,29 +8,32 @@ from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 
-pi = doc.ProjectInformation
-el = UnwrapElement(IN[1])  # noqa
+pi = doc.OwnerFamily
+# el = UnwrapElement(IN[1])  # noqa
 
-schemaGuid = System.Guid('720080CB-DA99-40DC-9415-E53F280AA1F8')
+schemaGuid = System.Guid('3cd61681-a611-4a2f-b49c-ea8f0239322b')
 schema_builder = SchemaBuilder(schemaGuid).SetReadAccessLevel(AccessLevel.Public)
 
-fbName = schema_builder.AddSimpleField('Username', str)
-fbAge = schema_builder.AddSimpleField('UserAge', int)
+fbName = schema_builder.AddSimpleField('Author', str)
+fbData = schema_builder.AddSimpleField('Data', str)
+fbMail = schema_builder.AddSimpleField('Mail', str)
 
 sch = schema_builder.SetSchemaName('ShvydkoSS').Finish()
 
-fieldName = sch.GetField('Username')
-fieldAge = sch.GetField('UserAge')
+fieldName = sch.GetField('Author')
+fieldData = sch.GetField('Data')
+fieldMail = sch.GetField('Mail')
 
 ent = Entity(sch)
 
-ent.Set(fieldName, 'Сергей Швыдко')
-ent.Set(fieldAge, 35)
+ent.Set(fieldName, 'Sergey Shvydko')
+ent.Set(fieldData, '28.11.2019')
+ent.Set(fieldMail, 's.s.sh@mail.ru')
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 
-el.SetEntity(ent)
+pi.SetEntity(ent)
 
 TransactionManager.Instance.TransactionTaskDone()
 
-OUT = el
+OUT = pi

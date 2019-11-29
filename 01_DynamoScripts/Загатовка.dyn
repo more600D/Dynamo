@@ -41,8 +41,8 @@
     },
     {
       "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
-      "HintPath": "C:\\Users\\user\\OneDrive - repurpose collaborative experiences\\09_GitHub\\Dynamo-1\\Schedule_Create.py",
-      "InputValue": ".\\Schedule_Create.py",
+      "HintPath": "C:\\Users\\user\\OneDrive - repurpose collaborative experiences\\09_GitHub\\Dynamo-1\\ExtensibleStorage_Create.py",
+      "InputValue": "..\\ExtensibleStorage_Create.py",
       "NodeType": "ExtensionNode",
       "Id": "b8a25290ef734173a01a9c30652f6ae0",
       "Inputs": [],
@@ -159,16 +159,25 @@
       "Description": "Возврат типа объекта, представленного в виде строки.\n\nObject.Type (obj: var): string"
     },
     {
-      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
-      "NodeType": "BooleanInputNode",
-      "InputValue": false,
-      "Id": "113e604687e74a099f05bd26fea581c2",
-      "Inputs": [],
+      "ConcreteType": "Prorubim.DS.Common.ForceChildsEval, ProrubimDSCommonKitUI",
+      "NodeType": "ExtensionNode",
+      "Id": "48f1148966f541f1980b880070c0106c",
+      "Inputs": [
+        {
+          "Id": "d6db155b02cb401dbc5e54bbaf9e772c",
+          "Name": "passObject",
+          "Description": "Pass object",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
       "Outputs": [
         {
-          "Id": "ed0777bb845e4abaa970d0da9117db7f",
-          "Name": "",
-          "Description": "Boolean",
+          "Id": "d6d3510937dd47ebb87f9bdc982c9131",
+          "Name": "passObject",
+          "Description": "Pass object",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -176,7 +185,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Выбор между значениями true и false."
+      "Description": "Force child nodes execution on next workspace running iteration"
     }
   ],
   "Connectors": [
@@ -201,9 +210,9 @@
       "Id": "050f68d3443b41edae745cbba8db37ef"
     },
     {
-      "Start": "ed0777bb845e4abaa970d0da9117db7f",
+      "Start": "d6d3510937dd47ebb87f9bdc982c9131",
       "End": "43c6dccc434c47dbb57c684761b73308",
-      "Id": "c3ae23745b334593a38427d08bcd3b4f"
+      "Id": "854ea9e8c0c3470197092ab539948020"
     }
   ],
   "Dependencies": [],
@@ -231,69 +240,69 @@
     },
     "NodeViews": [
       {
+        "ShowGeometry": true,
+        "Name": "FileSystem.ReadText",
         "Id": "0f9891ee6acb46478587c9a24f163bd7",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "FileSystem.ReadText",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 638.84860168369426,
         "Y": 286.0
       },
       {
+        "ShowGeometry": true,
+        "Name": "File Path",
         "Id": "b8a25290ef734173a01a9c30652f6ae0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "File Path",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 215.93870381608042,
         "Y": 284.44271711760615
       },
       {
+        "ShowGeometry": true,
+        "Name": "File From Path",
         "Id": "017d3c6760a7478f865655f255706eca",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "File From Path",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 464.57385701465955,
         "Y": 286.0
       },
       {
+        "ShowGeometry": true,
+        "Name": "Python Script From String",
         "Id": "7466d1048a5744e99a5c0fe43ba2edcc",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script From String",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 869.01312832037388,
         "Y": 318.52732941788491
       },
       {
+        "ShowGeometry": true,
+        "Name": "Object.Type",
         "Id": "2d17937986a14b26a7252fbc0123fb4b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Object.Type",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 1122.7938786917462,
         "Y": 319.09188136848474
       },
       {
-        "Id": "113e604687e74a099f05bd26fea581c2",
+        "ShowGeometry": true,
+        "Name": "ForceChildsEval",
+        "Id": "48f1148966f541f1980b880070c0106c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Boolean",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 600.4444806211452,
-        "Y": 390.65935751299855
+        "X": 588.46911420202991,
+        "Y": 388.48690268892005
       }
     ],
     "Annotations": [],
-    "X": -71.843718717314118,
-    "Y": -145.53512239409361,
-    "Zoom": 1.1788662258749822
+    "X": -32.30029536568054,
+    "Y": -133.59542037650226,
+    "Zoom": 1.2422599153412073
   }
 }

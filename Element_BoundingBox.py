@@ -2,7 +2,7 @@ import clr
 clr.AddReference("RevitAPI")
 from Autodesk.Revit.DB import UnitUtils, DisplayUnitType, Transaction
 clr.AddReference('RevitAPIUI')
-from Autodesk.Revit.UI.Selection import ObjectType
+from Autodesk.Revit.UI.Selection import ObjectType, Selection
 clr.AddReference("RevitServices")
 from RevitServices.Persistence import DocumentManager
 

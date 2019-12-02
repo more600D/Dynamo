@@ -44,6 +44,14 @@
 			"",
 			"TransactionManager.Instance.TransactionTaskDone()"
 		]
+	},
+
+	"addapiui": {
+		"prefix": "addapiui",
+		"body": [
+			"clr.AddReference('RevitAPIUI')",
+			"from Autodesk.Revit.UI.Selection import ObjectType, Selection"
+		]
 	}
 
 }

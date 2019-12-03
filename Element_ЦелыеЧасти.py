@@ -36,6 +36,11 @@ def selElements(col):  # Выделение элементов из списка
     uidoc.Selection.SetElementIds(elementIdList)
 
 
+def valueParameter(param, paramName):
+    para = param.LookupParameter(paramName)
+    return round(UnitUtils.ConvertFromInternalUnits(para.AsDouble(), para.DisplayUnitType))
+
+
 col = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_GenericModel) \
     .WhereElementIsNotElementType().ToElements()
 
@@ -44,45 +49,30 @@ p1 = 'Р_Длина'
 el_filtered = filterByParam(col, 'Чугунная плитка')
 el_cutted = cutElements(el_filtered, p1, 1100)
 
-p_list = []
-part = []
-# for i in el_cutted:
-#     partValue = 1100
-#     para = i.LookupParameter(p1)
-#     if para:
-#         while partValue >= 0:
-#             value = round(UnitUtils.ConvertFromInternalUnits(para.AsDouble(), para.DisplayUnitType))
-#             if partValue >= 0:
-#                 part.append(i)
-#                 partValue -= value
-#         else:
-#             part = []
-#     p_list.append(part)
-
-# for i in range(len(el_cutted)):
-#     for j[i] in el_cutted:
-partValue = 1100
 more_haft = []
 less_haft = []
+partValue = 1100
+
 for i in el_cutted:
     para = i.LookupParameter(p1)
-    value = round(UnitUtils.ConvertFromInternalUnits(para.AsDouble(), para.DisplayUnitType))
+    value = valueParameter(i, p1)
     if para:
         if value > partValue / 2:
             more_haft.append(i)
         else:
             less_haft.append(i)
 
-for i in more_haft:
-    i_para = i.LookupParameter(p1)
-    i_value = round(UnitUtils.ConvertFromInternalUnits(i_para.AsDouble(), i_para.DisplayUnitType))
-    result = 0
-    if i_para:
-        for j in less_haft:
-            j_para = j.LookupParameter(p1)
-            j_value = round(UnitUtils.ConvertFromInternalUnits(j_para.AsDouble(), j_para.DisplayUnitType))
-            if j_para:
-                if result + j_value < partValue - i_value:
-                    
+p_list = []
 
-OUT = more_haft, less_haft
+for i in more_haft:
+    i_value = valueParameter(i, p1)
+    if i.LookupParameter(p1):
+        part = []
+        for j in less_haft:
+            j_value = valueParameter(j, p1)
+            if j.LookupParameter(p1):
+                if i_value + j_value > partValue:
+                    part.append(i)
+    p_list.append(part)
+
+OUT = p_list

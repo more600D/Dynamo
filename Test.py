@@ -18,7 +18,6 @@ def notNone(li):
         f_list.append(sp)
     return f_list
 
-
 for i in range(len(more_list)):
     min_list = []
     part = []

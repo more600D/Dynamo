@@ -1,8 +1,6 @@
 import clr
-clr.AddReference("RevitAPI")
-from Autodesk.Revit.DB import FilteredElementCollector
 clr.AddReference('RevitAPIUI')
-from Autodesk.Revit.UI import UIApplication, RevitCommandId, PostableCommand, TaskDialog
+from Autodesk.Revit.UI import RevitCommandId, PostableCommand, TaskDialog, TaskDialogCommonButtons, TaskDialogResult
 clr.AddReference("RevitServices")
 from RevitServices.Persistence import DocumentManager
 
@@ -21,17 +19,28 @@ app = uiapp.Application
 #             # int(TaskDialogResult.CommandLink2) to check the result
 #     except Exception:
 #         pass  # print(e) # uncomment this to debug
-uiapp = DocumentManager.Instance.CurrentUIApplication
-def AppDialogShowing(sender, event):
-    return event.DialogId
 
 
-def my_function(sender, e):
-    TaskDialog.Show('Тест', 'Тест1')
+def AppDialogShowing(sender, args):
+    dialogId = args.DialogId
+    promptInfo = "A Revit dialog will be opened.\n"
+    promptInfo += "The DialogId of this dialog is " + dialogId + "\n"
+    promptInfo += "If you don't want the dialog to open, please press cancel button"
+
+    taskDialog = TaskDialog("Revit")
+    taskDialog.Id = "Customer DialogId"
+    taskDialog.MainContent = promptInfo
+    buttons = TaskDialogCommonButtons.Ok | TaskDialogCommonButtons.Cancel
+    taskDialog.CommonButtons = buttons
+    result = taskDialog.Show()
+    if TaskDialogResult.Cancel == result:
+        args.OverrideResult(1)
+    else:
+        args.OverrideResult(0)
 
 
-uiapp.DialogBoxShowing += my_function
+uiapp.DialogBoxShowing += AppDialogShowing
 e = uiapp.PostCommand(RevitCommandId.LookupPostableCommandId(PostableCommand.PropertyLine))
-
+uiapp.DialogBoxShowing -= AppDialogShowing
 
 OUT = "Тест"

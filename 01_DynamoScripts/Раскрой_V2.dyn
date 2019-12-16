@@ -1,0 +1,354 @@
+{
+  "Uuid": "11ca7634-392b-41ac-b50f-d04bdc4747ba",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "Раскрой_V2",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
+      "HintPath": "C:\\Users\\user\\Desktop\\Спецификация обобщенной модели.csv",
+      "InputValue": "C:\\Users\\user\\Desktop\\Спецификация обобщенной модели.csv",
+      "NodeType": "ExtensionNode",
+      "Id": "f304e979c9eb42b6a0841ddb95710a19",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "69c16e61753544d8b250585e3d830817",
+          "Name": "",
+          "Description": "Filename",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Позволяет выбрать файл в системе и получить его имя"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSOffice.Data.ImportCSV@string,bool",
+      "Id": "db0554c7017140dab610141d656deede",
+      "Inputs": [
+        {
+          "Id": "5847ba26837b4b91b6be9a510244a472",
+          "Name": "filePath",
+          "Description": "Файл CSV для преобразования в список.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0156526c05c4494497bd731f5b941134",
+          "Name": "transpose",
+          "Description": "Необходимость переноса результирующего списка.\n\nbool\nЗначение по умолчанию : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "cec99bb553e247379be75665d9ac8bac",
+          "Name": "list",
+          "Description": "Список, содержащий элементы в файле CSV.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Импортирует данные из файла CSV (значения, разделенные запятыми), помещает элементы в список и, при необходимости, выполняет перенос.\n\nData.ImportCSV (filePath: string, transpose: bool = false): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "a[0];",
+      "Id": "ac4327ae6b1e4c76a4b46b3e01387569",
+      "Inputs": [
+        {
+          "Id": "f02c12493f844012b298a97abc232538",
+          "Name": "a",
+          "Description": "a",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "23cf37d529ff4fc294e3bf754a4e19cc",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
+      "HintPath": "C:\\Users\\user\\OneDrive - repurpose collaborative experiences\\09_GitHub\\Dynamo-1\\Test copy.py",
+      "InputValue": "C:\\Users\\user\\OneDrive - repurpose collaborative experiences\\09_GitHub\\Dynamo-1\\Test copy.py",
+      "NodeType": "ExtensionNode",
+      "Id": "900000a684bf4c25ad40b5edff50e8af",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "0a6394204d324f44aeaee295d7b52a65",
+          "Name": "",
+          "Description": "Filename",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Позволяет выбрать файл в системе и получить его имя"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.IO.FileSystem.ReadText@var",
+      "Id": "09eb978afb73490195f7f7efc0f8c7df",
+      "Inputs": [
+        {
+          "Id": "6632541a64004402821de704ea061f00",
+          "Name": "file",
+          "Description": "var",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "285a7646092347258d789e6144772ed9",
+          "Name": "str",
+          "Description": "Содержимое текстового файла.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Чтение текстового файла с выводом содержимого в виде строки.\n\nFileSystem.ReadText (file: var): string"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonStringNode, PythonNodeModels",
+      "VariableInputPorts": true,
+      "NodeType": "ExtensionNode",
+      "Id": "71b06d170c0b42088201e3646a067375",
+      "Inputs": [
+        {
+          "Id": "9ef8f0cc22754d7d9620bbc9525df1c5",
+          "Name": "script",
+          "Description": "Сценарий Python для запуска.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "27e09802bf76469ab846b7dbd977883b",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "cce1c2dafcf34dcf8472060977f2aa85",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение сценария IronPython из строки."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.FileObject, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "7a82dd26265f4e678361f21b7d950fbf",
+      "Inputs": [
+        {
+          "Id": "4712db140a5f4eef8fba565240450e98",
+          "Name": "path",
+          "Description": "Путь к файлу.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f712ea15b05941c6977429791d942a65",
+          "Name": "file",
+          "Description": "Файловый объект",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Создание нового объекта на основе пути."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "69c16e61753544d8b250585e3d830817",
+      "End": "5847ba26837b4b91b6be9a510244a472",
+      "Id": "4189ab2a5a3944c6a87826293f06a422"
+    },
+    {
+      "Start": "cec99bb553e247379be75665d9ac8bac",
+      "End": "f02c12493f844012b298a97abc232538",
+      "Id": "1c1dddee7a4d418498d8b4a727ff0aef"
+    },
+    {
+      "Start": "23cf37d529ff4fc294e3bf754a4e19cc",
+      "End": "27e09802bf76469ab846b7dbd977883b",
+      "Id": "c88de2bf29404d278f1de176753f293e"
+    },
+    {
+      "Start": "0a6394204d324f44aeaee295d7b52a65",
+      "End": "4712db140a5f4eef8fba565240450e98",
+      "Id": "326b413949c34798978cec850d9cebc9"
+    },
+    {
+      "Start": "285a7646092347258d789e6144772ed9",
+      "End": "9ef8f0cc22754d7d9620bbc9525df1c5",
+      "Id": "0b5c1caca4834871a722ac11142fee18"
+    },
+    {
+      "Start": "f712ea15b05941c6977429791d942a65",
+      "End": "6632541a64004402821de704ea061f00",
+      "Id": "a39da4ef0b51467a943e76a327d28561"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.2.6826",
+      "RunType": "Automatic",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "File Path",
+        "Id": "f304e979c9eb42b6a0841ddb95710a19",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 238.5,
+        "Y": 229.76868691588277
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Data.ImportCSV",
+        "Id": "db0554c7017140dab610141d656deede",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 661.5,
+        "Y": 230.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "ac4327ae6b1e4c76a4b46b3e01387569",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 894.03264571172974,
+        "Y": 233.42752674058212
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "File Path",
+        "Id": "900000a684bf4c25ad40b5edff50e8af",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 172.23196790759022,
+        "Y": 419.48950756350831
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "FileSystem.ReadText",
+        "Id": "09eb978afb73490195f7f7efc0f8c7df",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 613.44066324912728,
+        "Y": 420.23642310456864
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script From String",
+        "Id": "71b06d170c0b42088201e3646a067375",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1152.051386561717,
+        "Y": 360.11722404320943
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "File From Path",
+        "Id": "7a82dd26265f4e678361f21b7d950fbf",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 447.08493515181863,
+        "Y": 419.78957848426847
+      }
+    ],
+    "Annotations": [],
+    "X": 82.913352497934966,
+    "Y": 194.69733391483737,
+    "Zoom": 0.62471782703241385
+  }
+}

@@ -1,6 +1,7 @@
 import clr
 clr.AddReference("RevitAPI")
-from Autodesk.Revit.DB import FilteredElementCollector, Options, FilledRegion, Line, XYZ, View
+from Autodesk.Revit.DB import FilteredElementCollector, Options, FilledRegion, Line, XYZ, UnitUtils, \
+    DisplayUnitType, ReferenceArray
 clr.AddReference("RevitServices")
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
@@ -14,13 +15,22 @@ def CreateDimensions(filledRegion, dimensionDirection):
     for x in FindRegionEdges(filledRegion):
         if IsEdgeDirectionSatisfied(x, edgesDirection):
             edges.append(x)
+    if len(edges) < 2:
+        return
+    shift = UnitUtils.ConvertToInternalUnits(-10 * view.Scale, DisplayUnitType.DUT_MILLIMETERS) * edgesDirection
+    dimensionLine = Line.CreateUnbound(filledRegion.get_BoundingBox(view).Min + shift, dimensionDirection)
+    references = ReferenceArray()
+    for edge in edges:
+        references.Append(edge.Reference)
+    document.Create.NewDimension(view, dimensionLine, references)
 
 
 def IsEdgeDirectionSatisfied(edge, edgeDirection):
-    edgeCurve = Line(edge.AsCurve())
-    if edgeCurve is None:
-        return False
-    return edgeCurve.Direction.CrossProduct(edgeDirection).IsAlmostEqualTo(XYZ.Zero)
+    for e in edge:
+        edgeCurve = e.AsCurve()
+        if edgeCurve is None:
+            return False
+        return edgeCurve.Direction.CrossProduct(edgeDirection).IsAlmostEqualTo(XYZ.Zero)
 
 
 def FindFilledRegions(document, viewId):
@@ -29,20 +39,27 @@ def FindFilledRegions(document, viewId):
 
 
 def FindRegionEdges(filledRegion):
-    view = View(filledRegion.Document.GetElement(filledRegion.OwnerViewId))
+    view = filledRegion.Document.GetElement(filledRegion.OwnerViewId)
     options = Options()
     options.View = view
     options.ComputeReferences = True
-    return filledRegion.get_Geometry(options)
+    edges = []
+    for o in filledRegion.get_Geometry(options):
+        edges.append(o.Edges)
+    return edges
 
 
 doc = DocumentManager.Instance.CurrentDBDocument
-uiapp = DocumentManager.Instance.CurrentUIApplication
-app = uiapp.Application
-uidoc = uiapp.ActiveUIDocument
 
 view = doc.ActiveView
-fill = FindFilledRegions(doc, view.Id)
-mlist = [i for i in fill]
+filledRegions = FindFilledRegions(doc, view.Id)
 
-OUT = FindRegionEdges(mlist[0])
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+for filledRegion in filledRegions:
+    a = CreateDimensions(filledRegion, -1 * view.RightDirection)
+    b = CreateDimensions(filledRegion, view.UpDirection)
+
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = 'Готово!'

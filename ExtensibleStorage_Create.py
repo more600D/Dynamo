@@ -11,7 +11,7 @@ doc = DocumentManager.Instance.CurrentDBDocument
 pi = doc.OwnerFamily
 # el = UnwrapElement(IN[1])  # noqa
 
-schemaGuid = System.Guid('3cd61681-a611-4a2f-b49c-ea8f0239322b')
+schemaGuid = System.Guid('3cd61681-a611-4a2f-b49c-ea8f0030807b')
 schema_builder = SchemaBuilder(schemaGuid).SetReadAccessLevel(AccessLevel.Public)
 
 fbName = schema_builder.AddSimpleField('Author', str)
@@ -26,8 +26,8 @@ fieldMail = sch.GetField('Mail')
 
 ent = Entity(sch)
 
-ent.Set(fieldName, 'Sergey Shvydko')
-ent.Set(fieldData, '28.11.2019')
+ent.Set(fieldName, 'Sergey_Shvydko')
+ent.Set(fieldData, '19.12.2019')
 ent.Set(fieldMail, 's.s.sh@mail.ru')
 
 TransactionManager.Instance.EnsureInTransaction(doc)

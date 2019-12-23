@@ -20,6 +20,8 @@ fam_name = [f.Name for f in el_fam if f.GetEntity(sch).SchemaGUID == schemaGuid]
 el = []
 param_offset_guid = System.Guid('e4793a44-6050-45b3-843e-cfb49d9191c5')
 param_guid = System.Guid('6ec2f9e9-3d50-4d75-a453-26ef4e6d1625')
+
+TransactionManager.Instance.EnsureInTransaction(doc)
 for e in el_inst:
     if e.Symbol.Family.Name in fam_name and e.get_Parameter(param_offset_guid):
         lev = UnitUtils.ConvertFromInternalUnits(e.Location.Point.Z, DisplayUnitType.DUT_MILLIMETERS)
@@ -28,9 +30,8 @@ for e in el_inst:
         if e.get_Parameter(param_guid):
             param_set = e.get_Parameter(param_guid)
             value = UnitUtils.ConvertToInternalUnits(lev + param_value, param_set.DisplayUnitType)
-            TransactionManager.Instance.EnsureInTransaction(doc)
             param_set.Set(value)
-            TransactionManager.Instance.TransactionTaskDone()
         el.append(e)
+TransactionManager.Instance.TransactionTaskDone()
 
 OUT = el

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import clr
 clr.AddReference("RevitAPI")
-from Autodesk.Revit.DB import FilteredElementCollector, BuiltInParameter
+from Autodesk.Revit.DB import FilteredElementCollector, BuiltInParameter, UnitUtils, DisplayUnitType
 from Autodesk.Revit.DB.Architecture import Railing, PatternJustification
 clr.AddReference("RevitServices")
 from RevitServices.Persistence import DocumentManager
@@ -13,24 +13,30 @@ uiapp = DocumentManager.Instance.CurrentUIApplication
 app = uiapp.Application
 
 
-def GetTypeRailing(items, document):
+def GetBalisterCount(items, document):
     types = []
     info = []
     for item in items:
         param_length = item.get_Parameter(BuiltInParameter.CURVE_ELEM_LENGTH)
         railingType = document.GetElement(item.GetTypeId())
         bp = railingType.BalusterPlacement.BalusterPattern
-        info.append(bp.DistributionJustification)
+        cornerPost = railingType.BalusterPlacement.PostPattern
+        cornerPost_el = doc.GetElement(cornerPost.CornerPost.BalusterFamilyId)
+        info.append(UnitUtils.ConvertFromInternalUnits(bp.PatternAngle, DisplayUnitType.DUT_DEGREES_AND_MINUTES))
         if bp.DistributionJustification == PatternJustification.Beginning or \
                 bp.DistributionJustification == PatternJustification.End:
-            types.append(int(param_length.AsDouble() / bp.Length))
+            count = int(param_length.AsDouble() / bp.Length)
         elif bp.DistributionJustification == PatternJustification.Center:
-            types.append(int(param_length.AsDouble() / bp.Length) + 2)
+            count = int(param_length.AsDouble() / bp.Length) + 2
         elif bp.DistributionJustification == PatternJustification.SpreadPatternToFit:
-            types.append(int(param_length.AsDouble() / bp.Length) - 2)
+            count = int(param_length.AsDouble() / bp.Length) - 2
+        if cornerPost_el:
+            count += 1
+        types.append(count)
+
     return types, info
 
 
 el = FilteredElementCollector(doc).OfClass(Railing).ToElements()
 
-OUT = GetTypeRailing(el, doc)
+OUT = GetBalisterCount(el, doc)

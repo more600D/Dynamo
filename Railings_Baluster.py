@@ -13,6 +13,24 @@ uiapp = DocumentManager.Instance.CurrentUIApplication
 app = uiapp.Application
 
 
+def AnglePath(items):
+    result = []
+    angles = []
+    for item in items:
+        path = item.GetPath()
+        result.append(path)
+        og = []
+        for p in path:
+            points = []
+            pt0 = p.GetEndPoint(0)
+            pt1 = p.GetEndPoint(1)
+            points.append(pt1)
+            points.append(pt0)
+            og.append(points)
+        angles.append(og)
+    return result, angles
+
+
 def GetBalisterCount(items, document):
     types = []
     info = []
@@ -39,4 +57,4 @@ def GetBalisterCount(items, document):
 
 el = FilteredElementCollector(doc).OfClass(Railing).ToElements()
 
-OUT = GetBalisterCount(el, doc)
+OUT = AnglePath(el)

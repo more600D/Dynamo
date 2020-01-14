@@ -20,8 +20,7 @@ TransactionManager.Instance.EnsureInTransaction(doc)
 for e in el:
     if e.GetType().ToString() == 'Autodesk.Revit.DB.FamilyInstance':
         lev = doc.GetElement(e.OwnerViewId)
-        levelName = lev.Name
-        e.LookupParameter(param).Set(levelName)
+        e.LookupParameter(param).Set(lev.Name)
         items.append(e)
         levels.append(lev)
 TransactionManager.Instance.TransactionTaskDone()

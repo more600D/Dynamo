@@ -20,7 +20,7 @@ roomName = []
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 for r in rooms:
-    if r.LevelId == lev.Id:
+    if r.LevelId == lev.Id and r.Location:
         param_name = r.get_Parameter(BuiltInParameter.ROOM_NAME)
         param_koef = r.get_Parameter(guid)
         if param_koef:
@@ -36,4 +36,4 @@ for r in rooms:
         roomAtLevel.append(r.LevelId)
 TransactionManager.Instance.TransactionTaskDone()
 
-OUT = rooms
+OUT = roomAtLevel, roomName

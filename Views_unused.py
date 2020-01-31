@@ -35,6 +35,7 @@ view_Section = []
 view_FloorPlan = []
 view_Legend = []
 view_Schedule = []
+copyName = []
 
 for v in views_col:
     if v.ViewType == ViewType.ThreeD and not v.IsTemplate:
@@ -52,6 +53,8 @@ for v in views_col:
     if v.ViewType == ViewType.Schedule and not v.IsTemplate:
         if '000_' not in v.Name:
             view_Schedule.append(v.Id)
+    if 'копия' in v.Name:
+        copyName.append(v)
 for p in view_port:
     view_list.append(p.ViewId)
 for p in schedule_graf:
@@ -64,4 +67,4 @@ u_FloorPlan = not_on_sheet(view_FloorPlan, view_list)
 u_Legend = not_on_sheet(view_Legend, view_list)
 u_Schedule = not_on_sheet(view_Schedule, schedule_list)
 
-OUT = u_TreeD, u_DraftingView, u_Section, u_FloorPlan, u_Legend, u_Schedule, not_null(views_col)
+OUT = u_TreeD, u_DraftingView, u_Section, u_FloorPlan, u_Legend, u_Schedule, copyName, not_null(views_col)

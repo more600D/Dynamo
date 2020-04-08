@@ -12,11 +12,11 @@ def Convert_toMM(value):
     return UnitUtils.ConvertFromInternalUnits(value, DisplayUnitType.DUT_MILLIMETERS)
 
 
-elem = UnwrapElement(IN[1])
+elem = UnwrapElement(IN[1])  # noqa
 
 if elem.CurtainGrid:
     curve = elem.Location.Curve
-    if elem.Location.Curve.ToString() == 'Autodesk.Revit.DB.Arc':
+    if 'Arc' in elem.Location.Curve.ToString():
         value = curve.Radius
         panelsIds = elem.CurtainGrid.GetPanelIds()
         panels = []

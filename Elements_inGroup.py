@@ -1,6 +1,6 @@
 import clr
 clr.AddReference("RevitAPI")
-from Autodesk.Revit.DB import FilteredElementCollector, Group
+from Autodesk.Revit.DB import FilteredElementCollector, Group, Wall
 clr.AddReference("RevitServices")
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager

@@ -1,39 +1,27 @@
-more_list = IN[0]  # noqa
-less_list = IN[1]  # noqa
-ll = []
+import clr
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import FilteredElementCollector, Wall
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+clr.AddReference("RevitServices")
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
 
-# for l in range(len(el_list)):
-# 	i = el_list.index(min(el_list))
-# 	min_list.append(el_list[i])
-# 	del el_list[i]
 
+doc = DocumentManager.Instance.CurrentDBDocument
+uiapp = DocumentManager.Instance.CurrentUIApplication
+app = uiapp.Application
 
-def notNone(li):
-    f_list = []
-    for i in li:
-        sp = []
-        for j in i:
-            if j:
-                sp.append(j)
-        f_list.append(sp)
-    return f_list
+apiCurve = UnwrapElement(IN[1])
+level = UnwrapElement(IN[2])
+el = UnwrapElement()
 
-for i in range(len(more_list)):
-    min_list = []
-    part = []
-    val = []
-    ind = []
-    if len(less_list) > 0:
-        for j in range(len(less_list)):
-            if more_list[i] + less_list[j] <= 10:
-                val.append(less_list[j])
-                ind.append(j)
-            inx = val.index(max(val))
-        del less_list[ind[inx]]
-        min_list.append(max(val))
-        min_list.append(more_list[i])
-    else:
-        min_list.append(more_list[i])
-    ll.append(min_list)
+TransactionManager.Instance.EnsureInTransaction(doc)
 
-OUT = ll
+wall = Wall.Create(doc, apiCurve.Location.Curve, level.Id, False).ToDSType(False)
+
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = wall

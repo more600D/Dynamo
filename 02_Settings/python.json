@@ -52,6 +52,21 @@
 			"clr.AddReference('RevitAPIUI')",
 			"from Autodesk.Revit.UI.Selection import ObjectType, Selection"
 		]
+	},
+	"UnwrapElement": {
+		"prefix": "unwrap",
+		"body": [
+			"UnwrapElement()"
+		]
+	},
+	"RevitNodes": {
+		"prefix": "nodes",
+		"body": [
+			"clr.AddReference(\"RevitNodes\")",
+			"import Revit",
+			"clr.ImportExtensions(Revit.Elements)",
+			"clr.ImportExtensions(Revit.GeometryConversion)"
+		]
 	}
 
 }

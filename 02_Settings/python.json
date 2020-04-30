@@ -40,7 +40,7 @@
 		"body": [
 			"TransactionManager.Instance.EnsureInTransaction(doc)",
 			"",
-			"",
+			"${1}",
 			"",
 			"TransactionManager.Instance.TransactionTaskDone()"
 		]
@@ -56,11 +56,11 @@
 	"UnwrapElement": {
 		"prefix": "unwrap",
 		"body": [
-			"UnwrapElement()"
+			"UnwrapElement(${1})  # noqa"
 		]
 	},
 	"RevitNodes": {
-		"prefix": "nodes",
+		"prefix": "rvtnodes",
 		"body": [
 			"clr.AddReference(\"RevitNodes\")",
 			"import Revit",

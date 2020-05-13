@@ -41,8 +41,8 @@
     },
     {
       "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
-      "HintPath": "C:\\Users\\user\\OneDrive - repurpose collaborative experiences\\09_GitHub\\Dynamo-1\\ExtensibleStorage_Create.py",
-      "InputValue": "..\\ExtensibleStorage_Create.py",
+      "HintPath": "C:\\Dynamo\\Dynamo\\Levels_rename.py",
+      "InputValue": "..\\Levels_rename.py",
       "NodeType": "ExtensionNode",
       "Id": "b8a25290ef734173a01a9c30652f6ae0",
       "Inputs": [],
@@ -161,7 +161,7 @@
     {
       "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
       "NodeType": "BooleanInputNode",
-      "InputValue": false,
+      "InputValue": true,
       "Id": "2994a764b6104636918819c5e9cf25ff",
       "Inputs": [],
       "Outputs": [
@@ -177,6 +177,66 @@
       ],
       "Replication": "Disabled",
       "Description": "Выбор между значениями true и false."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "a.Elevation;",
+      "Id": "6583051d20f84e22981b867b0c577cc3",
+      "Inputs": [
+        {
+          "Id": "a6c8b3b901484b32a273a87aa62a2718",
+          "Name": "a",
+          "Description": "a",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "414539c316664594b3d850cf8277849a",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Count@var[]..[]",
+      "Id": "9beb779753bd44eda328fe1626c28d6b",
+      "Inputs": [
+        {
+          "Id": "e9351cce382b4353bd0fabc796fa2713",
+          "Name": "list",
+          "Description": "Список, элементы которого требуется сосчитать.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c24050ca03d5425d8003c87ad3690961",
+          "Name": "count",
+          "Description": "Длина списка.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Получение количества элементов, хранящихся в данном списке.\n\nList.Count (list: var[]..[]): int"
     }
   ],
   "Connectors": [
@@ -201,20 +261,31 @@
       "Id": "050f68d3443b41edae745cbba8db37ef"
     },
     {
+      "Start": "b00c330cf0ef4c6188b266c1acc18cd5",
+      "End": "a6c8b3b901484b32a273a87aa62a2718",
+      "Id": "85417f9906ac4b45a37121e753f652b9"
+    },
+    {
+      "Start": "b00c330cf0ef4c6188b266c1acc18cd5",
+      "End": "e9351cce382b4353bd0fabc796fa2713",
+      "Id": "a46db1b09c984be4a03d128ff99db8aa"
+    },
+    {
       "Start": "e21e92a3239d4c878b2d18869ccc01e2",
       "End": "43c6dccc434c47dbb57c684761b73308",
       "Id": "3d5eeb01c5524e3893b29b3165289e21"
     }
   ],
   "Dependencies": [],
+  "NodeLibraryDependencies": [],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": true,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.2.6826",
-      "RunType": "Manual",
+      "Version": "2.3.0.5885",
+      "RunType": "Automatic",
       "RunPeriod": "1000"
     },
     "Camera": {
@@ -231,69 +302,89 @@
     },
     "NodeViews": [
       {
+        "ShowGeometry": true,
+        "Name": "FileSystem.ReadText",
         "Id": "0f9891ee6acb46478587c9a24f163bd7",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "FileSystem.ReadText",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 638.84860168369426,
         "Y": 286.0
       },
       {
+        "ShowGeometry": true,
+        "Name": "File Path",
         "Id": "b8a25290ef734173a01a9c30652f6ae0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "File Path",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 215.93870381608042,
         "Y": 284.44271711760615
       },
       {
+        "ShowGeometry": true,
+        "Name": "File From Path",
         "Id": "017d3c6760a7478f865655f255706eca",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "File From Path",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 464.57385701465955,
         "Y": 286.0
       },
       {
+        "ShowGeometry": true,
+        "Name": "Python Script From String",
         "Id": "7466d1048a5744e99a5c0fe43ba2edcc",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script From String",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 869.01312832037388,
-        "Y": 318.52732941788491
+        "X": 861.28043236698352,
+        "Y": 320.983647766463
       },
       {
+        "ShowGeometry": true,
+        "Name": "Object.Type",
         "Id": "2d17937986a14b26a7252fbc0123fb4b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Object.Type",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 1122.7938786917462,
         "Y": 319.09188136848474
       },
       {
+        "ShowGeometry": true,
+        "Name": "Boolean",
         "Id": "2994a764b6104636918819c5e9cf25ff",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Boolean",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 652.27919323398442,
         "Y": 410.21642418248149
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "6583051d20f84e22981b867b0c577cc3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1137.5370066286473,
+        "Y": 448.24775514438306
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.Count",
+        "Id": "9beb779753bd44eda328fe1626c28d6b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1116.746063761776,
+        "Y": 712.857857433789
       }
     ],
     "Annotations": [],
-    "X": -111.30029536568054,
-    "Y": -112.59542037650226,
-    "Zoom": 1.2422599153412073
+    "X": -924.61022451334134,
+    "Y": -115.61371488485838,
+    "Zoom": 1.4855851247152494
   }
 }

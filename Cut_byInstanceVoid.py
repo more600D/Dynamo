@@ -8,8 +8,6 @@ from RevitServices.Transactions import TransactionManager
 
 
 doc = DocumentManager.Instance.CurrentDBDocument
-uiapp = DocumentManager.Instance.CurrentUIApplication
-app = uiapp.Application
 
 all_panels = FilteredElementCollector(doc).OfClass(FamilyInstance). \
     OfCategory(BuiltInCategory.OST_CurtainWallPanels).ToElements()
@@ -24,13 +22,11 @@ for p in all_panels:
             outline = Outline(pan_box.Min, pan_box.Max)
             bbfilter = BoundingBoxIntersectsFilter(outline)
             intersects = FilteredElementCollector(doc).OfClass(Wall).WherePasses(bbfilter).ToElements()
-            errors = []
             for i in intersects:
                 if i.Name != IN[1]:
                     try:
                         InstanceVoidCutUtils.AddInstanceVoidCut(doc, i, p)
-                    except Exception as err:
-                        errors.append(err)
+                    except: pass
             win_panels.append(p)
 TransactionManager.Instance.TransactionTaskDone()
 

@@ -4,7 +4,10 @@
 
 ## Python основы
 
-* [Методы](python-osnovy/untitled.md)
+* [ООП](python-osnovy/oop.md)
+* [Классы и объекты](python-osnovy/klassy-i-obekty.md)
+* [Методы](python-osnovy/untitled/README.md)
+  * [Untitled](python-osnovy/untitled/untitled.md)
 
 ## RevitAPI
 

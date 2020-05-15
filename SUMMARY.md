@@ -4,7 +4,7 @@
 
 ## Python основы
 
-* [Untitled](python-osnovy/untitled.md)
+* [Методы](python-osnovy/untitled.md)
 
 ## RevitAPI
 

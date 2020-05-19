@@ -1,0 +1,321 @@
+{
+  "Uuid": "fc514dec-fee3-49ae-a5a9-d9f6bb855eb2",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "ИзменениеВесаМодШтриховки",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import GraphicsStyleType, BuiltInCategory, Category\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\ndef lineweight(fill, weight=IN[4], graphStyle=GraphicsStyleType.Projection):\r\n    return fill.SetLineWeight(weight, graphStyle)\r\n\r\n\r\nview = doc.ActiveView\r\nscale = view.Scale\r\n\r\nfloor_fill = Category.GetCategory(doc, BuiltInCategory.OST_FloorsSurfacePattern)\r\nwall_fill = Category.GetCategory(doc, BuiltInCategory.OST_WallsSurfacePattern)\r\nceilling_fill = Category.GetCategory(doc, BuiltInCategory.OST_CeilingsSurfacePattern)\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nif IN[1]:\r\n    lineweight(floor_fill)\r\nif IN[2]:\r\n    lineweight(wall_fill)\r\nif IN[3]:\r\n    lineweight(ceilling_fill)\r\n\r\nview.Scale = 1\r\nview.Scale = scale\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n\r\nOUT = floor_fill.Name\r\n",
+      "VariableInputPorts": true,
+      "Id": "6650770b989e481ba004f4b250e727c4",
+      "Inputs": [
+        {
+          "Id": "af79de40349b4755a8bf62981a83f29d",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "88fa1928041b4f62a89660b02c7f163b",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1eea7218ae2c42ea8826518291905c07",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7352e08d77e54b2da6a5394d3a7f1b8b",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d42e6d12c11e42e3bc229a939d3d86d0",
+          "Name": "IN[4]",
+          "Description": "Input #4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7aa6d234e584495485f32ec32e54b377",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": true,
+      "Id": "2994a764b6104636918819c5e9cf25ff",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "42283634ba894dda8a84dd3813be1972",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.IntegerSlider, CoreNodeModels",
+      "NodeType": "NumberInputNode",
+      "NumberType": "Integer",
+      "InputValue": 12,
+      "MaximumValue": 16,
+      "MinimumValue": 1,
+      "StepValue": 1,
+      "Id": "23b133695b39429f9db89a464d05c663",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "6fa550a2f6c340299be2309ec3357964",
+          "Name": "",
+          "Description": "Int32",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Регулятор, создающий целые значения."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": true,
+      "Id": "50f0dbeb75b946cfaf789a130c2fb301",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c4c4779f9e784abba6ebc5609208eb55",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "afffa8a1c80245fdb65f437583da8247",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "99aac584c7f2475a8b44ee89465e373a",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "83cfffc3fe004f61a8504c08096d6927",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7358f91e05334b639759c2a43fd09c04",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "42283634ba894dda8a84dd3813be1972",
+      "End": "af79de40349b4755a8bf62981a83f29d",
+      "Id": "2dcf2b3dc42746ab9ac4c41be377a66a"
+    },
+    {
+      "Start": "6fa550a2f6c340299be2309ec3357964",
+      "End": "d42e6d12c11e42e3bc229a939d3d86d0",
+      "Id": "a75547a6fd5148b889319e2b00c45de7"
+    },
+    {
+      "Start": "c4c4779f9e784abba6ebc5609208eb55",
+      "End": "88fa1928041b4f62a89660b02c7f163b",
+      "Id": "4d1b7a22d9c24e97b711740c7ed56b93"
+    },
+    {
+      "Start": "99aac584c7f2475a8b44ee89465e373a",
+      "End": "1eea7218ae2c42ea8826518291905c07",
+      "Id": "5a4b0738db634ec7b87540396aedefa7"
+    },
+    {
+      "Start": "7358f91e05334b639759c2a43fd09c04",
+      "End": "7352e08d77e54b2da6a5394d3a7f1b8b",
+      "Id": "ab31d6b0493d4d079d2527c5c9af5c3a"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Automatic",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -861.87003715131755,
+      "EyeY": 776.79325844003608,
+      "EyeZ": -55.5800960293557,
+      "LookX": 657.7242817203894,
+      "LookY": -593.79311837213334,
+      "LookZ": -465.87798919169165,
+      "UpX": 0.33190944872867534,
+      "UpY": 0.91354545764260175,
+      "UpZ": -0.23509745780249872
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "6650770b989e481ba004f4b250e727c4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 656.54235095058755,
+        "Y": 89.893799851559379
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Повторить",
+        "Id": "2994a764b6104636918819c5e9cf25ff",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 434.3471455973438,
+        "Y": -70.4662922049057
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Вес линии",
+        "Id": "23b133695b39429f9db89a464d05c663",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 270.3471455973438,
+        "Y": 330.61636895845669
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Перекрытия",
+        "Id": "50f0dbeb75b946cfaf789a130c2fb301",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 434.3471455973438,
+        "Y": 70.7716667272002
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Стены",
+        "Id": "afffa8a1c80245fdb65f437583da8247",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 434.3471455973438,
+        "Y": 133.34547673058432
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Потолки",
+        "Id": "83cfffc3fe004f61a8504c08096d6927",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 434.3471455973438,
+        "Y": 195.91928673396848
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "4f9adbdc05a74c12affc31d3a5384c98",
+        "Title": "",
+        "Nodes": [
+          "50f0dbeb75b946cfaf789a130c2fb301",
+          "afffa8a1c80245fdb65f437583da8247",
+          "83cfffc3fe004f61a8504c08096d6927"
+        ],
+        "Left": 424.3471455973438,
+        "Top": 17.7716667272002,
+        "Width": 155.0,
+        "Height": 246.14762000676828,
+        "FontSize": 36.0,
+        "InitialTop": 70.7716667272002,
+        "InitialHeight": 223.14762000676828,
+        "TextblockHeight": 43.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": -275.70644224527666,
+    "Y": 199.70093803030349,
+    "Zoom": 1.1339963535193887
+  }
+}

@@ -2,7 +2,7 @@
   "Uuid": "fc514dec-fee3-49ae-a5a9-d9f6bb855eb2",
   "IsCustomNode": false,
   "Description": null,
-  "Name": "Загатовка",
+  "Name": "РавестваСегментовРазмеров",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -12,7 +12,7 @@
     {
       "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
       "NodeType": "BooleanInputNode",
-      "InputValue": true,
+      "InputValue": false,
       "Id": "2994a764b6104636918819c5e9cf25ff",
       "Inputs": [],
       "Outputs": [
@@ -28,26 +28,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Выбор между значениями true и false."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
-      "NodeType": "CodeBlockNode",
-      "Code": "\"ИмяТипа\";",
-      "Id": "a5d8d1e1479d4be193311db268622b33",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "d3715b8f5e7645e0b9c99ed0f5f82a3e",
-          "Name": "",
-          "Description": "Значение выражения в строке 1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
@@ -88,6 +68,26 @@
       ],
       "Replication": "Disabled",
       "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "ИмяТипа",
+      "Id": "5d8137bc06eb48b0a901896c97fcdcf7",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "68459eec0a8249cb8ae1f520ce8ab672",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Создание строки."
     }
   ],
   "Connectors": [
@@ -97,9 +97,9 @@
       "Id": "1416a44177dd47d2aa1cb1d6628e31c8"
     },
     {
-      "Start": "d3715b8f5e7645e0b9c99ed0f5f82a3e",
+      "Start": "68459eec0a8249cb8ae1f520ce8ab672",
       "End": "9ac543c219c54b8eabd17c348a778ec4",
-      "Id": "c5f71450ff3e424e88b3d7f82e75d9df"
+      "Id": "03c3dda745254fe4b5eb5e35ae09fbf9"
     }
   ],
   "Dependencies": [],
@@ -139,16 +139,6 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "Имя типа размера",
-        "Id": "a5d8d1e1479d4be193311db268622b33",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 497.29820248427257,
-        "Y": 47.51754806268832
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Python Script",
         "Id": "0fe260789a3a46a5afe1522494ea7cc2",
         "IsSetAsInput": false,
@@ -156,6 +146,16 @@
         "Excluded": false,
         "X": 685.179492940769,
         "Y": -8.0187935210872467
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Имя типа размера",
+        "Id": "5d8137bc06eb48b0a901896c97fcdcf7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 497.29820248427257,
+        "Y": 62.144476647691988
       }
     ],
     "Annotations": [
@@ -164,21 +164,35 @@
         "Title": "",
         "Nodes": [
           "2994a764b6104636918819c5e9cf25ff",
-          "a5d8d1e1479d4be193311db268622b33"
+          "5d8137bc06eb48b0a901896c97fcdcf7"
         ],
         "Left": 487.29820248427257,
         "Top": -68.850679450693463,
         "Width": 152.0,
-        "Height": 209.36822751338178,
+        "Height": 198.99515609838545,
         "FontSize": 36.0,
         "InitialTop": -15.850679450693463,
-        "InitialHeight": 186.36822751338178,
+        "InitialHeight": 208.36822751338178,
         "TextblockHeight": 43.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "663a5e84e5024ef081f349f0f9d7b182",
+        "Title": "Для повтора действия, менять значение в ноде \"Повторить\" True\\False, поочередно",
+        "Nodes": [],
+        "Left": 487.9569372851397,
+        "Top": -124.50881901526219,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
         "Background": "#FFC1D676"
       }
     ],
-    "X": -835.55037772610433,
-    "Y": 456.41041210908861,
-    "Zoom": 2.2065899618595646
+    "X": -707.89898941490378,
+    "Y": 414.46286887669692,
+    "Zoom": 2.1209406529507464
   }
 }

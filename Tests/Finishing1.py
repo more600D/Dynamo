@@ -1,7 +1,8 @@
 import clr
 clr.AddReference("RevitAPI")
 from Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory, Outline, BoundingBoxIntersectsFilter, \
-    FamilyInstance, ElementCategoryFilter, BuiltInParameter, LogicalAndFilter, UnitUtils
+    FamilyInstance, ElementCategoryFilter, BuiltInParameter, LogicalAndFilter, UnitUtils, \
+    SpatialElementBoundaryOptions
 clr.AddReference("RevitServices")
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
@@ -36,9 +37,30 @@ room_col = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Rooms).T
 elements = []
 square_value = []
 
+opt = SpatialElementBoundaryOptions()
 TransactionManager.Instance.EnsureInTransaction(doc)
 
 for room in room_col:
+    room_height_param = room.get_Parameter(BuiltInParameter.ROOM_HEIGHT)
+    segments_list = room.GetBoundarySegments(opt)
+    all_length = 0
+    fam_in_room = []
+    for segments in segments_list:
+        for segment in segments:
+            element_segement = doc.GetElement(segment.ElementId)
+            hasCurtainGrid = hasattr(element_segement, 'CurtainGrid')
+            if hasCurtainGrid:
+                if element_segement.CurtainGrid is None:
+                    all_length += segment.GetCurve().Length
+                else:
+                    fam_in_room.append(element_segement)
+            else:
+                hasCurveElementType = hasattr(element_segement, 'CurveElementType')
+                if not hasCurveElementType:
+                    all_length += segment.GetCurve().Length
+                else:
+                    fam_in_room.append(element_segement)
+    all_square = all_length * room_height_param.AsDouble()
     room_box = room.get_BoundingBox(None)
     param = room.LookupParameter('ПлощадьПроемов')
     if room_box:
@@ -48,7 +70,6 @@ for room in room_col:
             WherePasses(LogicalAndFilter(bbfilter, door_cat)).ToElements()
         windows = FilteredElementCollector(doc).OfClass(FamilyInstance). \
             WherePasses(LogicalAndFilter(bbfilter, win_cat)).ToElements()
-        fam_in_room = []
         value = 0
         for door in doors:
             value += square(door)
@@ -57,9 +78,10 @@ for room in room_col:
             if square(window):
                 value += square(window)
             fam_in_room.append(window)
-        param.Set(value)
+        finish_square = all_square - value
+        param.Set(finish_square)
     elements.append(fam_in_room)
-    square_value.append(UnitUtils.ConvertFromInternalUnits(value, param.DisplayUnitType))
+    square_value.append(UnitUtils.ConvertFromInternalUnits(finish_square, param.DisplayUnitType))
 
 
 TransactionManager.Instance.TransactionTaskDone()

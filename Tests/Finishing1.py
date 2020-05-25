@@ -19,9 +19,11 @@ def getTypeOrInstanceParameter(elem, builtInParameter):
 
 
 def square(elem):
-    value = getTypeOrInstanceParameter(elem, BuiltInParameter.FURNITURE_WIDTH) * \
-        getTypeOrInstanceParameter(elem, BuiltInParameter.FAMILY_HEIGHT_PARAM)
-    return value
+    param1 = getTypeOrInstanceParameter(elem, BuiltInParameter.FURNITURE_WIDTH)
+    param2 = getTypeOrInstanceParameter(elem, BuiltInParameter.FAMILY_HEIGHT_PARAM)
+    if param1 and param2:
+        value = param1 * param2
+        return value
 
 
 doc = DocumentManager.Instance.CurrentDBDocument
@@ -52,7 +54,8 @@ for room in room_col:
             value += square(door)
             fam_in_room.append(door)
         for window in windows:
-            value += square(window)
+            if square(window):
+                value += square(window)
             fam_in_room.append(window)
         param.Set(value)
     elements.append(fam_in_room)

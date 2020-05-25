@@ -11,8 +11,8 @@
   "Nodes": [
     {
       "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
-      "HintPath": "C:\\Dynamo\\Dynamo\\Tests\\Finishing.py",
-      "InputValue": "..\\Tests\\Finishing.py",
+      "HintPath": "C:\\Dynamo\\Dynamo\\Tests\\Finishing1.py",
+      "InputValue": "..\\Tests\\Finishing1.py",
       "NodeType": "ExtensionNode",
       "Id": "195b1f00d4da4f53b87789a5f8b5adec",
       "Inputs": [],
@@ -177,6 +177,36 @@
       ],
       "Replication": "Auto",
       "Description": "Возврат типа объекта, представленного в виде строки.\n\nObject.Type (obj: var): string"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.GetCategory",
+      "Id": "e12aecf0930f448cb97ed5aadfa5e93b",
+      "Inputs": [
+        {
+          "Id": "f07204258227482bb83dc1624b075894",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "31015eedf578428687d769edefce852f",
+          "Name": "Category",
+          "Description": "Category",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Получение категории элемента\n\nElement.GetCategory: Category"
     }
   ],
   "Connectors": [
@@ -199,6 +229,11 @@
       "Start": "d9f824579e3e42528040f39f503d264b",
       "End": "22bf2d16b5b9463592e64807e1ff4f3d",
       "Id": "dc5fd6f4f0d149f6956c1e8f75788db6"
+    },
+    {
+      "Start": "d9f824579e3e42528040f39f503d264b",
+      "End": "f07204258227482bb83dc1624b075894",
+      "Id": "6219bf3450754aed9cef581c2a0f25a9"
     },
     {
       "Start": "c03e89985dc543af8380fd9a2ba5c642",
@@ -238,8 +273,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 174.5,
-        "Y": 416.0
+        "X": 247.22647230764142,
+        "Y": 413.57578425641196
       },
       {
         "ShowGeometry": true,
@@ -248,8 +283,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 608.37290972432936,
-        "Y": 413.84043142340909
+        "X": 618.0697726986815,
+        "Y": 412.6283235516151
       },
       {
         "ShowGeometry": true,
@@ -258,8 +293,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 392.95896811438035,
-        "Y": 416.0
+        "X": 449.92803808869951,
+        "Y": 414.787892128206
       },
       {
         "ShowGeometry": true,
@@ -268,8 +303,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 911.66317871095953,
-        "Y": 413.95112715215038
+        "X": 860.3617978800861,
+        "Y": 411.7874008972579
       },
       {
         "ShowGeometry": true,
@@ -288,13 +323,23 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1243.4815522786137,
-        "Y": 416.88055190635845
+        "X": 1251.1559459377197,
+        "Y": 415.93276749114744
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Element.GetCategory",
+        "Id": "e12aecf0930f448cb97ed5aadfa5e93b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1232.4659486238479,
+        "Y": 762.59575788354368
       }
     ],
     "Annotations": [],
-    "X": -528.1430231795,
-    "Y": -295.95085690389874,
-    "Zoom": 1.1205547978539538
+    "X": -915.736780511417,
+    "Y": -535.57821446227172,
+    "Zoom": 1.457005430998477
   }
 }

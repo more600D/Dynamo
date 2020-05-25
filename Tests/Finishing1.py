@@ -19,7 +19,7 @@ def getTypeOrInstanceParameter(elem, builtInParameter):
             return param.AsDouble()
 
 
-def square(elem):
+def getSquare(elem):
     param1 = getTypeOrInstanceParameter(elem, BuiltInParameter.FURNITURE_WIDTH)
     param2 = getTypeOrInstanceParameter(elem, BuiltInParameter.FAMILY_HEIGHT_PARAM)
     if param1 and param2:
@@ -44,7 +44,7 @@ for room in room_col:
     room_height_param = room.get_Parameter(BuiltInParameter.ROOM_HEIGHT)
     segments_list = room.GetBoundarySegments(opt)
     all_length = 0
-    fam_in_room = []
+    elem_in_room = []
     for segments in segments_list:
         for segment in segments:
             element_segement = doc.GetElement(segment.ElementId)
@@ -53,13 +53,13 @@ for room in room_col:
                 if element_segement.CurtainGrid is None:
                     all_length += segment.GetCurve().Length
                 else:
-                    fam_in_room.append(element_segement)
+                    elem_in_room.append(element_segement)
             else:
                 hasCurveElementType = hasattr(element_segement, 'CurveElementType')
                 if not hasCurveElementType:
                     all_length += segment.GetCurve().Length
                 else:
-                    fam_in_room.append(element_segement)
+                    elem_in_room.append(element_segement)
     all_square = all_length * room_height_param.AsDouble()
     room_box = room.get_BoundingBox(None)
     param = room.LookupParameter('ПлощадьПроемов')
@@ -72,15 +72,15 @@ for room in room_col:
             WherePasses(LogicalAndFilter(bbfilter, win_cat)).ToElements()
         value = 0
         for door in doors:
-            value += square(door)
-            fam_in_room.append(door)
+            value += getSquare(door)
+            elem_in_room.append(door)
         for window in windows:
-            if square(window):
-                value += square(window)
-            fam_in_room.append(window)
+            if getSquare(window):
+                value += getSquare(window)
+            elem_in_room.append(window)
         finish_square = all_square - value
         param.Set(finish_square)
-    elements.append(fam_in_room)
+    elements.append(elem_in_room)
     square_value.append(UnitUtils.ConvertFromInternalUnits(finish_square, param.DisplayUnitType))
 
 

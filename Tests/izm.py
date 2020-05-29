@@ -18,7 +18,7 @@ def group_by_key(elems, keyfunc):
 
 
 def SetParameter(param_name, count, value):
-    param_number = titleblock.LookupParameter(param_name.format(count))
+    param_number = titleblock.LookupParameter("00_Изм{}_{}".format(count, param_name))
     if param_number:
         param_number.Set(value)
 
@@ -63,16 +63,16 @@ for rev_list in f_list:
             if '020_Основная надпись' in family.Name:
                 if len(rev_list) < num_in_list:
                     for i in range(num_in_list, len(rev_list), -1):
-                        SetParameter('00_Изм{}_Номер', i, 0)
-                        SetParameter('00_Изм{}_Количество', i, 0)
-                        SetParameter('00_Изм{}_Тип', i, '')
-                        SetParameter('00_Изм{}_НомерРазрешения', i, '')
-                        SetParameter('00_Изм{}_Дата', i, '')
-                SetParameter('00_Изм{}_Номер', count, float(rev_number))
-                SetParameter('00_Изм{}_Количество', count, count_revision)
-                SetParameter('00_Изм{}_Тип', count, rev_type)
-                SetParameter('00_Изм{}_НомерРазрешения', count, rev_solution)
-                SetParameter('00_Изм{}_Дата', count, rev_date)
+                        SetParameter('Номер', i, 0)
+                        SetParameter('Количество', i, 0)
+                        SetParameter('Тип', i, '')
+                        SetParameter('НомерРазрешения', i, '')
+                        SetParameter('Дата', i, '')
+                SetParameter('Номер', count, float(rev_number))
+                SetParameter('Количество', count, count_revision)
+                SetParameter('Тип', count, rev_type)
+                SetParameter('НомерРазрешения', count, rev_solution)
+                SetParameter('Дата', count, rev_date)
             count += 1
 
 TransactionManager.Instance.TransactionTaskDone()

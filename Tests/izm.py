@@ -40,7 +40,7 @@ for sheet in view_sheets:
 guid = Guid('9ff5d8e3-fc81-4d47-b629-a055922c80cb')
 f_list = []
 for rev in list_revisions:
-    f = group_by_key(rev, lambda x: float(x.get_Parameter(guid).AsString()))
+    f = group_by_key(rev, lambda x: x.get_Parameter(guid).AsString())
     f_list.append(f)
 
 TransactionManager.Instance.EnsureInTransaction(doc)

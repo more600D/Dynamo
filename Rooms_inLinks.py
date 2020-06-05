@@ -5,6 +5,7 @@ from Autodesk.Revit.DB import FilteredElementCollector, RevitLinkInstance, Built
 
 clr.AddReference("RevitServices")
 from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 
@@ -34,9 +35,18 @@ for room in rooms:
     llist.append(UnitUtils.ConvertFromInternalUnits(param, DisplayUnitType.DUT_SQUARE_METERS))
     mlist.append(llist)
 
+TransactionManager.Instance.EnsureInTransaction(doc)
 
 flist = []
 for f in fam_col:
-    flist.append(lnkdoc.GetRoomAtPoint(f.Location.Point))
+    room = lnkdoc.GetRoomAtPoint(f.Location.Point)
+    flist.append(room)
+    room_number = room.get_Parameter(BuiltInParameter.ROOM_NUMBER).AsString()
+    param = f.get_Parameter(BuiltInParameter.ALL_MODEL_INSTANCE_COMMENTS)
+    if param:
+        param.Set("Номер помещения {}".format(room_number))
+
+TransactionManager.Instance.TransactionTaskDone()
+
 
 OUT = flist, fam_col

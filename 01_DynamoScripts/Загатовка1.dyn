@@ -1,0 +1,346 @@
+{
+  "Uuid": "0157b3ae-236a-4483-adc9-28b98b474eee",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "Загатовка1",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
+      "HintPath": "C:\\Dynamo\\Dynamo\\Tests\\decal.py",
+      "InputValue": "C:\\Dynamo\\Dynamo\\Tests\\decal.py",
+      "NodeType": "ExtensionNode",
+      "Id": "195b1f00d4da4f53b87789a5f8b5adec",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ed2f8f4ac5e940dfbc245dcdd81b9323",
+          "Name": "",
+          "Description": "Filename",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows you to select a file on the system to get its filename"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.IO.FileSystem.ReadText@var",
+      "Id": "ad033fb032674224a7925948f94d55bb",
+      "Inputs": [
+        {
+          "Id": "645e9940e93345729d0052cd5ca0f598",
+          "Name": "file",
+          "Description": "var",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9f6d3d4db8274318a9377e340c99e581",
+          "Name": "str",
+          "Description": "Contents of the text file.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Reads a text file and returns the contents as a string.\n\nFileSystem.ReadText (file: var): string"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.FileObject, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "e8865335425e4671bac69fa40e69586a",
+      "Inputs": [
+        {
+          "Id": "6d48422220154473b970e062c67cf377",
+          "Name": "path",
+          "Description": "Path to the file.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7a4161e28b44450baffd847745def215",
+          "Name": "file",
+          "Description": "File object",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a file object from a path."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonStringNode, PythonNodeModels",
+      "VariableInputPorts": true,
+      "NodeType": "ExtensionNode",
+      "Id": "4016dd19d62b41bfba5a6a283a7cf6cd",
+      "Inputs": [
+        {
+          "Id": "35c8fc40a43f4155898adaf5cd0afbdd",
+          "Name": "script",
+          "Description": "Python script to run.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "bc33a84438164b488c87d867ef0b9104",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d9f824579e3e42528040f39f503d264b",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs a IronPython script from a string."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "0664519c-d392-4058-88fe-4c5f38d99e42-0003320c"
+      ],
+      "Id": "5e8c3e8db38d444fb1311cfc75f97e05",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "3538bcca11ec48c8a9b743dc34649454",
+          "Name": "Element",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "a.Parameters[5];",
+      "Id": "909c4ace93ae47738ad2f4e469b58630",
+      "Inputs": [
+        {
+          "Id": "0eb74a70c4184cff97ea9135fdf4df88",
+          "Name": "a",
+          "Description": "a",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e47f32583d1e42648f14c2333fcfb7d2",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.ElementType",
+      "Id": "6f4c51f29cd54375b0e2e21df437e2ae",
+      "Inputs": [
+        {
+          "Id": "a8489b2d41694a8c926f9e171187ec96",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5ea58a91527d47cca82299507ee63d67",
+          "Name": "ElementType",
+          "Description": "Element Type or Null.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns the FamilyType for this Element. Returns null if the Element cannot have a FamilyType assigned.\n\nElement.ElementType: Element"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "ed2f8f4ac5e940dfbc245dcdd81b9323",
+      "End": "6d48422220154473b970e062c67cf377",
+      "Id": "c6d5db6f5b7641b5bcc9120addd5c9f1"
+    },
+    {
+      "Start": "9f6d3d4db8274318a9377e340c99e581",
+      "End": "35c8fc40a43f4155898adaf5cd0afbdd",
+      "Id": "508a666b0bd6456595751f9342357697"
+    },
+    {
+      "Start": "7a4161e28b44450baffd847745def215",
+      "End": "645e9940e93345729d0052cd5ca0f598",
+      "Id": "9a41baeb3095453a9db3773918b15193"
+    },
+    {
+      "Start": "3538bcca11ec48c8a9b743dc34649454",
+      "End": "bc33a84438164b488c87d867ef0b9104",
+      "Id": "feafcd8a255a472284b2fa0d52209621"
+    },
+    {
+      "Start": "3538bcca11ec48c8a9b743dc34649454",
+      "End": "a8489b2d41694a8c926f9e171187ec96",
+      "Id": "bd998724e7c741ad90fc0bc1aafe9750"
+    },
+    {
+      "Start": "5ea58a91527d47cca82299507ee63d67",
+      "End": "0eb74a70c4184cff97ea9135fdf4df88",
+      "Id": "594a48a6ecde4d89a5164a9ff8cfae38"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Automatic",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "File Path",
+        "Id": "195b1f00d4da4f53b87789a5f8b5adec",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 174.5,
+        "Y": 416.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "FileSystem.ReadText",
+        "Id": "ad033fb032674224a7925948f94d55bb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 597.5,
+        "Y": 412.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "File From Path",
+        "Id": "e8865335425e4671bac69fa40e69586a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 439.5,
+        "Y": 416.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script From String",
+        "Id": "4016dd19d62b41bfba5a6a283a7cf6cd",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 954.14108901540067,
+        "Y": 451.88193644293494
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Element",
+        "Id": "5e8c3e8db38d444fb1311cfc75f97e05",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 499.0,
+        "Y": 713.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "909c4ace93ae47738ad2f4e469b58630",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1042.6004231658258,
+        "Y": 927.32932460876827
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Element.ElementType",
+        "Id": "6f4c51f29cd54375b0e2e21df437e2ae",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 708.30428304920326,
+        "Y": 923.90781098877119
+      }
+    ],
+    "Annotations": [],
+    "X": -712.88216309831614,
+    "Y": -428.33184163956878,
+    "Zoom": 1.5470165042756836
+  }
+}

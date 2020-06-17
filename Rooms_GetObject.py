@@ -21,7 +21,8 @@ for r in room_col:
     for g in r.get_Geometry(opt):
         if 'Line' in g.ToString():
             vector = (g.GetEndPoint(1) - g.GetEndPoint(0)).Normalize()
-            degrees = UnitUtils.ConvertFromInternalUnits(vector.AngleTo(XYZ.BasisX),DisplayUnitType.DUT_DECIMAL_DEGREES)
+            degrees = UnitUtils.ConvertFromInternalUnits(vector.AngleTo(XYZ.BasisX), \
+                DisplayUnitType.DUT_DECIMAL_DEGREES)
             if round(degrees) == 135:
                 lines.append(RevitToProtoCurve.ToProtoType(g))
 

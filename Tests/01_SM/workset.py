@@ -68,7 +68,7 @@ def SetWorkSet_byMaterial(cat, name_material, name_workset):
                             result = SetWorkSet_byElement(e, name_workset)
                             break
                     else:
-                        result = "Нет такого материяала: {}".format(name_material)
+                        result = "Нет такого материяала \"{}\" для {}".format(name_material, cat)
     return result
     TransactionManager.Instance.TransactionTaskDone()
 

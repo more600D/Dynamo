@@ -33,7 +33,7 @@ def SetWorkSet_byCategory(cat, name):
                         pass
                     msg = 'ОК'
                 else:
-                    msg = 'Нет такого набора: {}'.format(name)
+                    msg = 'Нет такого рабочего набора: {}'.format(name)
     else:
         msg = "Нет элементов категории {}".format(cat)
     return msg
@@ -49,8 +49,28 @@ def SetWorkSet_byElement(elem, name):
             param.Set(worksetId)
             msg = 'ОК'
         else:
-            msg = 'Нет такого набора: {}'.format(name)
+            msg = 'Нет такого рабочего набора: {}'.format(name)
     return msg
+
+
+def SetWorkSet_byMaterial(cat, name_material, name_workset):
+    TransactionManager.Instance.EnsureInTransaction(doc)
+    elems = FilteredElementCollector(doc).OfCategory(cat).WhereElementIsNotElementType().ToElements()
+    if elems:
+        for e in elems:
+            if e.GetType().Name != "FaceWall":
+                e_type = doc.GetElement(e.GetTypeId())
+                layers = e_type.GetCompoundStructure().GetLayers()
+                for l in layers:
+                    layer = doc.GetElement(l.MaterialId)
+                    if layer:
+                        if name_material.lower() in layer.Name.lower():
+                            result = SetWorkSet_byElement(e, name_workset)
+                            break
+                    else:
+                        result = "Нет такого материяала: {}".format(name_material)
+    return result
+    TransactionManager.Instance.TransactionTaskDone()
 
 
 cats = []
@@ -96,5 +116,8 @@ result.append(SetWorkSet_byCategory(BuiltInCategory.OST_CLines, '00_Опорны
 result.append(SetWorkSet_byCategory(BuiltInCategory.OST_Roofs, '01_Кровля'))
 result.append(SetWorkSet_byCategory(BuiltInCategory.OST_StructuralColumns, '02_Колонны'))
 result.append(SetWorkSet_byCategory(BuiltInCategory.OST_StructuralFraming, '02_Балки'))
+result.append(SetWorkSet_byMaterial(BuiltInCategory.OST_Walls, 'Утеплитель', '01_Утепление'))
+result.append(SetWorkSet_byMaterial(BuiltInCategory.OST_Walls, 'Штукатурка', '01_Отделка'))
+result.append(SetWorkSet_byMaterial(BuiltInCategory.OST_Floors, 'Утеплитель', '01_Утепление'))
 
 OUT = result

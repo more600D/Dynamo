@@ -149,8 +149,11 @@ result.append(SetWorkSet_byCategory(BuiltInCategory.OST_Roofs, '01_Кровля'
 result.append(SetWorkSet_byCategory(BuiltInCategory.OST_Fascia, '01_Кровля'))
 result.append(SetWorkSet_byCategory(BuiltInCategory.OST_StructuralColumns, '02_Колонны'))
 result.append(SetWorkSet_byCategory(BuiltInCategory.OST_StructuralFraming, '02_Балки'))
+result.append(SetWorkSet_byCategory(BuiltInCategory.OST_Gutter, '01_ВодосточнаяСистема'))
+result.append(SetWorkSet_byCategory(BuiltInCategory.OST_PipeCurves, '01_ВодосточнаяСистема'))
+result.append(SetWorkSet_byCategory(BuiltInCategory.OST_PipeFitting, '01_ВодосточнаяСистема'))
 result.append(SetWorkSet_byMaterial(BuiltInCategory.OST_Walls, 'Утеплитель', '01_Утепление'))
-result.append(SetWorkSet_byMaterial(BuiltInCategory.OST_Walls, 'Штукатурка', '01_Отделка'))
+result.append(SetWorkSet_byMaterial(BuiltInCategory.OST_Walls, 'Штукатурка', '01_ВнутреняяОтделка'))
 result.append(SetWorkSet_byMaterial(BuiltInCategory.OST_Floors, 'Утеплитель', '01_Утепление'))
 result.append(SetWorkSet_byGroupModel(BuiltInCategory.OST_GenericModel))
 

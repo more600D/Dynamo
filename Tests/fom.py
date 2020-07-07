@@ -7,7 +7,7 @@ clr.AddReference("System.Drawing")
 # AnchorStyles, DockStyle, PictureBox, PictureBoxSizeMode, TextBox
 # from System.Windows.Forms import TrackBar, TickStyle
 from System.Windows.Forms import *
-from System.Drawing import Size, Point, Font, Color, Image
+# from System.Drawing import Size, Point, Font, Color, Image
 
 in1 = IN[0]
 

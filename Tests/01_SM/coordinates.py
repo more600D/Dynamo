@@ -17,13 +17,15 @@ elems = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_LightingFix
     WhereElementIsNotElementType().ToElements()
 points = []
 for el in elems:
-    pt = str(el.Location.Point)[1:]
-    pt = pt[:len(pt) - 1]
-    points.append(pt)
+    loc = el.Location
+    if hasattr(loc, 'Point'):
+        pt = str(loc.Point)[1:]
+        pt = pt[:len(pt) - 1]
+        points.append(pt)
 
 # Создание имени и пути файла
 date = datetime.datetime.today().strftime("%Y%m%d_%H%M%S")
-filename = "Coordinates_{}.csv".format(date)
+filename = "Сoordinates_{}.csv".format(date)
 path = r'C:\Users\sssh\OneDrive\Desktop\test'
 fullpath = os.path.join(path, filename)
 

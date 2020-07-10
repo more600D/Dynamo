@@ -1,0 +1,219 @@
+{
+  "Uuid": "9a817678-0e7b-4ee1-9570-001c6961f24a",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "Заготовка",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonStringNode, PythonNodeModels",
+      "VariableInputPorts": true,
+      "NodeType": "ExtensionNode",
+      "Id": "ab7e14ef6f0b41a2a33643a108a383eb",
+      "Inputs": [
+        {
+          "Id": "5eab79083962423dadedd50a64be1deb",
+          "Name": "script",
+          "Description": "Сценарий Python для запуска.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1f0f435254aa4853b549f3a0ebd23dd9",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a8dba075e85c48eca21b61141e6de627",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение сценария IronPython из строки."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
+      "HintPath": "C:\\Users\\sssh\\OneDrive\\09_GitHub\\Dynamo\\Dynamo\\Tests\\01_SM\\coordinates.py",
+      "InputValue": "C:\\Users\\sssh\\OneDrive\\09_GitHub\\Dynamo\\Dynamo\\Tests\\01_SM\\coordinates.py",
+      "NodeType": "ExtensionNode",
+      "Id": "a1420e54b20c4969b88fa0f9af116110",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "2bbd33b219aa47e69c2155734bd945b5",
+          "Name": "",
+          "Description": "Filename",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Позволяет выбрать файл в системе и получить его имя"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.FileObject, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "f6b011c83502426c8edaf0715fe03a7f",
+      "Inputs": [
+        {
+          "Id": "f788381954ed4f748fcf745b954aa980",
+          "Name": "path",
+          "Description": "Путь к файлу.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "401168442b7e4bda976b8a806414a50c",
+          "Name": "file",
+          "Description": "Файловый объект",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Создание нового объекта на основе пути."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.IO.FileSystem.ReadText@var",
+      "Id": "4e803449d67742bc9a71a1269324b6a1",
+      "Inputs": [
+        {
+          "Id": "a854f2cee4a14c9dad85e144290c895d",
+          "Name": "file",
+          "Description": "var",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "685df0f7d86c4d088ac8eb6c7625f3ff",
+          "Name": "str",
+          "Description": "Содержимое текстового файла.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Чтение текстового файла с выводом содержимого в виде строки.\n\nFileSystem.ReadText (file: var): string"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "2bbd33b219aa47e69c2155734bd945b5",
+      "End": "f788381954ed4f748fcf745b954aa980",
+      "Id": "523350b9c7084024972941cc2ad68be8"
+    },
+    {
+      "Start": "401168442b7e4bda976b8a806414a50c",
+      "End": "a854f2cee4a14c9dad85e144290c895d",
+      "Id": "e1e00ecaf99146d2ba135b4067b0d41a"
+    },
+    {
+      "Start": "685df0f7d86c4d088ac8eb6c7625f3ff",
+      "End": "5eab79083962423dadedd50a64be1deb",
+      "Id": "6631794358574f0eb2554db810230410"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.3.8810",
+      "RunType": "Automatic",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script From String",
+        "Id": "ab7e14ef6f0b41a2a33643a108a383eb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 636.33252827718047,
+        "Y": 152.34243589677709
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "File Path",
+        "Id": "a1420e54b20c4969b88fa0f9af116110",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -14.30250863267554,
+        "Y": 148.42215736278413
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "File From Path",
+        "Id": "f6b011c83502426c8edaf0715fe03a7f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 234.1018223878927,
+        "Y": 151.95727927135383
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "FileSystem.ReadText",
+        "Id": "4e803449d67742bc9a71a1269324b6a1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 449.67018416411781,
+        "Y": 153.32260306726835
+      }
+    ],
+    "Annotations": [],
+    "X": -564.28389464475958,
+    "Y": -80.390749781812076,
+    "Zoom": 1.2632876338883305
+  }
+}

@@ -154,8 +154,11 @@ result.append(SetWorkSet_byCategory(BuiltInCategory.OST_PipeCurves, '01_Водо
 result.append(SetWorkSet_byCategory(BuiltInCategory.OST_PipeFitting, '01_ВодосточнаяСистема'))
 result.append(SetWorkSet_byMaterial(BuiltInCategory.OST_Walls, 'Утеплитель', '01_Утепление'))
 result.append(SetWorkSet_byMaterial(BuiltInCategory.OST_Walls, 'Штукатурка', '01_ВнутреняяОтделка'))
+result.append(SetWorkSet_byMaterial(BuiltInCategory.OST_Walls, 'Обеспыливание', '01_ВнутреняяОтделка'))
 result.append(SetWorkSet_byMaterial(BuiltInCategory.OST_Floors, 'Утеплитель', '01_Утепление'))
 result.append(SetWorkSet_byGroupModel(BuiltInCategory.OST_GenericModel))
+result.append(SetWorkSet_byGroupModel(BuiltInCategory.OST_Floors))
+result.append(SetWorkSet_byGroupModel(BuiltInCategory.OST_Roofs))
 
 TransactionManager.Instance.TransactionTaskDone()
 

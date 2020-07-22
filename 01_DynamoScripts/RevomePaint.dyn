@@ -1,0 +1,167 @@
+{
+  "Uuid": "0157b3ae-236a-4483-adc9-28b98b474eee",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "RevomePaint",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "ac4b4f57fded4f92afd46e6725a8c327",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d3d01491f95c4f649cb0c6dc5d687bec",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "fcb51d64-dfd3-4db9-a7d0-80a1d6d5b7d3-00028f0a"
+      ],
+      "Id": "185261c4b08a4eb988650ed8bd6e6cc5",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "579275dfa3bc4120ab532e825fd0cc89",
+          "Name": "Elements",
+          "Description": "Выбранные элементы.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# -*- coding: utf-8 -*-\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import Options, ElementId\r\n\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\ndef RemovePaintFromElement(el):\r\n    opt = Options()\r\n    opt.ComputeReferences = True\r\n    opt.IncludeNonVisibleObjects = True\r\n    opt.View = doc.ActiveView\r\n    solids = UnwrapElement(el).get_Geometry(opt)  # noqa\r\n    if solids:\r\n        for solid in solids:\r\n            if hasattr(solid, \"Faces\"):\r\n                for face in solid.Faces:\r\n                    selID = ElementId(el.Id)\r\n                    doc.RemovePaint(selID, face)\r\n                    if face.HasRegions:\r\n                        regions = face.GetRegions()\r\n                        for regFace in regions:\r\n                            doc.RemovePaint(selID, regFace)\r\nsel = IN[1]  # noqa\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nif isinstance(sel, list):\r\n    for s in sel:\r\n        RemovePaintFromElement(s)\r\nelse:\r\n    RemovePaintFromElement(sel)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = sel\r\n",
+      "VariableInputPorts": true,
+      "Id": "b7becf51ae8545a9b822d0d04920ad3d",
+      "Inputs": [
+        {
+          "Id": "9893d94b884343b4b92ea735a58497f1",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "eb45aaf561c44b75b8a845f7d7990bf5",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "dca8c806673845dba82211a5a34a463b",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "d3d01491f95c4f649cb0c6dc5d687bec",
+      "End": "9893d94b884343b4b92ea735a58497f1",
+      "Id": "10e5bbd6fb574f59b41db122f3251ef0"
+    },
+    {
+      "Start": "579275dfa3bc4120ab532e825fd0cc89",
+      "End": "eb45aaf561c44b75b8a845f7d7990bf5",
+      "Id": "149ae390566b4b089b88cc5a17833b6a"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -24.244679320325044,
+      "EyeY": 26.265069263685476,
+      "EyeZ": 117.18261671490436,
+      "LookX": 24.244679320325044,
+      "LookY": -26.265069263685476,
+      "LookZ": -117.18261671490436,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "ac4b4f57fded4f92afd46e6725a8c327",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 692.80999414640451,
+        "Y": 768.31750227631949
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Elements",
+        "Id": "185261c4b08a4eb988650ed8bd6e6cc5",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 648.86859228783328,
+        "Y": 846.90015114114055
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "b7becf51ae8545a9b822d0d04920ad3d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 903.59292642566368,
+        "Y": 790.34724004803934
+      }
+    ],
+    "Annotations": [],
+    "X": -577.54659234458,
+    "Y": -627.61979301093209,
+    "Zoom": 1.0427616799788957
+  }
+}

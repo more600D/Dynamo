@@ -10,86 +10,6 @@
   "Outputs": [],
   "Nodes": [
     {
-      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
-      "NodeType": "BooleanInputNode",
-      "InputValue": true,
-      "Id": "7e31b3b21c76418a805e9b45ddc53e0b",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "c03e89985dc543af8380fd9a2ba5c642",
-          "Name": "",
-          "Description": "Boolean",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Выбор между значениями true и false."
-    },
-    {
-      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory, Outline, BoundingBoxIntersectsFilter, \\\r\n    FamilyInstance, ElementCategoryFilter, BuiltInParameter, LogicalAndFilter, UnitUtils, \\\r\n    SpatialElementBoundaryOptions\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n\r\ndef getTypeOrInstanceParameter(elem, builtInParameter):\r\n    param = elem.get_Parameter(builtInParameter)\r\n    if param:\r\n        value = param.AsDouble()\r\n        if value:\r\n            return value\r\n        else:\r\n            param = elem.Symbol.get_Parameter(builtInParameter)\r\n            return param.AsDouble()\r\n\r\n\r\ndef getSquare(elem):\r\n    param1 = getTypeOrInstanceParameter(elem, BuiltInParameter.FURNITURE_WIDTH)\r\n    param2 = getTypeOrInstanceParameter(elem, BuiltInParameter.FAMILY_HEIGHT_PARAM)\r\n    if param1 and param2:\r\n        value = param1 * param2\r\n        return value\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\ndoor_cat = ElementCategoryFilter(BuiltInCategory.OST_Doors)\r\nwin_cat = ElementCategoryFilter(BuiltInCategory.OST_Windows)\r\n\r\nroom_col = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Rooms).ToElements()\r\n\r\nelements = []\r\nsquare_value = []\r\n\r\nopt = SpatialElementBoundaryOptions()\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor room in room_col:\r\n    room_height_param = room.get_Parameter(BuiltInParameter.ROOM_HEIGHT)\r\n    segments_list = room.GetBoundarySegments(opt)\r\n    all_length = 0\r\n    elem_in_room = []\r\n    for segments in segments_list:\r\n        for segment in segments:\r\n            element_segement = doc.GetElement(segment.ElementId)\r\n            hasCurtainGrid = hasattr(element_segement, 'CurtainGrid')\r\n            if hasCurtainGrid:\r\n                if element_segement.CurtainGrid is None:\r\n                    all_length += segment.GetCurve().Length\r\n                else:\r\n                    elem_in_room.append(element_segement)\r\n            else:\r\n                hasCurveElementType = hasattr(element_segement, 'CurveElementType')\r\n                if not hasCurveElementType:\r\n                    all_length += segment.GetCurve().Length\r\n                else:\r\n                    elem_in_room.append(element_segement)\r\n    all_square = all_length * room_height_param.AsDouble()\r\n    room_box = room.get_BoundingBox(None)\r\n    param = room.LookupParameter(IN[1])\r\n    if room_box:\r\n        outline = Outline(room_box.Min, room_box.Max)\r\n        bbfilter = BoundingBoxIntersectsFilter(outline)\r\n        doors = FilteredElementCollector(doc).OfClass(FamilyInstance). \\\r\n            WherePasses(LogicalAndFilter(bbfilter, door_cat)).ToElements()\r\n        windows = FilteredElementCollector(doc).OfClass(FamilyInstance). \\\r\n            WherePasses(LogicalAndFilter(bbfilter, win_cat)).ToElements()\r\n        value = 0\r\n        for door in doors:\r\n            value += getSquare(door)\r\n            elem_in_room.append(door)\r\n        for window in windows:\r\n            if getSquare(window):\r\n                value += getSquare(window)\r\n            elem_in_room.append(window)\r\n        finish_square = all_square - value\r\n        param.Set(finish_square)\r\n    elements.append(elem_in_room)\r\n    square_value.append(UnitUtils.ConvertFromInternalUnits(finish_square, param.DisplayUnitType))\r\n\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = elements, square_value\r\n",
-      "VariableInputPorts": true,
-      "Id": "c398c120271d4f8aa486de0f476c89b9",
-      "Inputs": [
-        {
-          "Id": "8d408b9afb5040b69f800c20bfd553e2",
-          "Name": "IN[0]",
-          "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "11955de5421b48a39b033fdf6838e44c",
-          "Name": "IN[1]",
-          "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "5f63e2f62c1f4b0d8bcb9f12186ef815",
-          "Name": "OUT",
-          "Description": "Результат сценария Python",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Выполнение встроенного сценария IronPython."
-    },
-    {
-      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
-      "NodeType": "StringInputNode",
-      "InputValue": "ПлощадьОтделкиСтен",
-      "Id": "0594ca6443914189aa132e81e18830b8",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "0c1c6f6d8fcc40e280fe63adf54de6ae",
-          "Name": "",
-          "Description": "String",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Создание строки."
-    },
-    {
       "ConcreteType": "DSRevitNodesUI.Categories, DSRevitNodesUI",
       "SelectedIndex": 458,
       "SelectedString": "OST_Rooms",
@@ -181,12 +101,12 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "\"Тип\";",
+      "Code": "\"Тип отделки\";",
       "Id": "5edd2b0f91bd4e06a5a78cf40a55e103",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "f5263bb9daae458aad6aff58add509ec",
+          "Id": "f48f1c05b370492dacd803d29c044315",
           "Name": "",
           "Description": "Значение выражения в строке 1",
           "UsingDefaultValue": false,
@@ -405,95 +325,6 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "\"Ключевое имя\";",
-      "Id": "1a4919bc09fb4bbcabef3c8b3d1a630c",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "39ca72db1e9c4cdf8c85f6da6407c4c8",
-          "Name": "",
-          "Description": "Значение выражения в строке 1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "Revit.Elements.Element.GetParameterValueByName@string",
-      "Id": "1ae3a82fcbeb481698aabfb970d9dfef",
-      "Inputs": [
-        {
-          "Id": "d17d50bc72494788a5d89c46862431e6",
-          "Name": "element",
-          "Description": "Revit.Elements.Element",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "cc6c55d8c2884e9f8343a4e515e03be8",
-          "Name": "parameterName",
-          "Description": "Имя параметра, значение которого требуется получить.\n\nstring",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "83ba162c08db4c90bb5fada6ad773d60",
-          "Name": "var[]..[]",
-          "Description": "var[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Получение значения одного из параметров элемента.\n\nElement.GetParameterValueByName (parameterName: string): var[]..[]"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "Revit.Elements.Element.Parameters",
-      "Id": "5041ca0b7f624a1380c4ecc8ebd2d895",
-      "Inputs": [
-        {
-          "Id": "34e7e0787a3244eeb80275084b300eba",
-          "Name": "element",
-          "Description": "Revit.Elements.Element",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "93e83b92be3443dca544c63d922adef5",
-          "Name": "Parameter[]",
-          "Description": "Parameter[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Получение всех параметров на основе элемента, отсортированных по имени.\n\nElement.Parameters: Parameter[]"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
-      "NodeType": "CodeBlockNode",
       "Code": "\"Тип\";",
       "Id": "5fd2a1f41b2c4dad9f8ff3d55e25c242",
       "Inputs": [],
@@ -652,12 +483,12 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "\" \";",
+      "Code": "\",\";",
       "Id": "ca1fec10f10946d3b82f1766edd421c8",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "67faa82ab27f4d3cab8bb13060547bbc",
+          "Id": "ec958db12ed041198987b5c88298d743",
           "Name": "",
           "Description": "Значение выражения в строке 1",
           "UsingDefaultValue": false,
@@ -771,16 +602,6 @@
   ],
   "Connectors": [
     {
-      "Start": "c03e89985dc543af8380fd9a2ba5c642",
-      "End": "8d408b9afb5040b69f800c20bfd553e2",
-      "Id": "ab7e2ea00a884b1097b556ad8a78c1bf"
-    },
-    {
-      "Start": "0c1c6f6d8fcc40e280fe63adf54de6ae",
-      "End": "11955de5421b48a39b033fdf6838e44c",
-      "Id": "e7e8331048b04d7a80a12f8438ce8d51"
-    },
-    {
       "Start": "34f3e1d842ac4b3e9f696d5db08f4f24",
       "End": "8070f6a859c049b8b231f45c3318b562",
       "Id": "5ef2ccb71afc429faaf42f88f4ffafcd"
@@ -801,9 +622,14 @@
       "Id": "11abb2ed39f448e1804be9181a5ffd98"
     },
     {
-      "Start": "f5263bb9daae458aad6aff58add509ec",
+      "Start": "f48f1c05b370492dacd803d29c044315",
       "End": "a590c5e282b04f868447c67f6f136d22",
-      "Id": "a4453c248fe04000ae8da4245465b337"
+      "Id": "2a281e37c29940dca9ece783edc27473"
+    },
+    {
+      "Start": "f48f1c05b370492dacd803d29c044315",
+      "End": "f29d7054959945249860b490ce0eed97",
+      "Id": "bfd80d850dad43789facc017d93776b5"
     },
     {
       "Start": "dd5ca2df3c2a4bc88554ec63c8c17cb6",
@@ -851,29 +677,9 @@
       "Id": "c463cd5c0da14f4aa0c9db18907f1c77"
     },
     {
-      "Start": "39ca72db1e9c4cdf8c85f6da6407c4c8",
-      "End": "cc6c55d8c2884e9f8343a4e515e03be8",
-      "Id": "c90b77ce867c469ab49b35ea2b3d3e43"
-    },
-    {
-      "Start": "f85e34080829439e88f641666dcce00a",
-      "End": "f29d7054959945249860b490ce0eed97",
-      "Id": "935727d751644d9087cfa65cd900680b"
-    },
-    {
       "Start": "2ff29b20a037440992af78768169a8a8",
       "End": "7dd50b122c464b5cb0ed596e33793440",
       "Id": "432ba549ef5a4d79b1b7d7d948657ae9"
-    },
-    {
-      "Start": "2ff29b20a037440992af78768169a8a8",
-      "End": "d17d50bc72494788a5d89c46862431e6",
-      "Id": "537e4d3aa4124922b61edd5ea4a8b7f7"
-    },
-    {
-      "Start": "2ff29b20a037440992af78768169a8a8",
-      "End": "34e7e0787a3244eeb80275084b300eba",
-      "Id": "d28566ece7714fb1a3d520dba3981d60"
     },
     {
       "Start": "b84b8d960dc84388a89fef4eb8c8e2f9",
@@ -891,9 +697,9 @@
       "Id": "6d35238993214abb91135c498353197a"
     },
     {
-      "Start": "67faa82ab27f4d3cab8bb13060547bbc",
+      "Start": "ec958db12ed041198987b5c88298d743",
       "End": "cd1c14976a7f4aa9be87b2f55cffb6df",
-      "Id": "e13059be17b54923a952e9f387e4f0ab"
+      "Id": "82cc9484223b4c7e89c4cee686f8e9a0"
     },
     {
       "Start": "db401e51bd6d4e0eb2bbf059edcdc69e",
@@ -928,42 +734,12 @@
     "NodeViews": [
       {
         "ShowGeometry": true,
-        "Name": "Boolean",
-        "Id": "7e31b3b21c76418a805e9b45ddc53e0b",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 282.08261488660651,
-        "Y": -1.867605978622521
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Python Script",
-        "Id": "c398c120271d4f8aa486de0f476c89b9",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 510.32440875676173,
-        "Y": 4.747000554623753
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Имя параметра для записи значения",
-        "Id": "0594ca6443914189aa132e81e18830b8",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 195.83471089323496,
-        "Y": 79.853604388417864
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Categories",
         "Id": "2f8fbdcba49a404eaa033cd675e82f7c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 175.81168256031447,
+        "X": 161.05551434055735,
         "Y": 845.69878980814258
       },
       {
@@ -983,8 +759,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 720.34079282917719,
-        "Y": 949.84203996471854
+        "X": 731.37452090748661,
+        "Y": 928.877956615931
       },
       {
         "ShowGeometry": true,
@@ -993,8 +769,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 564.69382704676684,
-        "Y": 978.80352920132543
+        "X": 542.62637089014834,
+        "Y": 981.01027481698725
       },
       {
         "ShowGeometry": true,
@@ -1003,8 +779,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1031.3968197329682,
-        "Y": 954.21684985652882
+        "X": 1035.5354845243905,
+        "Y": 935.4595121234031
       },
       {
         "ShowGeometry": true,
@@ -1049,42 +825,12 @@
       {
         "ShowGeometry": true,
         "Name": "Code Block",
-        "Id": "1a4919bc09fb4bbcabef3c8b3d1a630c",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 1672.3140979475909,
-        "Y": 656.87799164634157
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Element.GetParameterValueByName",
-        "Id": "1ae3a82fcbeb481698aabfb970d9dfef",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 1908.9021449337813,
-        "Y": 552.89586873543021
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Element.Parameters",
-        "Id": "5041ca0b7f624a1380c4ecc8ebd2d895",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 1409.8527943536869,
-        "Y": 407.45020371282527
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Code Block",
         "Id": "5fd2a1f41b2c4dad9f8ff3d55e25c242",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1369.2907005233612,
-        "Y": 989.47646566992546
+        "X": 1359.360345252883,
+        "Y": 1178.1532158090133
       },
       {
         "ShowGeometry": true,
@@ -1103,8 +849,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 2560.971279360781,
-        "Y": 1254.4095918221346
+        "X": 2552.1965622624389,
+        "Y": 1248.5597804232398
       },
       {
         "ShowGeometry": true,
@@ -1113,8 +859,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 2691.2287143878134,
-        "Y": 1169.5946721148848
+        "X": 2703.9033057520855,
+        "Y": 1159.84498645006
       },
       {
         "ShowGeometry": true,
@@ -1167,43 +913,9 @@
         "Y": 838.42183978012565
       }
     ],
-    "Annotations": [
-      {
-        "Id": "5ec93e39c3e5451d920d2075e334703a",
-        "Title": "",
-        "Nodes": [
-          "1a4919bc09fb4bbcabef3c8b3d1a630c",
-          "1ae3a82fcbeb481698aabfb970d9dfef"
-        ],
-        "Left": 1662.3140979475909,
-        "Top": 499.89586873543021,
-        "Width": 519.58804698619042,
-        "Height": 249.98212291091136,
-        "FontSize": 36.0,
-        "InitialTop": 552.89586873543021,
-        "InitialHeight": 226.98212291091147,
-        "TextblockHeight": 43.0,
-        "Background": "#FFFFC999"
-      },
-      {
-        "Id": "0acba6f75bcc447c8126799112017ced",
-        "Title": "",
-        "Nodes": [
-          "5041ca0b7f624a1380c4ecc8ebd2d895"
-        ],
-        "Left": 1399.8527943536869,
-        "Top": 354.45020371282527,
-        "Width": 262.0,
-        "Height": 146.0,
-        "FontSize": 36.0,
-        "InitialTop": 407.45020371282527,
-        "InitialHeight": 123.0,
-        "TextblockHeight": 43.0,
-        "Background": "#FFFFC999"
-      }
-    ],
-    "X": -248.62135663838609,
-    "Y": 197.73633580650923,
-    "Zoom": 0.95496107110819128
+    "Annotations": [],
+    "X": 43.512994003721076,
+    "Y": 181.66699977141445,
+    "Zoom": 0.3062808365710275
   }
 }

@@ -16,12 +16,12 @@ def RemovePaintFromElement(el):
         for solid in solids:
             if hasattr(solid, "Faces"):
                 for face in solid.Faces:
-                    selID = ElementId(el.Id)
-                    doc.RemovePaint(selID, face)
+                    elID = ElementId(el.Id)
+                    doc.RemovePaint(elID, face)
                     if face.HasRegions:
                         regions = face.GetRegions()
                         for regFace in regions:
-                            doc.RemovePaint(selID, regFace)
+                            doc.RemovePaint(elID, regFace)
 sel = IN[1]  # noqa
 
 TransactionManager.Instance.EnsureInTransaction(doc)

@@ -14,6 +14,6 @@ add
 docs = []
 for i in app.Documents:
     if not i.IsFamilyDocument:
-        docs.append(i)
+        docs.append(i)lll
 
 OUT = [i.Title for i in docs]

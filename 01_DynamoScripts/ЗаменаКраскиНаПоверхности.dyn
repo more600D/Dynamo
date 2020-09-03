@@ -1,0 +1,258 @@
+{
+  "Uuid": "0157b3ae-236a-4483-adc9-28b98b474eee",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "ЗаменаКраскиНаПоверхности",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "ac4b4f57fded4f92afd46e6725a8c327",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d3d01491f95c4f649cb0c6dc5d687bec",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "5c7238b1-ae72-4a84-96a1-dfac7a46fdab-0004a2bf",
+        "5c7238b1-ae72-4a84-96a1-dfac7a46fdab-0004a2e3",
+        "5c7238b1-ae72-4a84-96a1-dfac7a46fdab-0004a315",
+        "5c7238b1-ae72-4a84-96a1-dfac7a46fdab-0004a3fa"
+      ],
+      "Id": "49bb8ea9ff4842d7ba47e58247b5c6f4",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "551148463bef409f876db1a88724514e",
+          "Name": "Elements",
+          "Description": "Выбранные элементы.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Стена по умолчанию\";",
+      "Id": "25f608f111694e80ad58f04394456283",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a0cce69f6b9846479c4ab75e75084530",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Земля\";",
+      "Id": "90755b2175e04b50a71d4dccfda397ef",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "0e1a441afd794d82be6e7d785708e20e",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# -*- coding: utf-8 -*-\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, Options, Material, ElementId\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\n\r\n\r\ndef GetMaterail(name):\r\n    mat_col = FilteredElementCollector(doc).OfClass(Material)\r\n    for m in mat_col:\r\n        if name == m.Name:\r\n            return m\r\n\r\n\r\ndef AddPaint(old_Mat, new_Mat, face, elem):\r\n    if old_Mat == doc.GetElement(face.MaterialElementId).Name:\r\n        doc.Paint(ElementId(elem.Id), face, GetMaterail(new_Mat).Id)\r\n        return \"Готово!\"\r\n    else:\r\n        return \"Нет - {}\".format(old_Mat)\r\n\r\n\r\nsel = IN[1]  # noqa\r\nold_Mat = IN[2]  # noqa\r\nnew_Mat = IN[3]  # noqa\r\nall_mat = list()\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(sel, list):\r\n    for s in sel:\r\n        solid_list = UnwrapElement(s).get_Geometry(Options())  # noqa\r\n        for solid in solid_list:\r\n            if hasattr(solid, \"Faces\"):\r\n                for face in solid.Faces:\r\n                    all_mat.append(doc.GetElement(face.MaterialElementId).Name)\r\n                    AddPaint(old_Mat, new_Mat, face, s)\r\n                    if face.HasRegions:\r\n                        regions = face.GetRegions()\r\n                        for regFace in regions:\r\n                            all_mat.append(doc.GetElement(regFace.MaterialElementId).Name)\r\n                            AddPaint(old_Mat, new_Mat, regFace, s)\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = all_mat\r\n",
+      "VariableInputPorts": true,
+      "Id": "4f18bf65e0cc4eddbf5d21329078db4a",
+      "Inputs": [
+        {
+          "Id": "dfe8fe1e26bf4c6092885aa5d5c48b3c",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "abb7ec2c7d4245508e3619cdc1df54eb",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8acbd547d6a14bb184da0a05dd9a3bde",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "915a979f39f3498280f211dc2c39dd17",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0b3e4feccd7c47d9a6d65fa57f38b2b5",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "d3d01491f95c4f649cb0c6dc5d687bec",
+      "End": "dfe8fe1e26bf4c6092885aa5d5c48b3c",
+      "Id": "10156e25868048f6a53b80b83cf81746"
+    },
+    {
+      "Start": "551148463bef409f876db1a88724514e",
+      "End": "abb7ec2c7d4245508e3619cdc1df54eb",
+      "Id": "279d9f438aed4e06bf25d2f32caa8cf7"
+    },
+    {
+      "Start": "a0cce69f6b9846479c4ab75e75084530",
+      "End": "915a979f39f3498280f211dc2c39dd17",
+      "Id": "137373bbd6e24b29ad2909ee670b9013"
+    },
+    {
+      "Start": "0e1a441afd794d82be6e7d785708e20e",
+      "End": "8acbd547d6a14bb184da0a05dd9a3bde",
+      "Id": "8f363c27b4a24b9e89df20870dc030a2"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "ac4b4f57fded4f92afd46e6725a8c327",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 577.7808008439747,
+        "Y": 616.69886856224662
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Elements",
+        "Id": "49bb8ea9ff4842d7ba47e58247b5c6f4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 577.7808008439747,
+        "Y": 685.130570335717
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Новый материал",
+        "Id": "25f608f111694e80ad58f04394456283",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 577.7808008439747,
+        "Y": 914.99397388265788
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Старый материал",
+        "Id": "90755b2175e04b50a71d4dccfda397ef",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 577.7808008439747,
+        "Y": 821.56227210918746
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "4f18bf65e0cc4eddbf5d21329078db4a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1192.5771794300697,
+        "Y": 687.69207599875176
+      }
+    ],
+    "Annotations": [],
+    "X": -722.14674477049084,
+    "Y": -780.306174562284,
+    "Zoom": 1.3243774863504054
+  }
+}

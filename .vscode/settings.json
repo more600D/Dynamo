@@ -1,6 +1,10 @@
 {
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,
+<<<<<<< HEAD
     "python.linting.pylintEnabled": false,
     "python.pythonPath": "C:\\Python27\\python.exe"
+=======
+    "python.linting.pylintEnabled": false
+>>>>>>> 214168883da29b759988e35bec4aaef6c44b6d8c
 }

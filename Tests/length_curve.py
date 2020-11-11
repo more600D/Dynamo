@@ -46,11 +46,11 @@ if len(list(f_manager.Types)) == 0:
 if length_param:
     if length_param.CanAssignFormula:
         f_manager.SetFormula(length_param, str(line_length))
-        OUT = "Длина профиля составляет {}".format(round(line_length, 2))
+        OUT = "Длина профиля {}".format(round(line_length, 2))
 else:
     fparameter = f_manager.AddParameter(
         param_name, BuiltInParameterGroup.PG_DATA, ParameterType.Length, True)
     f_manager.SetFormula(fparameter, str(line_length))
-    OUT = "Создался параметр {} и длина профиля {}".format(param_name, line_length)
+    OUT = "Создался параметр \"{}\".\nДлина профиля {}".format(param_name, line_length)
 
 TransactionManager.Instance.TransactionTaskDone()

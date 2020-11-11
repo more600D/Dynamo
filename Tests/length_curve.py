@@ -1,7 +1,7 @@
 import clr
 clr.AddReference("RevitAPI")
 from Autodesk.Revit.DB import FilteredElementCollector, CurveElement, BuiltInCategory, UnitUtils, DisplayUnitType, \
-    View, ViewType, GraphicsStyleType, Color
+    View, ViewType, GraphicsStyleType, Color, BuiltInParameterGroup, ParameterType
 clr.AddReference("RevitServices")
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
@@ -10,6 +10,7 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 uiapp = DocumentManager.Instance.CurrentUIApplication
 app = uiapp.Application
+
 
 views = FilteredElementCollector(doc).OfClass(View)
 
@@ -35,6 +36,21 @@ v.Scale = scale
 
 line_length = UnitUtils.ConvertFromInternalUnits(line_length, DisplayUnitType.DUT_MILLIMETERS)
 
-TransactionManager.Instance.TransactionTaskDone()
+f_manager = doc.FamilyManager
+param_name = "_Профиль.Длина"
+length_param = f_manager.get_Parameter(param_name)
 
-OUT = cat.Name
+if len(list(f_manager.Types)) == 0:
+    f_manager.NewType('Тип 1')
+
+if length_param:
+    if length_param.CanAssignFormula:
+        f_manager.SetFormula(length_param, str(line_length))
+        OUT = "Длина профиля составляет {}".format(round(line_length, 2))
+else:
+    fparameter = f_manager.AddParameter(
+        param_name, BuiltInParameterGroup.PG_DATA, ParameterType.Length, True)
+    f_manager.SetFormula(fparameter, str(line_length))
+    OUT = "Создался параметр {} и длина профиля {}".format(param_name, line_length)
+
+TransactionManager.Instance.TransactionTaskDone()

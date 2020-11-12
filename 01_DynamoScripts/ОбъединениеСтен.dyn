@@ -1,0 +1,60 @@
+<Workspace Version="1.3.4.6666" X="9.69085561401843" Y="-35.9415742119974" zoom="0.931811528498331" ScaleFactor="1" Name="Home" Description="" RunType="Automatic" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="548c984b-1cfa-49b9-8428-b35453f7d95f" type="PythonNodeModels.PythonNode" nickname="Python Script" x="278.674272877501" y="233.120508872288" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script># -*- coding: utf-8 -*-
+import clr
+clr.AddReference("RevitAPI")
+from Autodesk.Revit.DB import FilteredElementCollector, Wall, Outline, BoundingBoxIntersectsFilter, JoinGeometryUtils, \
+    FamilyInstance, BuiltInCategory
+
+clr.AddReference("RevitServices")
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+door_col = FilteredElementCollector(doc).OfClass(FamilyInstance).OfCategory(BuiltInCategory.OST_Doors)
+
+f_list = []
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+if door_col:
+    for door in door_col:
+        group = []
+        door_box = door.get_BoundingBox(None)
+        if door_box:
+            outline = Outline(door_box.Min, door_box.Max)
+            bbfilter = BoundingBoxIntersectsFilter(outline)
+            wall_col = FilteredElementCollector(doc).OfClass(Wall).WherePasses(bbfilter).ToElements()
+            group.append(door)
+            wall_host = door.Host
+            for wall in wall_col:
+                group.append(wall)
+                try:
+                    JoinGeometryUtils.JoinGeometry(doc, wall, wall_host)
+                except Exception:
+                    pass
+            f_list.append(group)
+
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = f_list
+</Script>
+    </PythonNodeModels.PythonNode>
+    <CoreNodeModels.Input.BoolSelector guid="8f5f7895-ac2a-40f1-bbc1-ccfc4509f247" type="CoreNodeModels.Input.BoolSelector" nickname="Повторить" x="88.8969826685871" y="238.49586538451" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>True</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="8f5f7895-ac2a-40f1-bbc1-ccfc4509f247" start_index="0" end="548c984b-1cfa-49b9-8428-b35453f7d95f" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Фоновый просмотр" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

@@ -20,22 +20,42 @@ def GetVolumeFromBBox(el):
     return bbox_height * bbox_width * bbox_lenght
 
 
+def SetParameterByName(value, param_name):
+    f_manager = doc.FamilyManager
+    param = f_manager.get_Parameter(param_name)
+    if param:
+        f_manager.Set(param, value)
+        return 'OK'
+    else:
+        return 'Not OK'
+
+
 sel = UnwrapElement(IN[1])  # noqa
 faces = []
 square = 0
+vol1 = 0
+
+vol2 = GetVolumeFromBBox(sel)
 
 solids = sel.get_Geometry(Options())
-bbox = GetVolumeFromBBox(sel)
 if solids:
     for solid in solids:
-        sol = solid.Volume
+        vol1 += solid.Volume
         if hasattr(solid, 'Faces'):
             for face in solid.Faces:
                 mat_id = face.MaterialElementId
                 if mat_id.IntegerValue == -1:
                     square += face.Area
 
-# sq = UnitUtils.ConvertFromInternalUnits(square, DisplayUnitType.DUT_SQUARE_METERS)
-# vol = UnitUtils.ConvertFromInternalUnits(sol, DisplayUnitType.DUT_CUBIC_METERS)
+sq = UnitUtils.ConvertFromInternalUnits(square, DisplayUnitType.DUT_SQUARE_METERS)
+volume1 = UnitUtils.ConvertFromInternalUnits(vol1, DisplayUnitType.DUT_CUBIC_METERS)
+volume2 = UnitUtils.ConvertFromInternalUnits(vol2, DisplayUnitType.DUT_CUBIC_METERS)
 
-OUT = UnitUtils.ConvertFromInternalUnits(bbox, DisplayUnitType.DUT_CUBIC_METERS)
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+SetParameterByName(square, 'ARH_sr')
+SetParameterByName(vol1, 'ARH_v1')
+SetParameterByName(vol2, 'ARH_v2')
+
+TransactionManager.Instance.TransactionTaskDone()
+OUT = sq, volume1, volume2

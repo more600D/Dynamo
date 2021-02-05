@@ -18,25 +18,20 @@ uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
 
 
 class CustomISelectionFilter(ISelectionFilter):
-    def __init__(self, doc):
-        self.doc = doc
+    def __init__(self, name):
+        self.name = name
 
     def AllowElement(self, elem):
-        if elem.Category.Id.IntegerValue == BuiltInCategory.OST_Walls.value__:
-            elem_type = doc.GetElement(elem.GetTypeId())
-            width = elem_type.get_Parameter(BuiltInParameter.WALL_ATTR_WIDTH_PARAM).AsDouble()
-            if width == 0.951443569553806:
-                return True
+        if elem.Symbol.FamilyName == self.name:
+            return True
         else:
             return False
-    
+
     def AllowReference(self, ref, point):
         return True
 
 
 def get_unwrap_element(data):
-    """Unwrap element or elements.
-    \nAlso check item if is it assembly"""
     if not isinstance(data, list):
         elem = UnwrapElement(data)  # noqa
         if elem.Category.Name != 'Assemblies':
@@ -54,39 +49,59 @@ def create_view_orientation3D(view3D):
     orientation = ViewOrientation3D(eyePosition, upDirection, forwardDirection)
     view3D.SetOrientation(orientation)
 
-# sel = IN[1]  # noqa
 
-# selected = get_unwrap_element(sel)
-# ids = List[ElementId]()
-# ids.Add(selected.Id)
-
-# TransactionManager.Instance.EnsureInTransaction(doc)
-# try:
-#     assembly = AssemblyInstance.Create(doc, ids, selected.Category.Id)
-#     assembly.Name = 'test_{}'.format(selected.Id)
-# except Exception:
-#     pass
-# TransactionManager.Instance.TransactionTaskDone()
-# TransactionManager.Instance.ForceCloseTransaction()
-
-# TransactionManager.Instance.EnsureInTransaction(doc)
-
-# view3D = AssemblyViewUtils.Create3DOrthographic(doc, assembly.Id)
-# create_view_orientation3D(view3D)
-
-# TransactionManager.Instance.TransactionTaskDone()
+def add_field(schedule, name):
+    definition = schedule.Definition
+    all_fields = definition.GetSchedulableFields()
+    for field in all_fields:
+        if field.GetName(doc) == name:
+            definition.AddField(field)
+        else:
+            return 'нет такого параметра'
 
 
-# try:
-#     elem = uidoc.Selection.PickObject(ObjectType.Element,
-#                                       CustomISelectionFilter(doc),
-#                                       'Select elements')
-# except Exception.message:
-#     TaskDialog.Show('Нет таких стен', 'Не выбраны стены')
+name_detal = 'IZD-AK45-1'
+try:
+    sel = uidoc.Selection.PickObject(ObjectType.Element, CustomISelectionFilter(name_detal))
+except Exception.message:
+    TaskDialog.Show('Нет таких стен', 'Не выбраны стены')
 
-id_elem = ElementId(308886)
-elem = doc.GetElement(id_elem)
-elem_type = doc.GetElement(elem.GetTypeId())
-width = elem_type.get_Parameter(BuiltInParameter.WALL_ATTR_WIDTH_PARAM).AsDouble()
+elem = doc.GetElement(sel.ElementId)
+ids = List[ElementId]()
+ids.Add(sel.ElementId)
 
-OUT = width
+TransactionManager.Instance.EnsureInTransaction(doc)
+try:
+    assembly = AssemblyInstance.Create(doc, ids, elem.Category.Id)
+    assembly.Name = name_detal
+except Exception:
+    pass
+TransactionManager.Instance.TransactionTaskDone()
+TransactionManager.Instance.ForceCloseTransaction()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+view3D = AssemblyViewUtils.Create3DOrthographic(doc, assembly.Id)
+create_view_orientation3D(view3D)
+view3D.Scale = 20
+
+view_schedule = AssemblyViewUtils.CreateSingleCategorySchedule(doc, assembly.Id, elem.Category.Id)
+
+TransactionManager.Instance.TransactionTaskDone()
+
+# view_schedule = doc.GetElement(ElementId(314536))
+definition = view_schedule.Definition
+all_fields = definition.GetSchedulableFields()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+
+for f in definition.GetFieldOrder():
+    definition.RemoveField(f)
+
+add_field(view_schedule, 'ARH_sr')
+add_field(view_schedule, 'ARH_v')
+
+TransactionManager.Instance.TransactionTaskDone()
+
+
+OUT = all_fields

@@ -5,7 +5,7 @@ data = {')': 1,
         '[': 3,
         ']': 3}
 
-mylist = ['(', '{', '[', ']', '}', ')']
+mylist = ['(', '{', '[', ']', '}', '(']
 
 if len(mylist) % 2 == 0:
     if data[mylist[0]] == data[mylist[-1]]:

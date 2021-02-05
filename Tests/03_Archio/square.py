@@ -5,6 +5,9 @@ from Autodesk.Revit.DB import Options, UnitUtils
 clr.AddReference("RevitServices")
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
+clr.AddReference("RevitNodes")
+from Revit.GeometryConversion import RevitToProtoSolid, ProtoToRevitSolid
+from Revit.Elements import Element
 
 doc = DocumentManager.Instance.CurrentDBDocument
 
@@ -39,6 +42,7 @@ vol1 = 0
 solids = sel.get_Geometry(Options())
 if solids:
     for solid in solids:
+        a = RevitToProtoSolid.ToProtoType(solid)
         vol1 += solid.Volume
         if hasattr(solid, 'Faces'):
             for face in solid.Faces:

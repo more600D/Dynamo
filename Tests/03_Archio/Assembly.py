@@ -3,7 +3,7 @@ import csv
 from System.Collections.Generic import List
 clr.AddReference("RevitAPI")
 from Autodesk.Revit.DB import AssemblyInstance, ElementId, \
-    AssemblyViewUtils, XYZ, ViewOrientation3D, BuiltInCategory, BuiltInParameter
+    AssemblyViewUtils, XYZ, ViewOrientation3D, BuiltInCategory, BuiltInParameter, SectionType, UnitUtils, DisplayUnitType
 clr.AddReference('RevitAPIUI')
 from Autodesk.Revit.UI.Selection import ObjectType, Selection, ISelectionFilter
 from Autodesk.Revit.UI import TaskDialog
@@ -56,8 +56,15 @@ def add_field(schedule, name):
     for field in all_fields:
         if field.GetName(doc) == name:
             definition.AddField(field)
-        else:
-            return 'нет такого параметра'
+        # else:
+        #     return 'нет такого параметра'
+
+
+def change_width_colomn(schedule, value=30):
+    table_data_section = schedule.GetTableData().GetSectionData(SectionType.Body)
+    definition = view_schedule.Definition
+    for i in range(0, len(definition.GetFieldOrder())):
+        table_data_section.SetColumnWidth(i, UnitUtils.ConvertToInternalUnits(value, DisplayUnitType.DUT_MILLIMETERS))
 
 
 name_detal = 'IZD-AK45-1'
@@ -89,19 +96,22 @@ view_schedule = AssemblyViewUtils.CreateSingleCategorySchedule(doc, assembly.Id,
 
 TransactionManager.Instance.TransactionTaskDone()
 
-# view_schedule = doc.GetElement(ElementId(314536))
+# view_schedule = doc.GetElement(ElementId(314569))
 definition = view_schedule.Definition
-all_fields = definition.GetSchedulableFields()
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 
+definition.ShowHeaders = False
+definition.ShowTitle = False
 for f in definition.GetFieldOrder():
     definition.RemoveField(f)
 
 add_field(view_schedule, 'ARH_sr')
 add_field(view_schedule, 'ARH_v')
 
+change_width_colomn(view_schedule, 30)
+
 TransactionManager.Instance.TransactionTaskDone()
 
 
-OUT = all_fields
+OUT = 1

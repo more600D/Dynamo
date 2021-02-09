@@ -4,7 +4,7 @@ clr.AddReference("RevitAPI")
 from Autodesk.Revit.DB import AssemblyInstance, ElementId, \
     AssemblyViewUtils, XYZ, ViewOrientation3D, BuiltInCategory, BuiltInParameter, \
     SectionType, UnitUtils, DisplayUnitType, Viewport, FilteredElementCollector, \
-    ScheduleHorizontalAlignment, Options
+    ScheduleHorizontalAlignment, ElementTransformUtils, View, ScheduleSheetInstance
 clr.AddReference('RevitAPIUI')
 from Autodesk.Revit.UI.Selection import ObjectType, ISelectionFilter
 from Autodesk.Revit.UI import TaskDialog
@@ -13,9 +13,9 @@ clr.AddReference("RevitServices")
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
-
 doc = DocumentManager.Instance.CurrentDBDocument
 uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument
+# --------------------------------------------------------------------------------------------
 
 
 class CustomISelectionFilter(ISelectionFilter):
@@ -104,6 +104,26 @@ def change_type(el, name):
             el.ChangeTypeId(type_id)
 
 
+def move_element(view_port, view, value_x, value_y):
+    bb_vp = view_port.get_BoundingBox(view)
+    if bb_vp:
+        x = UnitUtils.ConvertToInternalUnits(value_x, DisplayUnitType.DUT_MILLIMETERS)
+        y = UnitUtils.ConvertToInternalUnits(value_y, DisplayUnitType.DUT_MILLIMETERS)
+        new_x = x - (bb_vp.Max.X - bb_vp.Min.X) / 2
+        new_y = y + (bb_vp.Max.Y - bb_vp.Min.Y) / 2
+        pt3 = XYZ(new_x, new_y, 0)
+        point = ElementTransformUtils.MoveElement(doc, view_port.Id, pt3)
+        return point
+
+
+def select_template_id(name):
+    col = FilteredElementCollector(doc).OfClass(View).ToElements()
+    for tp in col:
+        if tp.IsTemplate:
+            if tp.Name == name:
+                return tp.Id
+
+
 # --------------------------------------------------------------------------------------------
 name_detal = 'IZD-AK45-1'
 try:
@@ -115,29 +135,24 @@ elem = doc.GetElement(sel.ElementId)
 ids = List[ElementId]()
 ids.Add(sel.ElementId)
 
-
 TransactionManager.Instance.EnsureInTransaction(doc)
-
 assembly = AssemblyInstance.Create(doc, ids, elem.Category.Id)
-
-view3D = create_View3D(assembly)
+view3D = create_View3D(assembly, 10)
 view_schedule = create_schedule(assembly)
-add_field(view_schedule, 'ARH_sr', 'Площадь разв. (S, м2)')
-add_field(view_schedule, 'ARH_v', 'Объем (V, м3)')
-
+view_schedule.ViewTemplateId = select_template_id('Detail_Template')
 assembly_sheet = AssemblyViewUtils.CreateSheet(doc, assembly.Id, get_title_block('ARH_TitleBlock'))
-vp = Viewport.Create(doc, assembly_sheet.Id, view3D.Id, XYZ.Zero)
-change_type(vp, 'No Title')
-viewport_boundingbox = vp.get_BoundingBox(assembly_sheet)
+vp_view3d = Viewport.Create(doc, assembly_sheet.Id, view3D.Id, XYZ.Zero)
+change_type(vp_view3d, 'No Title')
+vp_schedule = ScheduleSheetInstance.Create(doc, assembly_sheet.Id, view_schedule.Id, XYZ.Zero)
 doc.Regenerate()
-
+move_element(vp_view3d, assembly_sheet, 410, 20)
+move_element(vp_schedule, assembly_sheet, 357.1, 282.1)
 TransactionManager.Instance.TransactionTaskDone()
 TransactionManager.Instance.ForceCloseTransaction()
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-change_width_colomn(view_schedule, 60)
 assembly.AssemblyTypeName = elem.Name
 assembly_sheet.Name = elem.Name
 TransactionManager.Instance.TransactionTaskDone()
 
-OUT = viewport_boundingbox
+OUT = assembly

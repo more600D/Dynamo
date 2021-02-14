@@ -1,0 +1,385 @@
+{
+  "Uuid": "0157b3ae-236a-4483-adc9-28b98b474eee",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "SHV_СоставМногослойногоЭлемента",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [
+    {
+      "Id": "f4bd6ce0f80548acb40c7d71d871862b",
+      "Name": "Имя параметр типа для записи",
+      "Type": "string",
+      "Value": "Type Comments",
+      "Description": "Creates a string."
+    },
+    {
+      "Id": "df69b2550e474fe49cddc281dc0350be",
+      "Name": "Имя параметра материала",
+      "Type": "string",
+      "Value": "Description",
+      "Description": "Creates a string."
+    }
+  ],
+  "Outputs": [
+    {
+      "Id": "f6c04169201b4ca488c6f0988e3e821c",
+      "Name": "Watch",
+      "Type": "string",
+      "InitialValue": "1. Ribbed aluminium cladding - 50.0 мм\r\n2. Fiberglass batt insulation - 100.0 мм\r\n3. Light gauge steel cladding support - 200.0 мм",
+      "Description": "Visualize the output of node."
+    }
+  ],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# -*- coding: utf-8 -*-\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import UnitUtils, DisplayUnitType, StorageType\r\n\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\ndef get_material_name(material_id, param_name):\r\n    mat = doc.GetElement(material_id)\r\n    if mat:\r\n        param = mat.LookupParameter(param_name)\r\n        if param:\r\n            if param.StorageType == StorageType.String:\r\n                return param.AsString()\r\n    else:\r\n        return 'Материал не назначен'\r\n\r\n\r\ndef get_layers_to_string(structure_element, element_param_name, material_param_name):\r\n    element_type = doc.GetElement(structure_element.GetTypeId())\r\n    element_param = element_type.LookupParameter(element_param_name)\r\n    if element_param:\r\n        structure = element_type.GetCompoundStructure()\r\n        layers = structure.GetLayers()\r\n        data = ''\r\n        for i in range(0, len(layers)):\r\n            width = UnitUtils.ConvertFromInternalUnits(layers[i].Width, DisplayUnitType.DUT_MILLIMETERS)\r\n            name = get_material_name(layers[i].MaterialId, material_param_name)\r\n            data += '\\r\\n{}. {} - {} мм'.format(i + 1, name, width)\r\n        if element_param.StorageType == StorageType.String:\r\n            element_param.Set(data.strip())\r\n        return data.strip()\r\n\r\n\r\nsel = UnwrapElement(IN[1])  # noqa\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\ndata = get_layers_to_string(sel, IN[2], IN[3])  # noqa\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = data\r\n",
+      "VariableInputPorts": true,
+      "Id": "fd1a02e5227048edba26a6c3426292d1",
+      "Inputs": [
+        {
+          "Id": "2e24e4de118c4ff490132487b5b93677",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b47643f6387345baa2502b5f585351a3",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c81a475e14c24c47ab2e49a2307ab869",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "186395b13cd24def94c7ee8d0419356e",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7fafa21cf11f4fe8a511279f4e205924",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "4b11b4d5abf14d8888a038aa01198891",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f7e3c3602fcd4d97b16234d72722b429",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selection between a true and false."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "3200c069-2c18-4019-91b5-547b3a75a8c3-0004b840"
+      ],
+      "Id": "037d5099e24f44508662780a7a6cded7",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "afcbfac4c78e42a8a4a27e259dc50d75",
+          "Name": "Element",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "Type Comments",
+      "Id": "f4bd6ce0f80548acb40c7d71d871862b",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f354a3257f51492e81c4d3b970388de4",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a string."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "Description",
+      "Id": "df69b2550e474fe49cddc281dc0350be",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "179ec42a49934f078a31c4af1843ed0b",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a string."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "f6c04169201b4ca488c6f0988e3e821c",
+      "Inputs": [
+        {
+          "Id": "0fb73db6c5504e84b7f683951a0b6048",
+          "Name": "",
+          "Description": "Node to evaluate.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c276963a0f904c3dbd505ee86ff1a57e",
+          "Name": "",
+          "Description": "Watch contents.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the output of node."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "7fafa21cf11f4fe8a511279f4e205924",
+      "End": "0fb73db6c5504e84b7f683951a0b6048",
+      "Id": "0a713b75a88d42519f31dc88cc2b7496"
+    },
+    {
+      "Start": "f7e3c3602fcd4d97b16234d72722b429",
+      "End": "2e24e4de118c4ff490132487b5b93677",
+      "Id": "5ca82225be5a4f138fc9567291005e04"
+    },
+    {
+      "Start": "afcbfac4c78e42a8a4a27e259dc50d75",
+      "End": "b47643f6387345baa2502b5f585351a3",
+      "Id": "57631921660a4acf9f104f5b24f426e2"
+    },
+    {
+      "Start": "f354a3257f51492e81c4d3b970388de4",
+      "End": "c81a475e14c24c47ab2e49a2307ab869",
+      "Id": "b62ddace11974b9385bad8dc0c7e7e62"
+    },
+    {
+      "Start": "179ec42a49934f078a31c4af1843ed0b",
+      "End": "186395b13cd24def94c7ee8d0419356e",
+      "Id": "fc88c250939b4ff28861fae4dd222ac7"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.6.1.8786",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "fd1a02e5227048edba26a6c3426292d1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 340.72598190453971,
+        "Y": 520.00024660964186
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Повтор",
+        "Id": "4b11b4d5abf14d8888a038aa01198891",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 86.964261922213836,
+        "Y": 353.64939770058646
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Выбрать многослойный элемент",
+        "Id": "037d5099e24f44508662780a7a6cded7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -53.035738077786164,
+        "Y": 420.24573943515327
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Имя параметр типа для записи",
+        "Id": "f4bd6ce0f80548acb40c7d71d871862b",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -42.035738077786164,
+        "Y": 627.44296481549679
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Имя параметра материала",
+        "Id": "df69b2550e474fe49cddc281dc0350be",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -13.035738077786164,
+        "Y": 810.77519358795212
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Watch",
+        "Id": "f6c04169201b4ca488c6f0988e3e821c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": true,
+        "Excluded": false,
+        "X": 513.46461082562359,
+        "Y": 518.75541513973258
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "c418790a2524430480773dca12fd9cc7",
+        "Title": "Данные материала",
+        "Nodes": [
+          "df69b2550e474fe49cddc281dc0350be",
+          "d061d8d2c41b4b63a7561d47ce617897"
+        ],
+        "Left": -77.035738077786164,
+        "Top": 700.99100804021987,
+        "Width": 309.0,
+        "Height": 177.78418554773225,
+        "FontSize": 24.0,
+        "InitialTop": 739.99100804021987,
+        "InitialHeight": 165.639672945882,
+        "TextblockHeight": 29.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "807554d3e2414c59913bf9a4406ad06d",
+        "Title": "Многослойный элемент",
+        "Nodes": [
+          "f4bd6ce0f80548acb40c7d71d871862b",
+          "b60dda38455c4579bca3c0a4b33554f5"
+        ],
+        "Left": -52.035738077786164,
+        "Top": 538.98271267069947,
+        "Width": 284.0,
+        "Height": 156.46025214479732,
+        "FontSize": 24.0,
+        "InitialTop": 577.98271267069947,
+        "InitialHeight": 147.46025214479732,
+        "TextblockHeight": 29.0,
+        "Background": "#FFFFB8D8"
+      },
+      {
+        "Id": "d061d8d2c41b4b63a7561d47ce617897",
+        "Title": "Данный параметр нужен для получения информации о материале. Например, это может быть имя материала и описание",
+        "Nodes": [],
+        "Left": -67.035738077786164,
+        "Top": 739.99100804021987,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "b60dda38455c4579bca3c0a4b33554f5",
+        "Title": "В данный параметр типа будет записана структура элемента",
+        "Nodes": [],
+        "Left": -22.035738077786164,
+        "Top": 577.98271267069947,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": 148.32547494874638,
+    "Y": -118.29090008667268,
+    "Zoom": 0.80332159346259768
+  }
+}

@@ -4,7 +4,8 @@ clr.AddReference("RevitAPI")
 from Autodesk.Revit.DB import AssemblyInstance, ElementId, \
     AssemblyViewUtils, XYZ, ViewOrientation3D, BuiltInCategory, BuiltInParameter, \
     SectionType, UnitUtils, DisplayUnitType, Viewport, FilteredElementCollector, \
-    ScheduleHorizontalAlignment, ElementTransformUtils, View, ScheduleSheetInstance
+    ScheduleHorizontalAlignment, ElementTransformUtils, View, ScheduleSheetInstance, \
+    AssemblyDetailViewOrientation, ViewportRotation
 clr.AddReference('RevitAPIUI')
 from Autodesk.Revit.UI.Selection import ObjectType, ISelectionFilter
 from Autodesk.Revit.UI import TaskDialog
@@ -78,6 +79,17 @@ def change_width_colomn(schedule, value=30):
         table_data_section.SetColumnWidth(i, UnitUtils.ConvertToInternalUnits(value, DisplayUnitType.DUT_MILLIMETERS))
 
 
+def create_detail_section(assembly, orientation, sheet, point, vp_type_name=None, template=None, scale=5):
+    section_view = AssemblyViewUtils.CreateDetailSection(doc, assembly.Id, orientation)
+    section_view.Scale = scale
+    vp_section_view = Viewport.Create(doc, sheet.Id, section_view.Id, point)
+    if vp_type_name:
+        change_type(vp_section_view, vp_type_name)
+    if template:
+        section_view.ViewTemplateId = select_template_id(template)
+    return section_view, vp_section_view
+
+
 def create_schedule(assembly, headers=True, title=False):
     elem_id = list(assembly.GetMemberIds())[0]
     cat = doc.GetElement(elem_id).Category.Id
@@ -116,6 +128,17 @@ def move_element(view_port, view, value_x, value_y):
         return point
 
 
+def move_element_schedule(scheduleview_port, view, value_x, value_y):
+    bb_vp = scheduleview_port.get_BoundingBox(view)
+    if bb_vp:
+        x = UnitUtils.ConvertToInternalUnits(value_x, DisplayUnitType.DUT_MILLIMETERS)
+        y = UnitUtils.ConvertToInternalUnits(value_y, DisplayUnitType.DUT_MILLIMETERS)
+        new_x = x - bb_vp.Max.X - bb_vp.Min.X
+        pt3 = XYZ(new_x, y, 0)
+        point = ElementTransformUtils.MoveElement(doc, scheduleview_port.Id, pt3)
+        return point
+
+
 def select_template_id(name):
     col = FilteredElementCollector(doc).OfClass(View).ToElements()
     for tp in col:
@@ -136,23 +159,62 @@ ids = List[ElementId]()
 ids.Add(sel.ElementId)
 
 TransactionManager.Instance.EnsureInTransaction(doc)
+# Создание сборки
 assembly = AssemblyInstance.Create(doc, ids, elem.Category.Id)
-view3D = create_View3D(assembly, 10)
-view_schedule = create_schedule(assembly)
-view_schedule.ViewTemplateId = select_template_id('Detail_Template')
+
+# Создание листа сборки
 assembly_sheet = AssemblyViewUtils.CreateSheet(doc, assembly.Id, get_title_block('ARH_TitleBlock'))
+assembly_sheet.Name = elem.Name
+
+# Создание 3д вида
+view3D = create_View3D(assembly, 10)
 vp_view3d = Viewport.Create(doc, assembly_sheet.Id, view3D.Id, XYZ.Zero)
 change_type(vp_view3d, 'No Title')
+move_element(vp_view3d, assembly_sheet, 410, 20)
+
+# Создание спецификации
+view_schedule = create_schedule(assembly)
+view_schedule.ViewTemplateId = select_template_id('Detail_Template')
 vp_schedule = ScheduleSheetInstance.Create(doc, assembly_sheet.Id, view_schedule.Id, XYZ.Zero)
 doc.Regenerate()
-move_element(vp_view3d, assembly_sheet, 410, 20)
-move_element(vp_schedule, assembly_sheet, 357.1, 282.1)
+move_element_schedule(vp_schedule, assembly_sheet, 415, 292)
+
+# Создание разреза
+pt_section_view = XYZ(1.10604515064852, 0.626337804965914, 0)
+section_view = create_detail_section(assembly,
+                                     AssemblyDetailViewOrientation.DetailSectionA,
+                                     assembly_sheet,
+                                     pt_section_view,
+                                     'Title No Line',
+                                     'ARH_Section')
+title_on_sheet = section_view[0].get_Parameter(BuiltInParameter.VIEW_DESCRIPTION).Set('1-1')
+
+# Создание фасада
+pt_right_view = XYZ(0.457935776376508, 0.626337804965913, 0)
+right_view = create_detail_section(assembly,
+                                   AssemblyDetailViewOrientation.ElevationRight,
+                                   assembly_sheet,
+                                   pt_right_view,
+                                   'No Title',
+                                   'ARH_Section')
+
+# Создание вида сверху
+pt_top_view = XYZ(0.378418462541723, 0.255355082500111, 0)
+top_view = create_detail_section(assembly,
+                                 AssemblyDetailViewOrientation.ElevationTop,
+                                 assembly_sheet,
+                                 pt_top_view,
+                                 'No Title',
+                                 'ARH_Section')
+top_view[1].Rotation = ViewportRotation.Clockwise
+center = top_view[1].GetBoxCenter()
+ElementTransformUtils.MoveElement(doc, top_view[1].Id, pt_top_view - center)
+
 TransactionManager.Instance.TransactionTaskDone()
 TransactionManager.Instance.ForceCloseTransaction()
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 assembly.AssemblyTypeName = elem.Name
-assembly_sheet.Name = elem.Name
 TransactionManager.Instance.TransactionTaskDone()
 
 OUT = assembly

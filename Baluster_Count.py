@@ -8,10 +8,7 @@ clr.AddReference("RevitServices")
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
-
 doc = DocumentManager.Instance.CurrentDBDocument
-uiapp = DocumentManager.Instance.CurrentUIApplication
-app = uiapp.Application
 
 elem = UnwrapElement(IN[1])  # noqa
 
@@ -87,5 +84,4 @@ a = set_to_parameter(elem, str(baluster_count))
 b = set_to_type_parameter(elem, structure)
 TransactionManager.Instance.TransactionTaskDone()
 
-# OUT = structure, 'Общее количество - {}шт.'.format(baluster_count)
-OUT = a, b
+OUT = structure, 'Общее количество - {}шт.'.format(baluster_count)

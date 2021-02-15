@@ -26,8 +26,8 @@
     {
       "Id": "f6c04169201b4ca488c6f0988e3e821c",
       "Name": "Watch",
-      "Type": "string",
-      "InitialValue": "1. Ribbed aluminium cladding - 50.0 мм\r\n2. Fiberglass batt insulation - 100.0 мм\r\n3. Light gauge steel cladding support - 200.0 мм",
+      "Type": "unknown",
+      "InitialValue": "",
       "Description": "Visualize the output of node."
     }
   ],
@@ -35,7 +35,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# -*- coding: utf-8 -*-\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import UnitUtils, DisplayUnitType, StorageType\r\n\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\ndef get_material_name(material_id, param_name):\r\n    mat = doc.GetElement(material_id)\r\n    if mat:\r\n        param = mat.LookupParameter(param_name)\r\n        if param:\r\n            if param.StorageType == StorageType.String:\r\n                return param.AsString()\r\n    else:\r\n        return 'Материал не назначен'\r\n\r\n\r\ndef get_layers_to_string(structure_element, element_param_name, material_param_name):\r\n    element_type = doc.GetElement(structure_element.GetTypeId())\r\n    element_param = element_type.LookupParameter(element_param_name)\r\n    if element_param:\r\n        structure = element_type.GetCompoundStructure()\r\n        layers = structure.GetLayers()\r\n        data = ''\r\n        for i in range(0, len(layers)):\r\n            width = UnitUtils.ConvertFromInternalUnits(layers[i].Width, DisplayUnitType.DUT_MILLIMETERS)\r\n            name = get_material_name(layers[i].MaterialId, material_param_name)\r\n            data += '\\r\\n{}. {} - {} мм'.format(i + 1, name, width)\r\n        if element_param.StorageType == StorageType.String:\r\n            element_param.Set(data.strip())\r\n        return data.strip()\r\n\r\n\r\nsel = UnwrapElement(IN[1])  # noqa\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\ndata = get_layers_to_string(sel, IN[2], IN[3])  # noqa\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = data\r\n",
+      "Code": "# -*- coding: utf-8 -*-\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import UnitUtils, DisplayUnitType, StorageType, ElementClassFilter, \\\r\n    IndependentTag, BuiltInParameter\r\n\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\ndef get_material_name(material_id, param_name):\r\n    mat = doc.GetElement(material_id)\r\n    if mat:\r\n        param = mat.LookupParameter(param_name)\r\n        if param:\r\n            if param.StorageType == StorageType.String:\r\n                return param.AsString()\r\n    else:\r\n        return 'The material is not assigned'\r\n\r\n\r\ndef get_layers_to_string(structure_element, element_param_name, material_param_name):\r\n    element_type = doc.GetElement(structure_element.GetTypeId())\r\n    element_param = element_type.LookupParameter(element_param_name)\r\n    if element_param:\r\n        structure = element_type.GetCompoundStructure()\r\n        layers = structure.GetLayers()\r\n        data = ''\r\n        for i in range(0, len(layers)):\r\n            width = UnitUtils.ConvertFromInternalUnits(layers[i].Width, DisplayUnitType.DUT_MILLIMETERS)\r\n            name = get_material_name(layers[i].MaterialId, material_param_name)\r\n            if not name:\r\n                name = 'Value_is_missing'\r\n            if width != 0:\r\n                data += '\\r\\n{}. {} - {} мм'.format(i + 1, name.capitalize(), width)\r\n            else:\r\n                data += '\\r\\n{}. {}'.format(i + 1, name.capitalize())\r\n        if element_param.StorageType == StorageType.String:\r\n            element_param.Set(data.strip())\r\n        return data.strip()\r\n\r\n\r\ndef get_independent_tag_by_name(tag_ids, name):\r\n    for tag_id in tag_ids:\r\n        elem = doc.GetElement(tag_id)\r\n        fam_name = elem.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM).AsValueString()\r\n        if fam_name == name:\r\n            return elem\r\n\r\n\r\ndef get_tag(elem):\r\n    independ_tags_class = ElementClassFilter(IndependentTag)\r\n    tags = elem.GetDependentElements(independ_tags_class)\r\n    tag = get_independent_tag_by_name(tags, 'Марка_флажок')\r\n    return tag\r\n\r\n\r\ndef get_type_tag(types, number):\r\n    for t in types:\r\n        elem = doc.GetElement(t)\r\n        name = elem.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM).AsString()\r\n        if str(number) in name:\r\n            return t\r\n\r\n\r\ndef change_type_tag(elem, tag):\r\n    element_type = doc.GetElement(elem.GetTypeId())\r\n    structure = element_type.GetCompoundStructure()\r\n    types = tag.GetValidTypes()\r\n    if structure:\r\n        count = structure.LayerCount\r\n        t = get_type_tag(types, count)\r\n        tag.ChangeTypeId(t)\r\n        return 'Everything is awesome'\r\n\r\n\r\nsel = UnwrapElement(IN[1])  # noqa\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\ndata = get_layers_to_string(sel, IN[2], IN[3])  # noqa\r\nchange_type_tag(sel, get_tag(sel))\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = data\r\n",
       "VariableInputPorts": true,
       "Id": "fd1a02e5227048edba26a6c3426292d1",
       "Inputs": [
@@ -114,7 +114,7 @@
       "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
       "NodeType": "ExtensionNode",
       "InstanceId": [
-        "3200c069-2c18-4019-91b5-547b3a75a8c3-0004b840"
+        "cfc7aae0-0ae7-47ad-aab3-66778c3d03ff-0004b7cb"
       ],
       "Id": "037d5099e24f44508662780a7a6cded7",
       "Inputs": [],
@@ -328,7 +328,7 @@
         "Height": 177.78418554773225,
         "FontSize": 24.0,
         "InitialTop": 739.99100804021987,
-        "InitialHeight": 165.639672945882,
+        "InitialHeight": 215.78418554773225,
         "TextblockHeight": 29.0,
         "Background": "#FFC1D676"
       },
@@ -345,7 +345,7 @@
         "Height": 156.46025214479732,
         "FontSize": 24.0,
         "InitialTop": 577.98271267069947,
-        "InitialHeight": 147.46025214479732,
+        "InitialHeight": 194.46025214479732,
         "TextblockHeight": 29.0,
         "Background": "#FFFFB8D8"
       },

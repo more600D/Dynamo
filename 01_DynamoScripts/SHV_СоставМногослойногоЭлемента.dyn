@@ -11,14 +11,14 @@
       "Id": "f4bd6ce0f80548acb40c7d71d871862b",
       "Name": "Имя параметр типа для записи",
       "Type": "string",
-      "Value": "Type Comments",
+      "Value": "Комментарии к типоразмеру",
       "Description": "Creates a string."
     },
     {
       "Id": "df69b2550e474fe49cddc281dc0350be",
       "Name": "Имя параметра материала",
       "Type": "string",
-      "Value": "Description",
+      "Value": "Описание",
       "Description": "Creates a string."
     }
   ],
@@ -26,8 +26,8 @@
     {
       "Id": "f6c04169201b4ca488c6f0988e3e821c",
       "Name": "Watch",
-      "Type": "unknown",
-      "InitialValue": "",
+      "Type": "string",
+      "InitialValue": "1. Покрытие бетонной плиты - 50 мм\r\n2. Физический материал - 175 мм\r\n3. Гидроизоляция\r\n4. Жесткая пенопластовая изоляционная плита - 50 мм\r\n5. Value_is_missing - от 150 - 450 мм",
       "Description": "Visualize the output of node."
     }
   ],
@@ -35,7 +35,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# -*- coding: utf-8 -*-\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import UnitUtils, DisplayUnitType, StorageType, ElementClassFilter, \\\r\n    IndependentTag, BuiltInParameter\r\n\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\ndef get_material_name(material_id, param_name):\r\n    mat = doc.GetElement(material_id)\r\n    if mat:\r\n        param = mat.LookupParameter(param_name)\r\n        if param:\r\n            if param.StorageType == StorageType.String:\r\n                return param.AsString()\r\n    else:\r\n        return 'The material is not assigned'\r\n\r\n\r\ndef get_layers_to_string(structure_element, element_param_name, material_param_name):\r\n    element_type = doc.GetElement(structure_element.GetTypeId())\r\n    element_param = element_type.LookupParameter(element_param_name)\r\n    if element_param:\r\n        structure = element_type.GetCompoundStructure()\r\n        layers = structure.GetLayers()\r\n        data = ''\r\n        for i in range(0, len(layers)):\r\n            width = UnitUtils.ConvertFromInternalUnits(layers[i].Width, DisplayUnitType.DUT_MILLIMETERS)\r\n            name = get_material_name(layers[i].MaterialId, material_param_name)\r\n            if not name:\r\n                name = 'Value_is_missing'\r\n            if width != 0:\r\n                data += '\\r\\n{}. {} - {} мм'.format(i + 1, name.capitalize(), width)\r\n            else:\r\n                data += '\\r\\n{}. {}'.format(i + 1, name.capitalize())\r\n        if element_param.StorageType == StorageType.String:\r\n            element_param.Set(data.strip())\r\n        return data.strip()\r\n\r\n\r\ndef get_independent_tag_by_name(tag_ids, name):\r\n    for tag_id in tag_ids:\r\n        elem = doc.GetElement(tag_id)\r\n        fam_name = elem.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM).AsValueString()\r\n        if fam_name == name:\r\n            return elem\r\n\r\n\r\ndef get_tag(elem):\r\n    independ_tags_class = ElementClassFilter(IndependentTag)\r\n    tags = elem.GetDependentElements(independ_tags_class)\r\n    tag = get_independent_tag_by_name(tags, 'Марка_флажок')\r\n    return tag\r\n\r\n\r\ndef get_type_tag(types, number):\r\n    for t in types:\r\n        elem = doc.GetElement(t)\r\n        name = elem.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM).AsString()\r\n        if str(number) in name:\r\n            return t\r\n\r\n\r\ndef change_type_tag(elem, tag):\r\n    element_type = doc.GetElement(elem.GetTypeId())\r\n    structure = element_type.GetCompoundStructure()\r\n    types = tag.GetValidTypes()\r\n    if structure:\r\n        count = structure.LayerCount\r\n        t = get_type_tag(types, count)\r\n        tag.ChangeTypeId(t)\r\n        return 'Everything is awesome'\r\n\r\n\r\nsel = UnwrapElement(IN[1])  # noqa\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\ndata = get_layers_to_string(sel, IN[2], IN[3])  # noqa\r\nchange_type_tag(sel, get_tag(sel))\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = data\r\n",
+      "Code": "# -*- coding: utf-8 -*-\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import UnitUtils, DisplayUnitType, StorageType, ElementClassFilter, \\\r\n    IndependentTag, BuiltInParameter\r\n\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\ndef get_material_name(material_id, param_name):\r\n    mat = doc.GetElement(material_id)\r\n    if mat:\r\n        param = mat.LookupParameter(param_name)\r\n        if param:\r\n            if param.StorageType == StorageType.String:\r\n                return param.AsString()\r\n    else:\r\n        return 'The material is not assigned'\r\n\r\n\r\ndef get_layers_to_string(structure_element, element_param_name, material_param_name):\r\n    element_type = doc.GetElement(structure_element.GetTypeId())\r\n    element_param = element_type.LookupParameter(element_param_name)\r\n    if element_param:\r\n        structure = element_type.GetCompoundStructure()\r\n        variable_layer_index = structure.VariableLayerIndex\r\n        layers = structure.GetLayers()\r\n        data = ''\r\n        for i in range(0, len(layers)):\r\n            width = UnitUtils.ConvertFromInternalUnits(layers[i].Width, DisplayUnitType.DUT_MILLIMETERS)\r\n            name = get_material_name(layers[i].MaterialId, material_param_name).capitalize()\r\n            if not name:\r\n                name = 'Value_is_missing'\r\n            if width != 0:\r\n                data += '\\r\\n{}. {} - {} мм'.format(i + 1, name, width)\r\n            elif layers[1].LayerId == variable_layer_index:\r\n                data += '\\r\\n{}. {} - переменная'.format(i + 1, name)\r\n            else:\r\n                data += '\\r\\n{}. {}'.format(i + 1, name)\r\n        if element_param.StorageType == StorageType.String:\r\n            element_param.Set(data.strip())\r\n        return data.strip()\r\n\r\n\r\ndef get_independent_tag_by_name(tag_ids, name):\r\n    for tag_id in tag_ids:\r\n        elem = doc.GetElement(tag_id)\r\n        fam_name = elem.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM).AsValueString()\r\n        if fam_name == name:\r\n            return elem\r\n\r\n\r\ndef get_tag(elem):\r\n    independ_tags_class = ElementClassFilter(IndependentTag)\r\n    tags = elem.GetDependentElements(independ_tags_class)\r\n    tag = get_independent_tag_by_name(tags, 'Марка_флажок')\r\n    return tag\r\n\r\n\r\ndef get_type_tag(types, number):\r\n    for t in types:\r\n        elem = doc.GetElement(t)\r\n        name = elem.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM).AsString()\r\n        if str(number) in name:\r\n            return t\r\n\r\n\r\ndef change_type_tag(elem, tag):\r\n    if tag:\r\n        element_type = doc.GetElement(elem.GetTypeId())\r\n        structure = element_type.GetCompoundStructure()\r\n        types = tag.GetValidTypes()\r\n        if structure:\r\n            count = structure.LayerCount\r\n            t = get_type_tag(types, count)\r\n            tag.ChangeTypeId(t)\r\n            return 'Everything is awesome'\r\n\r\n\r\nsel = UnwrapElement(IN[1])  # noqa\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\ndata = get_layers_to_string(sel, IN[2], IN[3])  # noqa\r\n# change_type_tag(sel, get_tag(sel))\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = data\r\n",
       "VariableInputPorts": true,
       "Id": "fd1a02e5227048edba26a6c3426292d1",
       "Inputs": [
@@ -114,7 +114,7 @@
       "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
       "NodeType": "ExtensionNode",
       "InstanceId": [
-        "cfc7aae0-0ae7-47ad-aab3-66778c3d03ff-0004b7cb"
+        "8743766e-8786-49c5-881d-e8f56fd278b3-0004a29f"
       ],
       "Id": "037d5099e24f44508662780a7a6cded7",
       "Inputs": [],
@@ -134,7 +134,7 @@
     {
       "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
       "NodeType": "StringInputNode",
-      "InputValue": "Type Comments",
+      "InputValue": "Комментарии к типоразмеру",
       "Id": "f4bd6ce0f80548acb40c7d71d871862b",
       "Inputs": [],
       "Outputs": [
@@ -154,7 +154,7 @@
     {
       "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
       "NodeType": "StringInputNode",
-      "InputValue": "Description",
+      "InputValue": "Описание",
       "Id": "df69b2550e474fe49cddc281dc0350be",
       "Inputs": [],
       "Outputs": [
@@ -199,18 +199,194 @@
       ],
       "Replication": "Disabled",
       "Description": "Visualize the output of node."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
+      "HintPath": "C:\\Users\\sssh\\OneDrive\\09_GitHub\\Dynamo\\Dynamo-1\\Wall_Layer_to_parameter.py",
+      "InputValue": "..\\Wall_Layer_to_parameter.py",
+      "NodeType": "ExtensionNode",
+      "Id": "a92424396ae643db818bef6a5acd92a2",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "6475bb5661274ccdac3d1bc2748b451d",
+          "Name": "",
+          "Description": "Filename",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Позволяет выбрать файл в системе и получить его имя"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.IO.FileSystem.ReadText@var",
+      "Id": "895f1343c04f43499c624e9392d51cc9",
+      "Inputs": [
+        {
+          "Id": "ed9dc000397942e78b793f641da472e1",
+          "Name": "file",
+          "Description": "var",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6f81a287fd9844fbba0bb4997b6c6ba5",
+          "Name": "str",
+          "Description": "Содержимое текстового файла.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Чтение текстового файла с выводом содержимого в виде строки.\n\nFileSystem.ReadText (file: var): string"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonStringNode, PythonNodeModels",
+      "VariableInputPorts": true,
+      "NodeType": "ExtensionNode",
+      "Id": "9d246106974442ed8a2186b144525dd8",
+      "Inputs": [
+        {
+          "Id": "b2b5dbeaa4234d7b9498ea730b3e99b1",
+          "Name": "script",
+          "Description": "Сценарий Python для запуска.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9915b5db068d4f3594cd89365225d5cb",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "84f386b3c1914f03aec93eca4003c74f",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "bf3b0226f4ef433f999fd37931bb05e0",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9aa8828d518e41c49dc52d0f00705cc7",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2d1315c4a31040edb5fb379a7d34cb55",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение сценария IronPython из строки."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.FileObject, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "b034f179e9db43b0a7c60e1f44f634d2",
+      "Inputs": [
+        {
+          "Id": "8a9a684ec95845709240ddab0b152efd",
+          "Name": "path",
+          "Description": "Путь к файлу.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9379eb04ed9443d98b2faaf74d37ce36",
+          "Name": "file",
+          "Description": "Файловый объект",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Создание нового объекта на основе пути."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.Object.Type@var",
+      "Id": "09e318f51d41433f838889ebec369c48",
+      "Inputs": [
+        {
+          "Id": "42ae0ff56c904b358f9d8cabe06a58c8",
+          "Name": "obj",
+          "Description": "Объект.\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "095fedc8fd4f45b8acfa6b99947870fa",
+          "Name": "string",
+          "Description": "Тип объекта.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Возврат типа объекта, представленного в виде строки.\n\nObject.Type (obj: var): string"
     }
   ],
   "Connectors": [
     {
-      "Start": "7fafa21cf11f4fe8a511279f4e205924",
-      "End": "0fb73db6c5504e84b7f683951a0b6048",
-      "Id": "0a713b75a88d42519f31dc88cc2b7496"
-    },
-    {
       "Start": "f7e3c3602fcd4d97b16234d72722b429",
       "End": "2e24e4de118c4ff490132487b5b93677",
       "Id": "5ca82225be5a4f138fc9567291005e04"
+    },
+    {
+      "Start": "f7e3c3602fcd4d97b16234d72722b429",
+      "End": "9915b5db068d4f3594cd89365225d5cb",
+      "Id": "8a265288345e4e70b1cb80e252b9152b"
     },
     {
       "Start": "afcbfac4c78e42a8a4a27e259dc50d75",
@@ -218,14 +394,54 @@
       "Id": "57631921660a4acf9f104f5b24f426e2"
     },
     {
+      "Start": "afcbfac4c78e42a8a4a27e259dc50d75",
+      "End": "84f386b3c1914f03aec93eca4003c74f",
+      "Id": "ebc64e9050614dd2bf569947650775e1"
+    },
+    {
       "Start": "f354a3257f51492e81c4d3b970388de4",
       "End": "c81a475e14c24c47ab2e49a2307ab869",
       "Id": "b62ddace11974b9385bad8dc0c7e7e62"
     },
     {
+      "Start": "f354a3257f51492e81c4d3b970388de4",
+      "End": "bf3b0226f4ef433f999fd37931bb05e0",
+      "Id": "bfdd78f2364b4b25826ffb65be11dabe"
+    },
+    {
       "Start": "179ec42a49934f078a31c4af1843ed0b",
       "End": "186395b13cd24def94c7ee8d0419356e",
       "Id": "fc88c250939b4ff28861fae4dd222ac7"
+    },
+    {
+      "Start": "179ec42a49934f078a31c4af1843ed0b",
+      "End": "9aa8828d518e41c49dc52d0f00705cc7",
+      "Id": "fe01543f0a3b4fd481e696d3f49adce8"
+    },
+    {
+      "Start": "c276963a0f904c3dbd505ee86ff1a57e",
+      "End": "42ae0ff56c904b358f9d8cabe06a58c8",
+      "Id": "3341617ba25a40d4836ecc8981e8ee00"
+    },
+    {
+      "Start": "6475bb5661274ccdac3d1bc2748b451d",
+      "End": "8a9a684ec95845709240ddab0b152efd",
+      "Id": "a77d2ffb82d4477cb7940bd04f2cf589"
+    },
+    {
+      "Start": "6f81a287fd9844fbba0bb4997b6c6ba5",
+      "End": "b2b5dbeaa4234d7b9498ea730b3e99b1",
+      "Id": "15e63b50c1f54841ba0cefa61939e8b7"
+    },
+    {
+      "Start": "2d1315c4a31040edb5fb379a7d34cb55",
+      "End": "0fb73db6c5504e84b7f683951a0b6048",
+      "Id": "1023cf5f75ab4f00854902a2097b04b7"
+    },
+    {
+      "Start": "9379eb04ed9443d98b2faaf74d37ce36",
+      "End": "ed9dc000397942e78b793f641da472e1",
+      "Id": "76c3d14fb6a84ccebc77038aadda67be"
     }
   ],
   "Dependencies": [],
@@ -236,12 +452,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": true,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.6.1.8786",
+      "Version": "2.3.0.5885",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Фоновый просмотр",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -259,9 +475,9 @@
         "Id": "fd1a02e5227048edba26a6c3426292d1",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 340.72598190453971,
-        "Y": 520.00024660964186
+        "Excluded": true,
+        "X": 341.65254808001282,
+        "Y": 517.22054808322241
       },
       {
         "ShowGeometry": true,
@@ -270,7 +486,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 86.964261922213836,
+        "X": 87.890828097686949,
         "Y": 353.64939770058646
       },
       {
@@ -310,8 +526,58 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": true,
         "Excluded": false,
-        "X": 513.46461082562359,
-        "Y": 518.75541513973258
+        "X": 746.666233023829,
+        "Y": 281.96196454963251
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "File Path",
+        "Id": "a92424396ae643db818bef6a5acd92a2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -194.95353874241795,
+        "Y": 229.42615459513374
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "FileSystem.ReadText",
+        "Id": "895f1343c04f43499c624e9392d51cc9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 163.62757116567786,
+        "Y": 234.98555164797239
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script From String",
+        "Id": "9d246106974442ed8a2186b144525dd8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 445.30368850950492,
+        "Y": 292.4326545273056
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "File From Path",
+        "Id": "b034f179e9db43b0a7c60e1f44f634d2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 21.862946318291051,
+        "Y": 232.2058531215531
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Object.Type",
+        "Id": "09e318f51d41433f838889ebec369c48",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1045.2455510839741,
+        "Y": 571.58098939047932
       }
     ],
     "Annotations": [
@@ -378,8 +644,8 @@
         "Background": "#FFC1D676"
       }
     ],
-    "X": 148.32547494874638,
-    "Y": -118.29090008667268,
-    "Zoom": 0.80332159346259768
+    "X": 7.7879118503842619,
+    "Y": -166.2520489538669,
+    "Zoom": 0.95448494563359143
   }
 }

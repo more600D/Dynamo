@@ -64,6 +64,7 @@ for room in room_col:
     room_box = room.get_BoundingBox(None)
     param = room.LookupParameter('ПлощадьПроемов')
     if room_box:
+        fff = []
         outline = Outline(room_box.Min, room_box.Max)
         bbfilter = BoundingBoxIntersectsFilter(outline)
         doors = FilteredElementCollector(doc).OfClass(FamilyInstance). \
@@ -72,18 +73,21 @@ for room in room_col:
             WherePasses(LogicalAndFilter(bbfilter, win_cat)).ToElements()
         value = 0
         for door in doors:
-            value += getSquare(door)
-            elem_in_room.append(door)
+            try:
+                value += getSquare(door)
+                elem_in_room.append(door)
+            except Exception:
+                fff.append(door)
         for window in windows:
             if getSquare(window):
                 value += getSquare(window)
             elem_in_room.append(window)
         finish_square = all_square - value
-        param.Set(finish_square)
+        # param.Set(finish_square)
     elements.append(elem_in_room)
-    square_value.append(UnitUtils.ConvertFromInternalUnits(finish_square, param.DisplayUnitType))
+    # square_value.append(UnitUtils.ConvertFromInternalUnits(finish_square, param.DisplayUnitType))
 
 
 TransactionManager.Instance.TransactionTaskDone()
 
-OUT = elements, square_value
+OUT = fff

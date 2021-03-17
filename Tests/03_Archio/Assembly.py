@@ -5,7 +5,7 @@ from Autodesk.Revit.DB import AssemblyInstance, ElementId, \
     AssemblyViewUtils, XYZ, ViewOrientation3D, BuiltInCategory, BuiltInParameter, \
     SectionType, UnitUtils, DisplayUnitType, Viewport, FilteredElementCollector, \
     ScheduleHorizontalAlignment, ElementTransformUtils, View, ScheduleSheetInstance, \
-    AssemblyDetailViewOrientation
+    AssemblyDetailViewOrientation, Line, ReferenceArray, Options, IFamilyLoadOptions, FamilySource
 clr.AddReference('RevitAPIUI')
 from Autodesk.Revit.UI.Selection import ObjectType, ISelectionFilter
 from Autodesk.Revit.UI import TaskDialog
@@ -24,24 +24,14 @@ class CustomISelectionFilter(ISelectionFilter):
         self.name = name
 
     def AllowElement(self, elem):
-        if elem.Symbol.FamilyName == self.name:
+        param = elem.Symbol.get_Parameter(BuiltInParameter.ALL_MODEL_MANUFACTURER)
+        if param.AsString().lower() == self.name.lower():
             return True
         else:
             return False
 
     def AllowReference(self, ref, point):
         return True
-
-
-def get_unwrap_element(data):
-    if not isinstance(data, list):
-        elem = UnwrapElement(data)  # noqa
-        if elem.Category.Name != 'Assemblies':
-            return elem
-        else:
-            return 'Выберите не сборку'
-    else:
-        return [UnwrapElement(i) for i in data]  # noqa
 
 
 def create_view_orientation3D(view3D):
@@ -147,10 +137,111 @@ def select_template_id(name):
                 return tp.Id
 
 
+# Dimensions----------------------------------------------------------------------------------
+def create_dimension(element, point1, point2, reference_names_list, view, direction_to_move=XYZ(0, 0, 0)):
+    line = Line.CreateBound(point1, point2)
+    refArray = ReferenceArray()
+    for ref in reference_names_list:
+        refArray.Append(element.GetReferenceByName(ref))
+    dim = doc.Create.NewDimension(view, line, refArray)
+    ElementTransformUtils.MoveElement(doc, dim.Id, direction_to_move)
+    return dim
+
+
+def create_dimension_on_view(element, orientation, view, offset=0.2, document=doc):
+    bb = element.get_BoundingBox(view)
+    view_direction = view.ViewDirection.ToString()
+    back = XYZ(0, 1, 0).ToString()
+    front = XYZ(0, -1, 0).ToString()
+    left = XYZ(-1, 0, 0).ToString()
+    right = XYZ(1, 0, 0).ToString()
+    top = XYZ(0, 0, 1).ToString()
+    botton = XYZ(0, 0, -1).ToString()
+    # Back or Front
+    if view_direction == back or view_direction == front:
+        if orientation == 'vertical':
+            pt1 = XYZ(bb.Max.X, 0, bb.Min.Z)
+            pt2 = XYZ(bb.Max.X, 0, bb.Max.Z)
+            return create_dimension(element, pt1, pt2, ['3', '4'], view, XYZ(offset, 0, 0))
+        elif orientation == 'horizontal':
+            pt1 = XYZ(bb.Min.X, 0, bb.Min.Z)
+            pt2 = XYZ(bb.Max.X, 0, bb.Min.Z)
+            return create_dimension(element, pt1, pt2, ['1', '2'], view, XYZ(0, 0, -offset))
+    # Left or Right
+    elif view_direction == left or view_direction == right:
+        if orientation == 'vertical':
+            pt1 = XYZ(0, bb.Min.Y, bb.Max.Z)
+            pt2 = XYZ(0, bb.Min.Y, bb.Min.Z)
+            return create_dimension(element, pt1, pt2, ['3', '4'], view, XYZ(0, -offset, 0))
+        elif orientation == 'horizontal':
+            pt1 = XYZ(0, bb.Min.Y, bb.Min.Z)
+            pt2 = XYZ(0, bb.Max.Y, bb.Min.Z)
+            return create_dimension(element, pt1, pt2, ['5', '6'], view, XYZ(0, 0, -offset))
+    # Top or Botton
+    elif view_direction == top or view_direction == botton:
+        if orientation == 'vertical':
+            pt1 = XYZ(bb.Min.X, bb.Min.Y, 0)
+            pt2 = XYZ(bb.Min.X, bb.Max.Y, 0)
+            return create_dimension(element, pt1, pt2, ['5', '6'], view, XYZ(-offset, 0, 0))
+        elif orientation == 'horizontal':
+            pt1 = XYZ(bb.Min.X, bb.Min.Y, 0)
+            pt2 = XYZ(bb.Max.X, bb.Min.Y, 0)
+            return create_dimension(element, pt1, pt2, ['1', '2'], view, XYZ(0, -offset, 0))
+
+
+# Family--------------------------------------------------------------------------------------
+class FamilyOption(IFamilyLoadOptions):
+    def OnFamilyFound(self, familyInUse, overwriteParameterValues):
+        self.overwriteParameterValues = True
+        return True
+
+    def OnSharedFamilyFound(self, sharedFamily, familyInUse, source, overwriteParameterValues):
+        self.source = FamilySource.Family
+        self.overwriteParameterValues = True
+        return True
+
+
+def get_volume_from_bBox(element):
+    bbox = element.get_BoundingBox(None)
+    bbox_lenght = bbox.Max.X - bbox.Min.X
+    bbox_width = bbox.Max.Y - bbox.Min.Y
+    bbox_height = bbox.Max.Z - bbox.Min.Z
+    return bbox_height * bbox_width * bbox_lenght
+
+
+def get_square_from_solid(element):
+    square = 0
+    volume = 0
+    solids = element.get_Geometry(Options())
+    if solids:
+        for solid in solids:
+            volume += solid.Volume
+            if hasattr(solid, 'Faces'):
+                for face in solid.Faces:
+                    mat_id = face.MaterialElementId
+                    if mat_id.IntegerValue == -1:
+                        square += face.Area
+        return square, volume
+
+
+def set_parameter_by_name(value, param_name, document):
+    f_manager = document.FamilyManager
+    if len(list(f_manager.Types)) == 0:
+        f_manager.NewType('Тип 1')
+    param = f_manager.get_Parameter(param_name)
+    if param:
+        if param.CanAssignFormula:
+            val = UnitUtils.ConvertFromInternalUnits(value, param.DisplayUnitType)
+            f_manager.SetFormula(param, str(val))
+            return '{} - {}'.format(param_name, val)
+    else:
+        return 'Not OK'
+
+
 # --------------------------------------------------------------------------------------------
-name_detal = 'IZD-AK45-1'
+
 try:
-    sel = uidoc.Selection.PickObject(ObjectType.Element, CustomISelectionFilter(name_detal))
+    sel = uidoc.Selection.PickObject(ObjectType.Element, CustomISelectionFilter('arhio'))
 except Exception.message:
     TaskDialog.Show('Нет таких стен', 'Не выбраны стены')
 
@@ -190,7 +281,6 @@ section_view = create_detail_section(assembly,
                                      'ARH_Section')
 title_on_sheet = section_view[0].get_Parameter(BuiltInParameter.VIEW_DESCRIPTION).Set('1-1')
 
-
 # Создание фасада
 pt_right_view = XYZ(0.491748513235149, 0.626337804965914, 0)
 right_view = create_detail_section(assembly,
@@ -216,9 +306,14 @@ TransactionManager.Instance.ForceCloseTransaction()
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 assembly.AssemblyTypeName = elem_name
-outline = section_view[1].GetLabelOutline()
-outline.MaximumPoint = XYZ(1.23990697947749, 0.826617061467438, 0)
-outline.MinimumPoint = XYZ(0.973327475469422, 0.776187585524084, 0)
+create_dimension_on_view(elem, 'horizontal', right_view[0])
+create_dimension_on_view(elem, 'vertical', right_view[0])
+create_dimension_on_view(elem, 'horizontal', right_view[0])
+create_dimension_on_view(elem, 'vertical', right_view[0])
+create_dimension_on_view(elem, 'horizontal', section_view[0])
+create_dimension_on_view(elem, 'vertical', section_view[0])
+create_dimension_on_view(elem, 'horizontal', top_view[0])
+create_dimension_on_view(elem, 'vertical', top_view[0])
 TransactionManager.Instance.TransactionTaskDone()
 
 OUT = assembly

@@ -33,19 +33,22 @@ def get_material_name(material_id, param_name):
 
 def get_max_slab_shape_vertex(structure_element):
     if structure_element.Category.Id.IntegerValue == -2000032:
-        slab_shape_vertices = structure_element.SlabShapeEditor.SlabShapeVertices
-        point_z = [vertice.Position.Z for vertice in slab_shape_vertices]
-        return UnitUtils.ConvertFromInternalUnits(max(point_z), DisplayUnitType.DUT_MILLIMETERS)
+        slab_shape_editor = structure_element.SlabShapeEditor
+        if slab_shape_editor:
+            slab_shape_vertices = slab_shape_editor.SlabShapeVertices
+            point_z = [vertice.Position.Z for vertice in slab_shape_vertices]
+            return UnitUtils.ConvertFromInternalUnits(max(point_z), DisplayUnitType.DUT_MILLIMETERS)
     else:
-        return 'not floor'
+        return 'no shape editor'
 
 
-def get_layers_to_string(structure_element, element_param_name, material_param_name):
+def get_layers_to_string(structure_element, element_param_name, material_param_name, base=''):
     element_type = doc.GetElement(structure_element.GetTypeId())
     element_param = element_type.LookupParameter(element_param_name)
     if element_param:
         structure = element_type.GetCompoundStructure()
         variable_layer_index = structure.VariableLayerIndex
+        max_point = get_max_slab_shape_vertex(structure_element)
         layers = structure.GetLayers()
         data = ''
         for i in range(0, len(layers)):
@@ -54,13 +57,15 @@ def get_layers_to_string(structure_element, element_param_name, material_param_n
             if not name:
                 name = 'Value_is_missing'
             is_variable_layer = layers[i].LayerId == variable_layer_index
-            if width != 0 and not is_variable_layer:
+            if width != 0 and not is_variable_layer or isinstance(max_point, str):
                 data += '\r\n{}. {} - {} мм'.format(i + 1, name, width)
-            elif is_variable_layer:
-                total_width = to_int(width + get_max_slab_shape_vertex(structure_element))
+            elif is_variable_layer and not isinstance(max_point, str):
+                total_width = to_int(width + max_point)
                 data += '\r\n{}. {} - от {}-{} мм'.format(i + 1, name, width, total_width)
             else:
                 data += '\r\n{}. {}'.format(i + 1, name)
+        if base:
+            data += '\r\n{}. {}'.format(len(layers) + 1, base)
         if element_param.StorageType == StorageType.String:
             element_param.Set(data.strip())
         return data.strip()
@@ -70,7 +75,7 @@ def get_independent_tag_by_name(tag_ids, name):
     for tag_id in tag_ids:
         elem = doc.GetElement(tag_id)
         fam_name = elem.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM).AsValueString()
-        if fam_name == name:
+        if name in fam_name:
             return elem
 
 
@@ -89,23 +94,23 @@ def get_type_tag(types, number):
             return t
 
 
-def change_type_tag(elem, tag):
-    if tag:
-        element_type = doc.GetElement(elem.GetTypeId())
-        structure = element_type.GetCompoundStructure()
+def change_type_tag(data, tag):
+    if tag and data:
+        layers = data.split('\r\n')
         types = tag.GetValidTypes()
-        if structure:
-            count = structure.LayerCount
-            t = get_type_tag(types, count)
-            tag.ChangeTypeId(t)
-            return 'Everything is awesome'
+        count = len(layers)
+        t = get_type_tag(types, count)
+        tag.ChangeTypeId(t)
+        return 'Everything is awesome'
 
 
-sel = UnwrapElement(IN[1])  # noqa
-
+element = UnwrapElement(IN[1])  # noqa
+element_parameter_to_set = IN[2]  # noqa
+material_info = IN[3]  # noqa
+last_layer = ''
 TransactionManager.Instance.EnsureInTransaction(doc)
-data = get_layers_to_string(sel, IN[2], IN[3])  # noqa
-change_type_tag(sel, get_tag(sel))
+data = get_layers_to_string(element, element_parameter_to_set, material_info, last_layer)  # noqa
+change_type_tag(data, get_tag(element))
 TransactionManager.Instance.TransactionTaskDone()
 
 OUT = data

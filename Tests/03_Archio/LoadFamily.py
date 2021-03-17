@@ -71,21 +71,26 @@ if fam_doc:
     family_manager = fam_doc.FamilyManager
     sweep_col = FilteredElementCollector(fam_doc).OfClass(Sweep).ToElements()
     sweep = [s for s in list(sweep_col) if s.IsSolid][0]
+    empty_sweep = [s for s in list(sweep_col) if not s.IsSolid][0]
 
+    trans1 = Transaction(fam_doc, 'Delete empty form')
+    trans1.Start()
+    fam_doc.Delete(empty_sweep.Id)
     param_ARH_l = family_manager.get_Parameter('ARH_l')
-
-    trans = Transaction(fam_doc, 'запись')
-    trans.Start()
     if param_ARH_l:
         family_manager.Set(param_ARH_l, UnitUtils.ConvertToInternalUnits(1000, param_ARH_l.DisplayUnitType))
-    square = get_square_from_solid(sweep)[0]
-    vol1 = get_square_from_solid(sweep)[1]
-    vol2 = get_volume_from_bBox(sweep)
+        square = get_square_from_solid(sweep)[0]
+        vol1 = get_square_from_solid(sweep)[1]
+        vol2 = get_volume_from_bBox(sweep)
+    trans1.RollBack()
+
+    trans2 = Transaction(fam_doc, 'Set values')
+    trans2.Start()
     sq = set_parameter_by_name(square, 'ARH_sr', fam_doc)
     volume1 = set_parameter_by_name(vol1, 'ARH_v1', fam_doc)
     volume2 = set_parameter_by_name(vol2, 'ARH_v2', fam_doc)
-    trans.Commit()
+    trans2.Commit()
     fam_doc.LoadFamily(doc, FamilyOption())
     fam_doc.Close(False)
 
-OUT = param_ARH_l
+OUT = square, vol1

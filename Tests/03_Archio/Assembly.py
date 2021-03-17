@@ -5,7 +5,8 @@ from Autodesk.Revit.DB import AssemblyInstance, ElementId, \
     AssemblyViewUtils, XYZ, ViewOrientation3D, BuiltInCategory, BuiltInParameter, \
     SectionType, UnitUtils, DisplayUnitType, Viewport, FilteredElementCollector, \
     ScheduleHorizontalAlignment, ElementTransformUtils, View, ScheduleSheetInstance, \
-    AssemblyDetailViewOrientation, Line, ReferenceArray, Options, IFamilyLoadOptions, FamilySource
+    AssemblyDetailViewOrientation, Line, ReferenceArray, Options, IFamilyLoadOptions, FamilySource, \
+    Transaction, Sweep
 clr.AddReference('RevitAPIUI')
 from Autodesk.Revit.UI.Selection import ObjectType, ISelectionFilter
 from Autodesk.Revit.UI import TaskDialog
@@ -243,12 +244,13 @@ def set_parameter_by_name(value, param_name, document):
 try:
     sel = uidoc.Selection.PickObject(ObjectType.Element, CustomISelectionFilter('arhio'))
 except Exception.message:
-    TaskDialog.Show('Нет таких стен', 'Не выбраны стены')
+    pass
 
 elem = doc.GetElement(sel.ElementId)
 elem_name = elem.LookupParameter('ARH_mk').AsString()
 ids = List[ElementId]()
 ids.Add(sel.ElementId)
+family = elem.Symbol.Family
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 # Создание сборки
@@ -300,12 +302,11 @@ top_view = create_detail_section(assembly,
                                  'ARH_Section')
 center = top_view[1].GetBoxCenter()
 ElementTransformUtils.MoveElement(doc, top_view[1].Id, pt_top_view - center)
-
-TransactionManager.Instance.TransactionTaskDone()
 TransactionManager.Instance.ForceCloseTransaction()
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 assembly.AssemblyTypeName = elem_name
+# Размеры-------------------------------------------------------------------------------------
 create_dimension_on_view(elem, 'horizontal', right_view[0])
 create_dimension_on_view(elem, 'vertical', right_view[0])
 create_dimension_on_view(elem, 'horizontal', right_view[0])
@@ -315,5 +316,36 @@ create_dimension_on_view(elem, 'vertical', section_view[0])
 create_dimension_on_view(elem, 'horizontal', top_view[0])
 create_dimension_on_view(elem, 'vertical', top_view[0])
 TransactionManager.Instance.TransactionTaskDone()
+TransactionManager.Instance.ForceCloseTransaction()
+
+fam_doc = doc.EditFamily(family)
+
+# Семейство-----------------------------------------------------------------------------------
+if fam_doc:
+
+    family_manager = fam_doc.FamilyManager
+    sweep_col = FilteredElementCollector(fam_doc).OfClass(Sweep).ToElements()
+    sweep = [s for s in list(sweep_col) if s.IsSolid][0]
+    empty_sweep = [s for s in list(sweep_col) if not s.IsSolid][0]
+
+    trans1 = Transaction(fam_doc, 'Delete empty form')
+    trans1.Start()
+    fam_doc.Delete(empty_sweep.Id)
+    param_ARH_l = family_manager.get_Parameter('ARH_l')
+    if param_ARH_l:
+        family_manager.Set(param_ARH_l, UnitUtils.ConvertToInternalUnits(1000, param_ARH_l.DisplayUnitType))
+        square = get_square_from_solid(sweep)[0]
+        vol1 = get_square_from_solid(sweep)[1]
+        vol2 = get_volume_from_bBox(sweep)
+    trans1.RollBack()
+
+    trans2 = Transaction(fam_doc, 'Set values')
+    trans2.Start()
+    sq = set_parameter_by_name(square, 'ARH_sr', fam_doc)
+    volume1 = set_parameter_by_name(vol1, 'ARH_v1', fam_doc)
+    volume2 = set_parameter_by_name(vol2, 'ARH_v2', fam_doc)
+    trans2.Commit()
+    fam_doc.LoadFamily(doc, FamilyOption())
+    fam_doc.Close(False)
 
 OUT = assembly

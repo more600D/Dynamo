@@ -44,40 +44,35 @@ def check_elem_in_room(elem_id, room):
             return elem
 
 
-def get_room_solid(room, name):
-    calc = SpatialElementGeometryCalculator(doc)
-    calc_geometry = calc.CalculateSpatialElementGeometry(room)
-    solid = calc_geometry.GetGeometry()
-    sum_area = 0
-    opening_area = []
-    for face in solid.Faces:
-        if face.GetType().Name == 'CylindricalFace' or face.FaceNormal.Z == 0:
-            info = calc_geometry.GetBoundaryFaceInfo(face)
-            opening_area.append(info)
-        #     for i in info:
-        #         elem = doc.GetElement(i.SpatialBoundaryElement.HostElementId)
-        #         insert_elem_ids = elem.FindInserts(False, False, False, False)
-        #         for elem_id in insert_elem_ids:
-        #             opening = (check_elem_in_room(elem_id, room))
-        #             if opening:
-        #                 opening_area.append(get_square(opening))
-        #         if elem.CurtainGrid is None:
-        #             sum_area += face.Area
-    # room_param = room.LookupParameter(name)
-    # if room_param:
-    #     try:
-    #         room_param.Set(sum_area - sum(opening_area))
-    #     except Exception:
-    return opening_area
+def get_room_solid(rooms, name):
+    for room in rooms:
+        calc = SpatialElementGeometryCalculator(doc)
+        calc_geometry = calc.CalculateSpatialElementGeometry(room)
+        solid = calc_geometry.GetGeometry()
+        sum_area = 0
+        opening_area = []
+        for face in solid.Faces:
+            if face.GetType().Name == 'CylindricalFace' or face.FaceNormal.Z == 0:
+                info = calc_geometry.GetBoundaryFaceInfo(face)
+                opening_area.append(info)
+            #     for i in info:
+            #         elem = doc.GetElement(i.SpatialBoundaryElement.HostElementId)
+            #         insert_elem_ids = elem.FindInserts(False, False, False, False)
+            #         for elem_id in insert_elem_ids:
+            #             opening = (check_elem_in_room(elem_id, room))
+            #             if opening:
+            #                 opening_area.append(get_square(opening))
+            #         if elem.CurtainGrid is None:
+            #             sum_area += face.Area
+        # room_param = room.LookupParameter(name)
+        # if room_param:
+        #     try:
+        #         room_param.Set(sum_area - sum(opening_area))
+        #     except Exception:
+        return opening_area
 
 
 result = []
 room_col = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Rooms).ToElements()
 
-TransactionManager.Instance.EnsureInTransaction(doc)
-
-OUT = []
-for room in room_col:
-    OUT.append(get_room_solid(room, IN[1]))  # noqa
-
-TransactionManager.Instance.TransactionTaskDone()
+OUT = get_room_solid(room_col, '000'), len(list(room_col))

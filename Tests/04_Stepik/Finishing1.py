@@ -8,20 +8,19 @@ from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
 
-def getTypeOrInstanceParameter(elem, builtInParameter):
-    param = elem.get_Parameter(builtInParameter)
-    if param:
-        value = param.AsDouble()
-        if value:
-            return value
-        else:
-            param = elem.Symbol.get_Parameter(builtInParameter)
-            return param.AsDouble()
+def get_type_or_instance_parameter_value(elem, builtInParameter):
+    param_instance = elem.get_Parameter(builtInParameter)
+    value_instance = param_instance.AsDouble()
+    if not param_instance or value_instance == 0:
+        param_type = elem.Symbol.get_Parameter(builtInParameter)
+        return param_type.AsDouble()
+    else:
+        return value_instance
 
 
-def getSquare(elem):
-    param1 = getTypeOrInstanceParameter(elem, BuiltInParameter.FURNITURE_WIDTH)
-    param2 = getTypeOrInstanceParameter(elem, BuiltInParameter.FAMILY_HEIGHT_PARAM)
+def get_square(elem):
+    param1 = get_type_or_instance_parameter_value(elem, BuiltInParameter.CASEWORK_WIDTH)
+    param2 = get_type_or_instance_parameter_value(elem, BuiltInParameter.CASEWORK_HEIGHT)
     if param1 and param2:
         value = param1 * param2
         return value
@@ -74,13 +73,13 @@ for room in room_col:
         value = 0
         for door in doors:
             try:
-                value += getSquare(door)
+                value += get_square(door)
                 elem_in_room.append(door)
             except Exception:
                 fff.append(door)
         for window in windows:
-            if getSquare(window):
-                value += getSquare(window)
+            if get_square(window):
+                value += get_square(window)
             elem_in_room.append(window)
         finish_square = all_square - value
         # param.Set(finish_square)

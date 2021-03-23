@@ -9,8 +9,6 @@ from RevitServices.Transactions import TransactionManager
 
 
 doc = DocumentManager.Instance.CurrentDBDocument
-uiapp = DocumentManager.Instance.CurrentUIApplication
-app = uiapp.Application
 
 
 def get_type_or_instance_parameter_value(family_instance, builtInParameter):
@@ -96,18 +94,18 @@ def get_full_square_wall_from_room(room, param_name):
     set_value_by_param_name(room, param_name, value)  # noqa
     return value
 
-sel_room = UnwrapElement(IN[2])  # noqa
 
 room_col = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Rooms).ToElements()
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 report = []
+report.append('{:>5}{:-^25}{:^5}'.format('Номер'.upper(), 'Имя помещения'.upper(), 'Площадь'.upper()))
 for room in room_col:
     name = room.get_Parameter(BuiltInParameter.ROOM_NAME).AsString()
     number = room.Number
     total = UnitUtils.ConvertFromInternalUnits(get_full_square_wall_from_room(room,IN[1]),  # noqa
                                                DisplayUnitType.DUT_SQUARE_METERS)
-    report.append('{}-{} - {:.2f} м2'.format(number, name, total))
+    report.append('{:>5}{:-^25}{:.2f}'.format(number, name, total))
 
 TransactionManager.Instance.TransactionTaskDone()
 

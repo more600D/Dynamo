@@ -36,24 +36,28 @@ def create_directshape(room_collection):
             for shape in direct_shapes_col:
                 document.Delete(shape.Id)
         datashape = []
+        bad_rooms = []
         for room in room_collection:
-            calculator = SpatialElementGeometryCalculator(document)
-            geometry_result = calculator.CalculateSpatialElementGeometry(room)
-            room_solid = geometry_result.GetGeometry()
-            geometry_objects = List[GeometryObject]()
-            geometry_objects.Add(room_solid)
-            room_name = room.get_Parameter(BuiltInParameter.ROOM_NAME).AsString()
+            try:
+                calculator = SpatialElementGeometryCalculator(document)
+                geometry_result = calculator.CalculateSpatialElementGeometry(room)
+                room_solid = geometry_result.GetGeometry()
+                geometry_objects = List[GeometryObject]()
+                geometry_objects.Add(room_solid)
+                room_name = room.get_Parameter(BuiltInParameter.ROOM_NAME).AsString()
 
-            ds_type = get_directshape_type(room_name)
-            ds = DirectShape.CreateElementInstance(document,
-                                                   ds_type.Id,
-                                                   ElementId(BuiltInCategory.OST_GenericModel),
-                                                   room_name,
-                                                   Transform.Identity)
-            ds.SetTypeId(ds_type.Id)
-            ds.SetShape(geometry_objects)
-            datashape.append(ds)
-        return datashape
+                ds_type = get_directshape_type(room_name)
+                ds = DirectShape.CreateElementInstance(document,
+                                                       ds_type.Id,
+                                                       ElementId(BuiltInCategory.OST_GenericModel),
+                                                       room_name,
+                                                       Transform.Identity)
+                ds.SetTypeId(ds_type.Id)
+                ds.SetShape(geometry_objects)
+                datashape.append(ds)
+            except Exception:
+                bad_rooms.append(room)
+        return datashape, bad_rooms
 
 
 room_col = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Rooms).ToElements()

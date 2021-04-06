@@ -1,0 +1,273 @@
+{
+  "Uuid": "0157b3ae-236a-4483-adc9-28b98b474eee",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "SHV_Stair_Square",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "ac4b4f57fded4f92afd46e6725a8c327",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d3d01491f95c4f649cb0c6dc5d687bec",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# -*- coding: utf-8 -*-\r\n# s.s.sh@mail.ru\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import Options, XYZ, UnitUtils, DisplayUnitType, StorageType, \\\r\n    FilteredElementCollector, BuiltInParameter\r\nfrom Autodesk.Revit.DB.Architecture import Stairs\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\n\r\n\r\ndef get_type_name(elem):\r\n    elem_type = doc.GetElement(elem.GetTypeId())\r\n    elem_type_name = elem_type.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM).AsString()\r\n    return elem_type_name\r\n\r\n\r\ndef get_square_from_face(face):\r\n    face_normal = face.FaceNormal\r\n    if face_normal.IsAlmostEqualTo(XYZ.BasisZ):\r\n        return face.Area\r\n    else:\r\n        return 0\r\n\r\n\r\ndef get_square_from_part(part_list, document):\r\n    if part_list:\r\n        square = 0\r\n        for item_id in part_list:\r\n            stair_run = document.GetElement(item_id)\r\n            geometry = stair_run.get_Geometry(Options())\r\n            if geometry:\r\n                for geo in geometry:\r\n                    if geo.GetType().Name == 'Solid':\r\n                        for face in geo.Faces:\r\n                            square += get_square_from_face(face)\r\n                    if geo.GetType().Name == 'GeometryInstance' and square == 0:\r\n                        instance_geo = geo.GetInstanceGeometry()\r\n                        for solid in instance_geo:\r\n                            for face in solid.Faces:\r\n                                square += get_square_from_face(face)\r\n            return square\r\n\r\n\r\ndef set_value(elem, parameter_name, value):\r\n    param = elem.LookupParameter(parameter_name)\r\n    if param:\r\n        if param.StorageType == StorageType.String:\r\n            param.Set(str(UnitUtils.ConvertFromInternalUnits(value,\r\n                                                             DisplayUnitType.DUT_SQUARE_METERS)))\r\n        else:\r\n            param.Set(value)\r\n\r\n\r\ndef get_square_from_runs_and_landings(stair):\r\n    if stair.Category.Id.IntegerValue == -2000120:\r\n        document = stair.Document\r\n        runs_square = get_square_from_part(stair.GetStairsRuns(), document)\r\n        landings_square = get_square_from_part(stair.GetStairsLandings(), document)\r\n        if runs_square:\r\n            set_value(stair, IN[1], runs_square)  # noqa\r\n            value_runs = UnitUtils.ConvertFromInternalUnits(runs_square,\r\n                                                            DisplayUnitType.DUT_SQUARE_METERS)\r\n        else:\r\n            set_value(stair, IN[1], 0)  # noqa\r\n            value_runs = 'нет маршей'\r\n        if landings_square:\r\n            set_value(stair, IN[2], landings_square)  # noqa\r\n            value_landings = UnitUtils.ConvertFromInternalUnits(landings_square,\r\n                                                                DisplayUnitType.DUT_SQUARE_METERS)\r\n        else:\r\n            set_value(stair, IN[2], 0)  # noqa\r\n            value_landings = 'нет площадок'\r\n        return 'Площадь ступенек: {}'.format(value_runs), 'Площадь площадок: {}'.format(value_landings)\r\n    else:\r\n        return 'Select stair'\r\n\r\n\r\nstairs_col = FilteredElementCollector(doc).OfClass(Stairs)\r\nresult = []\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor stair in stairs_col:\r\n    item = []\r\n    item.append('Id лестницы: {}'.format(stair.Id))\r\n    item.append('Имя: {}'.format(get_type_name(stair)))\r\n    for square in get_square_from_runs_and_landings(stair):\r\n        item.append(square)\r\n    result.append(item)\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = result\r\n",
+      "VariableInputPorts": true,
+      "Id": "c5260c3eab35422a94fb5ebd496aa848",
+      "Inputs": [
+        {
+          "Id": "900b9f9f708c4c51a083b9b790e242ba",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "530ac9ef452a4bfe9691fded1ded588a",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "373fdeaaba1946ef89ef3bb0ab91df62",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f8d333d05eb34e50a8ce620205d3fab0",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Площадь ступеней\";",
+      "Id": "81e1f54b79d74962a597953f1bf43327",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "53b6630a635543348257b44096b0606e",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Площадь площадок\";",
+      "Id": "56e32ab2c94c469a8171d504c69053c1",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "51de1fe64c9740ccac2a441a2edc1e72",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "26b572df06dd4a85a6ffcc45ef97fdbe",
+      "Inputs": [
+        {
+          "Id": "3e3c2de10791476dbdc82a0ad0edfa84",
+          "Name": "",
+          "Description": "Node to evaluate.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c4d0f2b129ce484cad8f07f61005eaaa",
+          "Name": "",
+          "Description": "Watch contents.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Визуализация входного элемента узла."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "d3d01491f95c4f649cb0c6dc5d687bec",
+      "End": "900b9f9f708c4c51a083b9b790e242ba",
+      "Id": "e2e2baf284c645838672e5c8459ee1d7"
+    },
+    {
+      "Start": "f8d333d05eb34e50a8ce620205d3fab0",
+      "End": "3e3c2de10791476dbdc82a0ad0edfa84",
+      "Id": "073da1288b684de5b8838d24951b79fa"
+    },
+    {
+      "Start": "53b6630a635543348257b44096b0606e",
+      "End": "530ac9ef452a4bfe9691fded1ded588a",
+      "Id": "c2265e7986384538bab14325bb1b977a"
+    },
+    {
+      "Start": "51de1fe64c9740ccac2a441a2edc1e72",
+      "End": "373fdeaaba1946ef89ef3bb0ab91df62",
+      "Id": "80272cbe49b94609b9438a68dbff0d9a"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.5.0.7460",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Повторить",
+        "Id": "ac4b4f57fded4f92afd46e6725a8c327",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 813.0859959914593,
+        "Y": 713.38773412305727
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "c5260c3eab35422a94fb5ebd496aa848",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 999.80193711731954,
+        "Y": 757.93276694243752
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Параметр для ступенек",
+        "Id": "81e1f54b79d74962a597953f1bf43327",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 759.68501669546151,
+        "Y": 781.27263374931306
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Параметр для площадок",
+        "Id": "56e32ab2c94c469a8171d504c69053c1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 759.83538393146068,
+        "Y": 870.35868167960757
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Информация",
+        "Id": "26b572df06dd4a85a6ffcc45ef97fdbe",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1159.2279779266712,
+        "Y": 758.46091846308889
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "892d6865480443599dfe9b9340627708",
+        "Title": "Input",
+        "Nodes": [
+          "ac4b4f57fded4f92afd46e6725a8c327",
+          "81e1f54b79d74962a597953f1bf43327",
+          "56e32ab2c94c469a8171d504c69053c1"
+        ],
+        "Left": 749.68501669546151,
+        "Top": 660.38773412305727,
+        "Width": 208.40097929599779,
+        "Height": 302.9709475565503,
+        "FontSize": 36.0,
+        "InitialTop": 713.38773412305727,
+        "InitialHeight": 301.9709475565503,
+        "TextblockHeight": 43.0,
+        "Background": "#FFFFB8D8"
+      }
+    ],
+    "X": -586.67625602883891,
+    "Y": -559.02122634448358,
+    "Zoom": 0.90587313038876371
+  }
+}

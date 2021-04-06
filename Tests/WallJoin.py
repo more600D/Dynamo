@@ -10,30 +10,35 @@ from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 
-door_col = FilteredElementCollector(doc).OfClass(FamilyInstance).OfCategory(BuiltInCategory.OST_Doors)
 
-f_list = []
+def join_walls(collector):
+    if collector:
+        f_list = []
+        for element in collector:
+            group = []
+            element_box = element.get_BoundingBox(None)
+            if element_box:
+                outline = Outline(element_box.Min, element_box.Max)
+                bbfilter = BoundingBoxIntersectsFilter(outline)
+                wall_col = FilteredElementCollector(doc).OfClass(Wall).WherePasses(bbfilter).ToElements()
+                group.append(element)
+                wall_host = element.Host
+                for wall in wall_col:
+                    group.append(wall)
+                    try:
+                        JoinGeometryUtils.JoinGeometry(doc, wall, wall_host)
+                    except Exception:
+                        pass
+                f_list.append(group)
+        return f_list
+
+
+door_col = FilteredElementCollector(doc).OfClass(FamilyInstance).OfCategory(BuiltInCategory.OST_Doors)
+window_col = FilteredElementCollector(doc).OfClass(FamilyInstance).OfCategory(BuiltInCategory.OST_Windows)
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-
-if door_col:
-    for door in door_col:
-        group = []
-        door_box = door.get_BoundingBox(None)
-        if door_box:
-            outline = Outline(door_box.Min, door_box.Max)
-            bbfilter = BoundingBoxIntersectsFilter(outline)
-            wall_col = FilteredElementCollector(doc).OfClass(Wall).WherePasses(bbfilter).ToElements()
-            group.append(door)
-            wall_host = door.Host
-            for wall in wall_col:
-                group.append(wall)
-                try:
-                    JoinGeometryUtils.JoinGeometry(doc, wall, wall_host)
-                except Exception:
-                    pass
-            f_list.append(group)
-
+f_list_door = join_walls(door_col)
+f_list_windor = join_walls(window_col)
 TransactionManager.Instance.TransactionTaskDone()
 
-OUT = f_list
+OUT = f_list_door, f_list_windor

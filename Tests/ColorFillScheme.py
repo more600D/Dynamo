@@ -16,12 +16,10 @@ color_fill_scheme = view.GetColorFillSchemeId(ElementId(99859))
 
 col = FilteredElementCollector(doc).OfClass(ColorFillScheme).ToElements()
 
-color_scheme_id = View.GetColorFillSchemeId(view, ElementId(-2000160))
-
 cat = Category.GetCategory(doc, BuiltInCategory.OST_Rooms)
-a = view.GetColorFillSchemeId(cat.Id)
+color_scheme_id = view.GetColorFillSchemeId(cat.Id)
 
-elem = doc.GetElement(a)
+elem = doc.GetElement(color_scheme_id)
 
 # OUT = [doc.GetElement(c) for c in color_fill_scheme]
 OUT = elem

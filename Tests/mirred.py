@@ -1,4 +1,4 @@
-elems = UnwrapElement(IN[0])
+elems = UnwrapElement(IN[0])  # noqa
 
 mirrored = []
 for el in elems:

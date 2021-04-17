@@ -6,10 +6,9 @@ from Autodesk.Revit.DB import AssemblyInstance, ElementId, \
     SectionType, UnitUtils, DisplayUnitType, Viewport, FilteredElementCollector, \
     ScheduleHorizontalAlignment, ElementTransformUtils, View, ScheduleSheetInstance, \
     AssemblyDetailViewOrientation, Line, ReferenceArray, Options, IFamilyLoadOptions, FamilySource, \
-    Transaction, Sweep
+    Transaction, Sweep, STLExportOptions, View3D, Extrusion, STLExportResolution, ExportUnit
 clr.AddReference('RevitAPIUI')
 from Autodesk.Revit.UI.Selection import ObjectType, ISelectionFilter
-from Autodesk.Revit.UI import TaskDialog
 
 clr.AddReference("RevitServices")
 from RevitServices.Persistence import DocumentManager
@@ -239,7 +238,35 @@ def set_parameter_by_name(value, param_name, document):
         return 'Not OK'
 
 
+# STL-----------------------------------------------------------------------------------------
+def get_path_file():
+    doc = DocumentManager.Instance.CurrentDBDocument
+    title = doc.Title
+    path = doc.PathName.split(title)
+    return path[0]
+
+
+def get_3dview_by_name(view_name, document):
+    view_col = FilteredElementCollector(document).OfClass(View3D)
+    for view in view_col:
+        if view.Name == view_name:
+            return view
+
+
+def export_to_stl(view_name, file_name, document):
+    view = get_3dview_by_name(view_name, document)
+    extrusions = FilteredElementCollector(document).OfClass(Extrusion)
+    extrusion_list = List[ElementId]()
+    for ex in extrusions:
+        extrusion_list.Add(ex.Id)
+    view.HideElements(extrusion_list)
+    stl_opt = STLExportOptions(STLExportResolution.Fine)
+    stl_opt.TargetUnit = ExportUnit.Millimeter
+    stl_opt.ViewId = view.Id
+    folder = get_path_file()
+    return document.Export(folder, file_name, stl_opt), folder + file_name
 # --------------------------------------------------------------------------------------------
+
 
 try:
     sel = uidoc.Selection.PickObject(ObjectType.Element, CustomISelectionFilter('arhio'))
@@ -328,23 +355,24 @@ if fam_doc:
     sweep = [s for s in list(sweep_col) if s.IsSolid][0]
     empty_sweep = [s for s in list(sweep_col) if not s.IsSolid][0]
 
-    trans1 = Transaction(fam_doc, 'Delete empty form')
-    trans1.Start()
-    fam_doc.Delete(empty_sweep.Id)
-    param_ARH_l = family_manager.get_Parameter('ARH_l')
-    if param_ARH_l:
-        family_manager.Set(param_ARH_l, UnitUtils.ConvertToInternalUnits(1000, param_ARH_l.DisplayUnitType))
-        square = get_square_from_solid(sweep)[0]
-        vol1 = get_square_from_solid(sweep)[1]
-        vol2 = get_volume_from_bBox(sweep)
-    trans1.RollBack()
+    with Transaction(fam_doc, 'Delete empty form') as trans1:
+        trans1.Start()
+        fam_doc.Delete(empty_sweep.Id)
+        param_ARH_l = family_manager.get_Parameter('ARH_l')
+        if param_ARH_l:
+            family_manager.Set(param_ARH_l, UnitUtils.ConvertToInternalUnits(1000, param_ARH_l.DisplayUnitType))
+            square = get_square_from_solid(sweep)[0]
+            vol1 = get_square_from_solid(sweep)[1]
+            vol2 = get_volume_from_bBox(sweep)
+            export_to_stl(r'{3D}', fam_doc.Title, fam_doc)
+        trans1.RollBack()
 
-    trans2 = Transaction(fam_doc, 'Set values')
-    trans2.Start()
-    sq = set_parameter_by_name(square, 'ARH_sr', fam_doc)
-    volume1 = set_parameter_by_name(vol1, 'ARH_v1', fam_doc)
-    volume2 = set_parameter_by_name(vol2, 'ARH_v2', fam_doc)
-    trans2.Commit()
+    with Transaction(fam_doc, 'Set values') as trans2:
+        trans2.Start()
+        sq = set_parameter_by_name(square, 'ARH_sr', fam_doc)
+        volume1 = set_parameter_by_name(vol1, 'ARH_v1', fam_doc)
+        volume2 = set_parameter_by_name(vol2, 'ARH_v2', fam_doc)
+        trans2.Commit()
     fam_doc.LoadFamily(doc, FamilyOption())
     fam_doc.Close(False)
 

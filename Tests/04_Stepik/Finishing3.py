@@ -2,7 +2,7 @@
 import clr
 clr.AddReference("RevitAPI")
 from Autodesk.Revit.DB import FilteredElementCollector, BuiltInParameter, SpatialElementBoundaryOptions, StorageType, \
-    UnitUtils, DisplayUnitType, BuiltInCategory
+    UnitUtils, DisplayUnitType, BuiltInCategory, ElementOnPhaseStatus
 clr.AddReference("RevitServices")
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
@@ -40,12 +40,14 @@ def get_inserts_in_room(wall_list, room):
         if inserts:
             for i in inserts:
                 element_in_room = wall.Document.GetElement(i)
-                to_room = element_in_room.ToRoom[phase]
-                from_room = element_in_room.FromRoom[phase]
-                if to_room and to_room.Number == room.Number:
-                    inserts_in_room.append(element_in_room)
-                elif from_room and from_room.Number == room.Number:
-                    inserts_in_room.append(element_in_room)
+                status = element_in_room.GetPhaseStatus(phase.Id)
+                if status == ElementOnPhaseStatus.New or status == ElementOnPhaseStatus.Existing:
+                    to_room = element_in_room.ToRoom[phase]
+                    from_room = element_in_room.FromRoom[phase]
+                    if to_room and to_room.Number == room.Number:
+                        inserts_in_room.append(element_in_room)
+                    elif from_room and from_room.Number == room.Number:
+                        inserts_in_room.append(element_in_room)
     return inserts_in_room
 
 

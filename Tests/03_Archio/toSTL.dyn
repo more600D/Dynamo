@@ -11,8 +11,8 @@
   "Nodes": [
     {
       "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
-      "HintPath": "C:\\Users\\sssh\\OneDrive\\09_GitHub\\Dynamo\\Dynamo-1\\Tests\\03_Archio\\Export_to_stl.py",
-      "InputValue": "C:\\Users\\sssh\\OneDrive\\09_GitHub\\Dynamo\\Dynamo-1\\Tests\\03_Archio\\Export_to_stl.py",
+      "HintPath": "C:\\Users\\sssh\\OneDrive\\09_GitHub\\Dynamo\\Dynamo-1\\Tests\\03_Archio\\Assembly.py",
+      "InputValue": ".\\Assembly.py",
       "NodeType": "ExtensionNode",
       "Id": "a85fa58a60e84480b9ffd194023ef0cd",
       "Inputs": [],
@@ -131,7 +131,7 @@
     {
       "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
       "NodeType": "BooleanInputNode",
-      "InputValue": false,
+      "InputValue": true,
       "Id": "e69a0a55389746febec4c8025f3f5cf7",
       "Inputs": [],
       "Outputs": [
@@ -248,8 +248,8 @@
       }
     ],
     "Annotations": [],
-    "X": 65.585484135165814,
-    "Y": 51.9784952345733,
-    "Zoom": 0.57937399427177749
+    "X": -732.71810268466413,
+    "Y": -238.48727149856694,
+    "Zoom": 1.6276637566670589
   }
 }

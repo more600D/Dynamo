@@ -1,0 +1,122 @@
+{
+  "Uuid": "0157b3ae-236a-4483-adc9-28b98b474eee",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "Балясины",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "ac4b4f57fded4f92afd46e6725a8c327",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "25f653de784245149a7f1514021c7607",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "from collections import Counter\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, Options, BuiltInParameter, BuiltInCategory\r\nfrom Autodesk.Revit.DB.Architecture import Railing\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\ndef get_data_handrail_type(handrail_type, railing_length):\r\n    pr_mark = handrail_type.get_Parameter(BuiltInParameter.WINDOW_TYPE_ID).AsString()\r\n    p_length1 = handrail_type.get_Parameter(\r\n        BuiltInParameter.CONTINUOUSRAIL_END_EXTENSION_LENGTH_PARAM).AsValueString()\r\n    p_length2 = handrail_type.get_Parameter(\r\n        BuiltInParameter.CONTINUOUSRAIL_EXTENSION_LENGTH_PARAM).AsValueString()\r\n    full_length = int(p_length1) + int(p_length2) + int(railing_length)\r\n    height_param = handrail_type.get_Parameter(BuiltInParameter.HANDRAIL_HEIGHT_PARAM)\r\n    if height_param:\r\n        height = height_param.AsValueString()\r\n        return '\\r\\n{} (L={}, h={})'.format(pr_mark, full_length, height)\r\n    else:\r\n        return '\\r\\n{} (L={}'.format(pr_mark, full_length)\r\n\r\n\r\ndef get_all_hand_rail_type(railing):\r\n    data = ''\r\n    doc = railing.Document\r\n    railing_length = railing.get_Parameter(BuiltInParameter.CURVE_ELEM_LENGTH).AsValueString()\r\n    railing_type = doc.GetElement(railing.GetTypeId())\r\n    primary_handrail_type = doc.GetElement(railing_type.PrimaryHandrailType)\r\n    primary_handrail_pos = railing_type.PrimaryHandRailPosition\r\n    secondary_handrail_type = doc.GetElement(railing_type.SecondaryHandrailType)\r\n    secondary_handrail_pos = railing_type.SecondaryHandRailPosition\r\n    top_rail_type = doc.GetElement(railing_type.TopRailType)\r\n    if not primary_handrail_pos and not secondary_handrail_pos and not top_rail_type:\r\n        data = '-'\r\n    else:\r\n        if top_rail_type:\r\n            tr_height = railing_type.get_Parameter(\r\n                BuiltInParameter.RAILING_SYSTEM_TOP_RAIL_HEIGHT_PARAM).AsValueString()\r\n            value = get_data_handrail_type(top_rail_type, railing_length) + ', h={})'.format(tr_height)\r\n            data += value\r\n        if primary_handrail_pos:\r\n            data += get_data_handrail_type(primary_handrail_type, railing_length)\r\n        if secondary_handrail_pos:\r\n            data += get_data_handrail_type(secondary_handrail_type, railing_length)\r\n    return data.strip()\r\n\r\n\r\ndef get_all_balusters(railing):\r\n    geos = railing.get_Geometry(Options())\r\n    geo_instance = []\r\n    for g in geos:\r\n        if g.GetType().Name == \"GeometryInstance\":\r\n            for symbol_geo in g.GetSymbolGeometry():\r\n                if symbol_geo.GetType().Name == \"GeometryInstance\":\r\n                    geo_instance.append(symbol_geo.Symbol)\r\n    return geo_instance\r\n\r\n\r\ndef get_data_balusters(doc, balusters_list, type_name):\r\n    list_type = []\r\n    data = ''\r\n    all_type_balusters = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_StairsRailingBaluster)\r\n    for b in balusters_list:\r\n        b_name = b.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM).AsString()\r\n        for b_type in all_type_balusters:\r\n            b_type_name = b_type.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM).AsString()\r\n            b_type_group_model = b_type.get_Parameter(BuiltInParameter.ALL_MODEL_MODEL)\r\n            if b_type_group_model:\r\n                value = b_type_group_model.AsString()\r\n                if b_name == b_type_name and value == type_name:\r\n                    list_type.append(b_type.get_Parameter(BuiltInParameter.WINDOW_TYPE_ID).AsString())\r\n    counts_dict = Counter(sorted(list_type))\r\n    if list_type:\r\n        for c in list(counts_dict):\r\n            data += '\\r\\n{} ({}шт)'.format(c, counts_dict[c])\r\n    else:\r\n        data = '-'\r\n    return data.strip()\r\n\r\n\r\ndef set_to_parameter(param_name, data):\r\n    param = railing.LookupParameter(param_name)\r\n    if param:\r\n        param.Set(data)\r\n\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nrailing_col = FilteredElementCollector(doc).OfClass(Railing)\r\nfor railing in railing_col:\r\n    set_to_parameter('_Поручень', get_all_hand_rail_type(railing))\r\n    set_to_parameter('_Стойка', get_data_balusters(doc, get_all_balusters(railing), 'Стойка'))\r\n    set_to_parameter('_Панель', get_data_balusters(doc, get_all_balusters(railing), 'Панель'))\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = list(railing_col)\r\n",
+      "VariableInputPorts": true,
+      "Id": "2478837c0d8748e7b6806873d435ca1e",
+      "Inputs": [
+        {
+          "Id": "7da1c6d2ad754d6ebb2bc272ede86fc2",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f88b64482eda4f5286f7c02308f0422b",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "25f653de784245149a7f1514021c7607",
+      "End": "7da1c6d2ad754d6ebb2bc272ede86fc2",
+      "Id": "b3e6327a9f5149babcbc35ad3cf4ee2f"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "ac4b4f57fded4f92afd46e6725a8c327",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 691.512180746313,
+        "Y": 529.95010598292
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "2478837c0d8748e7b6806873d435ca1e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 869.49730462916352,
+        "Y": 529.98414504112645
+      }
+    ],
+    "Annotations": [],
+    "X": -399.16724524328993,
+    "Y": -368.429935620988,
+    "Zoom": 1.2679210088477864
+  }
+}

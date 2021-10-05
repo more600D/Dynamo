@@ -32,28 +32,35 @@ def get_data_handrail_type(handrail_type, railing_length):
 
 def get_all_hand_rail_type(railing):
     data = ''
+    check = 'несчитать'
     doc = railing.Document
     railing_length = railing.get_Parameter(BuiltInParameter.CURVE_ELEM_LENGTH).AsValueString()
     railing_type = doc.GetElement(railing.GetTypeId())
     primary_handrail_type = doc.GetElement(railing_type.PrimaryHandrailType)
+    primary_handrail_type_name = primary_handrail_type.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM).AsString()
     primary_handrail_pos = railing_type.PrimaryHandRailPosition
     secondary_handrail_type = doc.GetElement(railing_type.SecondaryHandrailType)
+    secondary_handrail_type_name = secondary_handrail_type.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM).AsString()
     secondary_handrail_pos = railing_type.SecondaryHandRailPosition
     top_rail_type = doc.GetElement(railing_type.TopRailType)
+    top_rail_type_name = top_rail_type.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM).AsString()
     if not primary_handrail_pos and not secondary_handrail_pos and not top_rail_type:
         data = '-'
     else:
-        if top_rail_type:
+        if top_rail_type and check not in top_rail_type_name.lower():
             tr_height = railing_type.get_Parameter(
                 BuiltInParameter.RAILING_SYSTEM_TOP_RAIL_HEIGHT_PARAM).AsValueString()
             value = get_data_handrail_type(top_rail_type, railing_length) + ', h={})'.format(to_meters(tr_height))
             data += value
-        if primary_handrail_pos:
+        if primary_handrail_pos and check not in primary_handrail_type_name.lower():
             data += get_data_handrail_type(primary_handrail_type, railing_length)
-        if secondary_handrail_pos:
+        if secondary_handrail_pos and check not in secondary_handrail_type_name.lower():
             data += get_data_handrail_type(secondary_handrail_type, railing_length)
+    if check in top_rail_type_name.lower() and check in primary_handrail_type_name.lower() and \
+        check in secondary_handrail_type_name.lower():
+        data = '-'
     return data.strip()
-
+ 
 
 def get_all_balusters(railing):
     geos = railing.get_Geometry(Options())
@@ -62,7 +69,7 @@ def get_all_balusters(railing):
         if g.GetType().Name == "GeometryInstance":
             for symbol_geo in g.GetSymbolGeometry():
                 if symbol_geo.GetType().Name == "GeometryInstance":
-                    geo_instance.append(symbol_geo.Symbol)
+                    geo_instance.append(symbol_geo.Symbol) 
     return geo_instance
 
 

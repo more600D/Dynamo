@@ -11,8 +11,8 @@
   "Nodes": [
     {
       "ConcreteType": "DSRevitNodesUI.WallTypes, DSRevitNodesUI",
-      "SelectedIndex": 2,
-      "SelectedString": "01_Concrete_200 mm",
+      "SelectedIndex": 6,
+      "SelectedString": "01_Gypsum_1.Layers_Finish",
       "NodeType": "ExtensionNode",
       "Id": "aa683f4769764e3185238d6770c04c94",
       "Inputs": [],
@@ -67,15 +67,6 @@
           "Id": "d663ff2d348648f29f43b3b8003bdf0f",
           "Name": "IN[2]",
           "Description": "Input #2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "3477802b0d0f4d2ab41ff6c650448ab6",
-          "Name": "IN[3]",
-          "Description": "Input #3",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -259,12 +250,12 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "\"LC4\";",
+      "Code": "\"LC3\";",
       "Id": "ad7c8ad5af1a44dd8de57106ca0930c8",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "6ef9e8881c284f5d9bf8dd77b3044e5c",
+          "Id": "578bacb0ebdb49588e7d7770cb629151",
           "Name": "",
           "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
@@ -314,9 +305,9 @@
       "Id": "f4d28a9d1b7e41749c1564c30375b6b5"
     },
     {
-      "Start": "6ef9e8881c284f5d9bf8dd77b3044e5c",
+      "Start": "578bacb0ebdb49588e7d7770cb629151",
       "End": "43df077542f540608ab161d21e8219f5",
-      "Id": "5a3ace9d322345dc9a78d9f6215d45a5"
+      "Id": "171c43be1c824e21802b0b6dd61cbf85"
     }
   ],
   "Dependencies": [],
@@ -351,8 +342,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 326.97501990241591,
-        "Y": 742.98367168035554
+        "X": 110.67873375453337,
+        "Y": 778.08438478330129
       },
       {
         "ShowGeometry": true,
@@ -436,8 +427,8 @@
       }
     ],
     "Annotations": [],
-    "X": -69.566449707668937,
-    "Y": -475.4219534347335,
-    "Zoom": 0.84328771079912335
+    "X": 161.14795719795075,
+    "Y": -300.46656874573455,
+    "Zoom": 0.74839848802363729
   }
 }

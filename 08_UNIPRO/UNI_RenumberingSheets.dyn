@@ -1,0 +1,145 @@
+{
+  "Uuid": "597de8d6-0a29-489c-a771-95ce6869284d",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "UNI_RenumberingSheets",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# -*- coding: utf-8 -*-\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk.Revit.DB as DB\r\n\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\ndef renumbering_sheets(sheets_col, separator, param_name):\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tcount = 0\r\n\tfor sheet in sheets_col:\r\n\t    s_num =  sheet.SheetNumber\r\n\t    if separator in s_num:\r\n\t        res = s_num.split(separator)\r\n\t        param = sheet.LookupParameter(param_name)\r\n\t        if param:\r\n\t            param.Set(res[1])\r\n\t            count += 1\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\treturn 'Sheet chanded - {}'.format(count)\r\n\r\n\r\nsep = IN[0]\r\nparam_name = IN[1]\r\nsheets_col = DB.FilteredElementCollector(doc).OfClass(DB.ViewSheet).ToElements()\r\n\r\nOUT = renumbering_sheets(sheets_col, sep, param_name)",
+      "VariableInputPorts": true,
+      "Id": "e7a4f544ae67418a9647c7da38403266",
+      "Inputs": [
+        {
+          "Id": "394fc085532f4819bb4ea3bb85bcb1ce",
+          "Name": "separator",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e0c258b4b5d3463f9b83bdf88b088a1b",
+          "Name": "param_name",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "90e712958c0d43b68df3eb753acce84e",
+          "Name": "result",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"-\";\n\"UNI_Лист.Номер\";",
+      "Id": "f6ab4da78cf544428315b90f86d0e237",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b7bb4b50a122436cb250f4aa9103d9fe",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c88a3d370083413eb630a5a8d8f27ae8",
+          "Name": "",
+          "Description": "Значение выражения в строке 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "b7bb4b50a122436cb250f4aa9103d9fe",
+      "End": "394fc085532f4819bb4ea3bb85bcb1ce",
+      "Id": "6a9c16810bef463b9a86755d8f611534"
+    },
+    {
+      "Start": "c88a3d370083413eb630a5a8d8f27ae8",
+      "End": "e0c258b4b5d3463f9b83bdf88b088a1b",
+      "Id": "3247c4f625f648f0888617a79e10554a"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.6.1.8786",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "e7a4f544ae67418a9647c7da38403266",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 144.66620488845064,
+        "Y": 273.0250048190498
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "f6ab4da78cf544428315b90f86d0e237",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -73.79601078729263,
+        "Y": 280.38803236187789
+      }
+    ],
+    "Annotations": [],
+    "X": 133.36350348642316,
+    "Y": -190.64938940376362,
+    "Zoom": 1.2484436539722303
+  }
+}

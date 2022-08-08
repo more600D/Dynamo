@@ -1,0 +1,226 @@
+{
+  "Uuid": "5a72de97-451b-4377-88ac-fcd6165b1f8d",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "UNI_Opening.Cut",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [
+    {
+      "Id": "89bc8b96ea5447339d40f493b4af5a4b",
+      "Name": "String",
+      "Type": "string",
+      "Value": "UNI_Opening.Floor",
+      "Description": "Creates a string."
+    }
+  ],
+  "Outputs": [
+    {
+      "Id": "ec639257c49c46fc8072564498d39d02",
+      "Name": "Watch",
+      "Type": "string",
+      "InitialValue": "Elements cutted - 2",
+      "Description": "Visualize the output of node."
+    }
+  ],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "33882cf4270f4cec8a9d5dd444dec895",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "fb97450612924a4f9bbe615e8fffb87c",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selection between a true and false."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# -*- coding: utf-8 -*-\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk.Revit.DB as DB\r\n\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\ndef get_family_opening(family_name):\r\n    result = []\r\n    collector = DB.FilteredElementCollector(doc)\\\r\n                  .OfClass(DB.FamilyInstance)\\\r\n                  .ToElements()\r\n    for fam in collector:\r\n        fam_name = fam.Symbol.Family.Name\r\n        if fam_name == family_name:\r\n            result.append(fam)\r\n    return result\r\n\r\n\r\ndef cut_elements(fams):\r\n    count = 0\r\n    TransactionManager.Instance.EnsureInTransaction(doc)\r\n    for fam in fams:\r\n        bbox = fam.get_BoundingBox(None)\r\n        bb_filter = DB.BoundingBoxIntersectsFilter(\r\n                       DB.Outline(bbox.Min, bbox.Max)\r\n                       )\r\n        floor_col = DB.FilteredElementCollector(doc)\\\r\n                      .OfClass(DB.Floor)\\\r\n                      .WherePasses(bb_filter)\\\r\n                      .ToElements()\r\n        if floor_col:\r\n            for f in floor_col:\r\n                try:\r\n                    DB.InstanceVoidCutUtils.AddInstanceVoidCut(doc, f, fam)\r\n                    count += 1\r\n                except: pass\r\n    TransactionManager.Instance.TransactionTaskDone()\r\n    return 'Elements cutted - {}'.format(count)\r\n\r\n\r\nname = IN[1]\r\nOUT = cut_elements(get_family_opening(name))",
+      "VariableInputPorts": true,
+      "Id": "2a288922401742c3baf331eb79f27ec0",
+      "Inputs": [
+        {
+          "Id": "923e80fcdc4a4694822c694894bbc79f",
+          "Name": "isrepeat",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "70a59ec8daa242e38a0691609026175c",
+          "Name": "family_name",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "752f1531bbd84724b6d0605c1edd55f1",
+          "Name": "result",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "UNI_Opening.Floor",
+      "Id": "89bc8b96ea5447339d40f493b4af5a4b",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b6d7606e00ee43f1a94887c5177b1c62",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a string."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "ec639257c49c46fc8072564498d39d02",
+      "Inputs": [
+        {
+          "Id": "1e2b79f7698b451c94b18edac3ac35f2",
+          "Name": "",
+          "Description": "Node to evaluate.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "cbceef41ed8548a1a837e61e51a7d68b",
+          "Name": "",
+          "Description": "Watch contents.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the output of node."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "fb97450612924a4f9bbe615e8fffb87c",
+      "End": "923e80fcdc4a4694822c694894bbc79f",
+      "Id": "9fb1f99deffc42e4a0f26def3c2d5c6c"
+    },
+    {
+      "Start": "752f1531bbd84724b6d0605c1edd55f1",
+      "End": "1e2b79f7698b451c94b18edac3ac35f2",
+      "Id": "019ed1eefaae47c487ee6de9fbfccdcd"
+    },
+    {
+      "Start": "b6d7606e00ee43f1a94887c5177b1c62",
+      "End": "70a59ec8daa242e38a0691609026175c",
+      "Id": "0bc6652e53b74d03adf245fac0f600c2"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "33882cf4270f4cec8a9d5dd444dec895",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 439.381332724591,
+        "Y": 401.98998682543277
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "2a288922401742c3baf331eb79f27ec0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 607.84248774843957,
+        "Y": 408.93271562294967
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "String",
+        "Id": "89bc8b96ea5447339d40f493b4af5a4b",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 440.20863233228988,
+        "Y": 469.173975189107
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Watch",
+        "Id": "ec639257c49c46fc8072564498d39d02",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": true,
+        "Excluded": false,
+        "X": 815.34516034794524,
+        "Y": 407.36855796360294
+      }
+    ],
+    "Annotations": [],
+    "X": -333.66070731540844,
+    "Y": -137.80900803269469,
+    "Zoom": 1.048989545202526
+  }
+}

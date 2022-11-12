@@ -267,6 +267,15 @@
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
+        },
+        {
+          "Id": "38f3fa87b7154c83869e056a56e39358",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
         }
       ],
       "Outputs": [
@@ -488,6 +497,111 @@
       ],
       "Replication": "Auto",
       "Description": "Set one of the element's parameters.\n\nElement.SetParameterByName (parameterName: string, value: var): Element"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"ПОМЕЩЕНИЯ ОБЩЕГО ПОЛЬЗОВАНИЯ\";\n\"МОП\";",
+      "Id": "7e36b5eeb1584a51b9011f0439fec5e4",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "43b8c01faed14987a17de16f0777e1be",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4363b0af131346b4b8cec78505436b2f",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Техническ\";\n\"ИТП\";\n\"ИТП\";",
+      "Id": "f864fae1f6f74100be97c32465515dd0",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b3d08e923184459086d86d88a4ceb199",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "bef3f42e7dc4460dadb6eff001b9dab5",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b4281e83b35f45c586f9e0e185ae85e9",
+          "Name": "",
+          "Description": "Value of expression at line 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"ПОМЕЩЕНИЯ ОБЩЕГО ПОЛЬЗОВАНИЯ\";\n\"Лифтовые холлы\";\nString.Split(\n\"Лифт,тамбур-шлюз\"\n, \",\");",
+      "Id": "8b3a8d30a9834fbaa787d01d05ed9a43",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "3bca266dc5144e05be157ec3ce32aaf0",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9eb141da5e264298946e9e50e01f0343",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7d9cefa4fdf24cd183ce7975099d186a",
+          "Name": "",
+          "Description": "Value of expression at line 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
     }
   ],
   "Connectors": [
@@ -552,14 +666,19 @@
       "Id": "339f91b5c9d74402a498397da6d74f89"
     },
     {
-      "Start": "76bebdfb6e1941779d206cf210114ed3",
+      "Start": "3bca266dc5144e05be157ec3ce32aaf0",
       "End": "3786a35c7550465d8bb4bd975fe1f67e",
-      "Id": "4ec383a1bb884813a7bd8562fe103826"
+      "Id": "2a05c45b148a47b1a6ec11b50885cb57"
     },
     {
-      "Start": "be5cf6afd12e462c9abe829612b058a6",
+      "Start": "9eb141da5e264298946e9e50e01f0343",
       "End": "e1d2e1a246154341938d1a94b268adad",
-      "Id": "248adb2bef9b4b4db57ebd933f0fe6e6"
+      "Id": "a35c00ba5dd2448dba7566c87631e9b7"
+    },
+    {
+      "Start": "7d9cefa4fdf24cd183ce7975099d186a",
+      "End": "38f3fa87b7154c83869e056a56e39358",
+      "Id": "57c86967e4c544979fa03c8a93c3da1c"
     }
   ],
   "Dependencies": [],
@@ -644,8 +763,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 940.3317122729859,
-        "Y": 523.95388067264275
+        "X": 942.6758431696137,
+        "Y": 529.81420791421215
       },
       {
         "ShowGeometry": true,
@@ -714,8 +833,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 938.24354048921873,
-        "Y": 679.06432069060247
+        "X": 940.70184537133059,
+        "Y": 677.83516824954654
       },
       {
         "ShowGeometry": true,
@@ -736,11 +855,41 @@
         "Excluded": false,
         "X": 2735.0201504344332,
         "Y": 489.43236491452973
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "МОП",
+        "Id": "7e36b5eeb1584a51b9011f0439fec5e4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 952.65235240151355,
+        "Y": 923.01705699357842
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "ИТП",
+        "Id": "f864fae1f6f74100be97c32465515dd0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 946.84760757661047,
+        "Y": 1099.4344555317432
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Лифтовые холлы",
+        "Id": "8b3a8d30a9834fbaa787d01d05ed9a43",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 942.09184474012386,
+        "Y": 1249.5441025138562
       }
     ],
     "Annotations": [],
-    "X": -1099.4107123791193,
-    "Y": 50.954224117909916,
-    "Zoom": 0.54649987318417748
+    "X": -605.69026023225558,
+    "Y": -679.11545139839609,
+    "Zoom": 0.79550040171860525
   }
 }

@@ -11,8 +11,8 @@
   "Nodes": [
     {
       "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
-      "HintPath": "C:\\Dynamo\\08_UNIPRO\\05_AssemblyCode.py",
-      "InputValue": "C:\\Dynamo\\08_UNIPRO\\05_AssemblyCode.py",
+      "HintPath": "C:\\Dynamo\\08_UNIPRO\\05.1_AssemblyCode_SetTypes.py",
+      "InputValue": ".\\05.1_AssemblyCode_SetTypes.py",
       "NodeType": "ExtensionNode",
       "Id": "e873b17f072647ce8ea807358d7c2c3f",
       "Inputs": [],
@@ -153,12 +153,12 @@
     {
       "Start": "87768d72d8e44bbfb1b69c594d65add7",
       "End": "1e2ec86d98dc4621acd7ca4cdc9a30bf",
-      "Id": "48eb616cb5a64a16ae5bf6ad541c5f6a"
+      "Id": "799a717893534ed98cdb490b18d86d77"
     },
     {
       "Start": "08515ab7a6204ccab5eb6f63ce5b4bbe",
       "End": "54915dfc969a412eb0d420bcfdb134a3",
-      "Id": "bd2a77a3127f41faa8ccbb2c120fc81f"
+      "Id": "8bbacabee53e49859bb2bf8659ee6bb3"
     },
     {
       "Start": "e4a8420f221b4842bd3d6dc2549f89e8",
@@ -179,8 +179,8 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": true,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
-      "RunType": "Automatic",
+      "Version": "2.3.2.15696",
+      "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
@@ -203,8 +203,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 107.0,
-        "Y": 272.0
+        "X": 101.4578159525181,
+        "Y": 270.61445398812953
       },
       {
         "ShowGeometry": true,
@@ -213,8 +213,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 408.0,
-        "Y": 271.0
+        "X": 361.2114070185072,
+        "Y": 269.66318305767163
       },
       {
         "ShowGeometry": true,
@@ -223,8 +223,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 551.39627531436849,
-        "Y": 269.41030382929125
+        "X": 547.25222785651181,
+        "Y": 270.2391133208626
       },
       {
         "ShowGeometry": true,
@@ -248,8 +248,8 @@
       }
     ],
     "Annotations": [],
-    "X": -763.07134347633826,
-    "Y": -293.59287448338227,
-    "Zoom": 1.4768481228037988
+    "X": 92.700194576585091,
+    "Y": 2.4735167000750948,
+    "Zoom": 1.0133019305786215
   }
 }

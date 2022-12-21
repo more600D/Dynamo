@@ -19,29 +19,43 @@ def get_rooms_by_department(department):
     rooms = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Rooms).ToElements()
     for room in rooms:
         dep_param = room.get_Parameter(BuiltInParameter.ROOM_DEPARTMENT)
-        dep_value = dep_param.AsString().lower()
+        dep_value = dep_param.AsString()
         if dep_value:
             if isinstance(department, list):
                 for d in department:
-                    if d.lower() in dep_value:
+                    if d.lower() in dep_value.lower():
                         result.append(room)
             else:
-                if department.lower() in dep_value:
+                if department.lower() in dep_value.lower():
                     result.append(room)
-
     return result
 
 
-def get_walltype_by_material(name):
+def get_walltypes_from_room(rooms):
     result = []
-    wall_types = FilteredElementCollector(doc).OfClass(WallType).ToElements()
+    from Autodesk.Revit.DB import SpatialElementBoundaryOptions
+    opt = SpatialElementBoundaryOptions()
+    for room in rooms:
+        segments = room.GetBoundarySegments(opt)
+        if segments:
+            for segment in segments:
+                for s in segment:
+                    elem = doc.GetElement(s.ElementId)
+                    if elem:
+                        if elem.GetType().Name == 'Wall':
+                            result.append(doc.GetElement(elem.GetTypeId()))
+    return result
+
+
+def get_walltype_by_material(material_name, wall_types):
+    result = []
     for wtype in wall_types:
         com_str = wtype.GetCompoundStructure()
         if com_str:
             layers = com_str.GetLayers()
             for layer in layers:
                 mat = doc.GetElement(layer.MaterialId)
-                if is_needed_material(mat, name):
+                if is_needed_material(mat, material_name):
                     result.append(wtype)
     return result
 
@@ -67,5 +81,6 @@ def set_assembly_code(material_name, assembly_code_key):
 # vic2 = set_assembly_code('Фасадная атмосферостойкая', 'КС.ВО.06.01.01')
 
 dep = 'Техническ'
+rooms = get_rooms_by_department(dep)
 
-OUT = get_rooms_by_department(dep)
+OUT = get_walltypes_from_room(rooms)

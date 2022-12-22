@@ -58,6 +58,7 @@ def cut_elements(fams):
     TransactionManager.Instance.EnsureInTransaction(doc)
     floors = 0
     walls = 0
+    roofs = 0
     if fams:
         for fam in fams:
             current_time = set_time(fam)
@@ -67,8 +68,9 @@ def cut_elements(fams):
                         )
             floors += cut_filtered_elements(DB.Floor, bb_filter, fam)
             walls += cut_filtered_elements(DB.Wall, bb_filter, fam)
+            roofs += cut_filtered_elements(DB.FootPrintRoof, bb_filter, fam)
         TransactionManager.Instance.TransactionTaskDone()
-        result = 'Cutted elements - {}'.format(floors + walls)
+        result = 'Cutted elements - {}'.format(floors + walls + roofs)
         data = result+'\n'+current_time
         return data
     else: return 'Family list is empty'

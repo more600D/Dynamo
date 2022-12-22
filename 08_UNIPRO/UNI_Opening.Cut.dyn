@@ -9,7 +9,7 @@
   "Inputs": [
     {
       "Id": "89bc8b96ea5447339d40f493b4af5a4b",
-      "Name": "String",
+      "Name": "Family name",
       "Type": "string",
       "Value": "UNI_Отверстие.",
       "Description": "Creates a string."
@@ -20,7 +20,7 @@
       "Id": "ec639257c49c46fc8072564498d39d02",
       "Name": "Watch",
       "Type": "string",
-      "InitialValue": "Cutted elements - 3\n09.08.2022 14:01:19",
+      "InitialValue": "Cutted elements - 3\n10.08.2022 13:21:20",
       "Description": "Visualize the output of node."
     }
   ],
@@ -48,7 +48,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# -*- coding: utf-8 -*-\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk.Revit.DB as DB\r\n\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\ndef get_family_opening(family_name):\r\n    result = []\r\n    collector = DB.FilteredElementCollector(doc)\\\r\n                  .OfClass(DB.FamilyInstance)\\\r\n                  .ToElements()\r\n    for fam in collector:\r\n        fam_name = fam.Symbol.Family.Name\r\n        if family_name in fam_name:\r\n            result.append(fam)\r\n    return result\r\n\r\n\r\ndef set_time(fam_instance, mode=True, param_name='_Дата'):\r\n    res = ''\r\n    from datetime import datetime\r\n    dt_string = datetime.now().strftime('%d.%m.%Y %H:%M:%S')\r\n    param = fam_instance.LookupParameter(param_name)\r\n    if param:\r\n        if param.StorageType == DB.StorageType.String:\r\n            if mode:\r\n                if param.AsString() == '':\r\n                    param.Set(dt_string)\r\n            else:\r\n                param.Set(dt_string)\r\n    return dt_string\r\n\r\n\r\ndef cut_filtered_elements(class_type, bb_filter, family):\r\n    count = 0\r\n    elems_col = DB.FilteredElementCollector(doc)\\\r\n                  .OfClass(class_type)\\\r\n                  .WherePasses(bb_filter)\\\r\n                  .ToElements()\r\n    if elems_col:\r\n        for f in elems_col:\r\n            try:\r\n                DB.InstanceVoidCutUtils.AddInstanceVoidCut(doc, f, family)\r\n                count += 1\r\n                set_time(family, False)\r\n            except: pass\r\n    return count\r\n\r\n\r\ndef cut_elements(fams):\r\n    TransactionManager.Instance.EnsureInTransaction(doc)\r\n    floors = 0\r\n    walls = 0\r\n    if fams:\r\n        for fam in fams:\r\n            current_time = set_time(fam)\r\n            bbox = fam.get_BoundingBox(None)\r\n            bb_filter = DB.BoundingBoxIntersectsFilter(\r\n                        DB.Outline(bbox.Min, bbox.Max)\r\n                        )\r\n            floors += cut_filtered_elements(DB.Floor, bb_filter, fam)\r\n            walls += cut_filtered_elements(DB.Wall, bb_filter, fam)\r\n        TransactionManager.Instance.TransactionTaskDone()\r\n        result = 'Cutted elements - {}'.format(floors + walls)\r\n        data = result+'\\n'+current_time\r\n        return data\r\n    else: return 'Family list is empty'\r\n\r\n\r\nname = IN[1]\r\nOUT = cut_elements(get_family_opening(name))",
+      "Code": "# -*- coding: utf-8 -*-\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk.Revit.DB as DB\r\n\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\ndef get_family_opening(family_name):\r\n    result = []\r\n    collector = DB.FilteredElementCollector(doc)\\\r\n                  .OfClass(DB.FamilyInstance)\\\r\n                  .ToElements()\r\n    for fam in collector:\r\n        fam_name = fam.Symbol.Family.Name\r\n        if family_name in fam_name:\r\n            result.append(fam)\r\n    return result\r\n\r\n\r\ndef set_time(fam_instance, mode=True, param_name='_Дата'):\r\n    res = ''\r\n    from datetime import datetime\r\n    dt_string = datetime.now().strftime('%d.%m.%Y %H:%M:%S')\r\n    param = fam_instance.LookupParameter(param_name)\r\n    if param:\r\n        if param.StorageType == DB.StorageType.String:\r\n            if mode:\r\n                if param.AsString() == '':\r\n                    param.Set(dt_string)\r\n            else:\r\n                param.Set(dt_string)\r\n    return dt_string\r\n\r\n\r\ndef cut_filtered_elements(class_type, bb_filter, family):\r\n    count = 0\r\n    elems_col = DB.FilteredElementCollector(doc)\\\r\n                  .OfClass(class_type)\\\r\n                  .WherePasses(bb_filter)\\\r\n                  .ToElements()\r\n    if elems_col:\r\n        for f in elems_col:\r\n            try:\r\n                DB.InstanceVoidCutUtils.AddInstanceVoidCut(doc, f, family)\r\n                count += 1\r\n                set_time(family, False)\r\n            except: pass\r\n    return count\r\n\r\n\r\ndef cut_elements(fams):\r\n    TransactionManager.Instance.EnsureInTransaction(doc)\r\n    floors = 0\r\n    walls = 0\r\n    roofs = 0\r\n    if fams:\r\n        for fam in fams:\r\n            current_time = set_time(fam)\r\n            bbox = fam.get_BoundingBox(None)\r\n            bb_filter = DB.BoundingBoxIntersectsFilter(\r\n                        DB.Outline(bbox.Min, bbox.Max)\r\n                        )\r\n            floors += cut_filtered_elements(DB.Floor, bb_filter, fam)\r\n            walls += cut_filtered_elements(DB.Wall, bb_filter, fam)\r\n            roofs += cut_filtered_elements(DB.FootPrintRoof, bb_filter, fam)\r\n        TransactionManager.Instance.TransactionTaskDone()\r\n        result = 'Cutted elements - {}'.format(floors + walls + roofs)\r\n        data = result+'\\n'+current_time\r\n        return data\r\n    else: return 'Family list is empty'\r\n\r\n\r\nname = IN[1]\r\nOUT = cut_elements(get_family_opening(name))",
       "VariableInputPorts": true,
       "Id": "2a288922401742c3baf331eb79f27ec0",
       "Inputs": [
@@ -184,8 +184,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 439.381332724591,
-        "Y": 401.98998682543277
+        "X": 407.36110278728466,
+        "Y": 407.94723890679211
       },
       {
         "ShowGeometry": true,
@@ -194,18 +194,18 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 607.84248774843957,
-        "Y": 408.93271562294967
+        "X": 593.694014055211,
+        "Y": 410.42202864328948
       },
       {
         "ShowGeometry": true,
-        "Name": "String",
+        "Name": "Family name",
         "Id": "89bc8b96ea5447339d40f493b4af5a4b",
         "IsSetAsInput": true,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 421.79215611947518,
-        "Y": 475.61974186359214
+        "X": 415.09024752794596,
+        "Y": 469.66248978223285
       },
       {
         "ShowGeometry": true,
@@ -214,8 +214,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": true,
         "Excluded": false,
-        "X": 815.34516034794524,
-        "Y": 407.36855796360294
+        "X": 818.323786388625,
+        "Y": 410.34718400428261
       }
     ],
     "Annotations": [],

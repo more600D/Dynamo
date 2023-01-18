@@ -1,0 +1,329 @@
+{
+  "Uuid": "5a763438-2124-4e3b-8822-67a1406545d7",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "UNI_SetParametrValueToFiles",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [
+    {
+      "Id": "740c68eb232f436ab52bdf3e0a62661f",
+      "Name": "Directory Path",
+      "Type": "string",
+      "Value": "C:\\Users\\s.shvydko\\Desktop\\Scripts",
+      "Description": "Allows you to select a directory on the system to get its path"
+    },
+    {
+      "Id": "d847378ed3034b99847b1a6a44dc0c98",
+      "Name": "Wall type name",
+      "Type": "string",
+      "Value": "This type",
+      "Description": "Creates a string."
+    },
+    {
+      "Id": "ca73e0cbd3f34e6bb1dc0c36b93a51c6",
+      "Name": "Parameter name",
+      "Type": "string",
+      "Value": "Model",
+      "Description": "Creates a string."
+    },
+    {
+      "Id": "11b0cedaad8549e892c96b9d0490d772",
+      "Name": "Parameter value",
+      "Type": "string",
+      "Value": "UNIPRO",
+      "Description": "Creates a string."
+    }
+  ],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Input.Directory, CoreNodeModels",
+      "HintPath": "C:\\Users\\s.shvydko\\Desktop\\Scripts",
+      "InputValue": "C:\\Users\\s.shvydko\\Desktop\\Scripts",
+      "NodeType": "ExtensionNode",
+      "Id": "740c68eb232f436ab52bdf3e0a62661f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "564044c818d94ad79abb0e7d52971b28",
+          "Name": "",
+          "Description": "Directory",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows you to select a directory on the system to get its path"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "This type",
+      "Id": "d847378ed3034b99847b1a6a44dc0c98",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8f905d0d3afb4bd0b40e739f65367d2c",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a string."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "Model",
+      "Id": "ca73e0cbd3f34e6bb1dc0c36b93a51c6",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "51066d50168249439976f5b1e12a4f33",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a string."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "UNIPRO",
+      "Id": "11b0cedaad8549e892c96b9d0490d772",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f8fb8ca7af904ce8a48c9c7262e23f41",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a string."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import os\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import WallType, FilteredElementCollector, BuiltInParameter, Transaction\r\n\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\n\r\npath_dir = IN[0]\r\ntype_name = IN[1]\r\nparam_name = IN[2]\r\nvalue = IN[3]\r\n\r\n\r\ndef get_all_rvt_files(directury_path):\r\n    all_files = os.listdir(directury_path)\r\n    return [file for file in all_files if file.endswith('.rvt')]\r\n\r\n\r\ndef delete_file(directory_path):\r\n    all_files = os.listdir(directory_path)\r\n    for file in all_files:\r\n        if '000' in file and file.endswith('.rvt'):\r\n            try:\r\n                os.remove(os.path.join(directory_path, file))\r\n            except Exception:\r\n                pass\r\n\r\n\r\ndef set_value_to_file(rvt_files, type_name, param_name, value):\r\n    for rvt_file in rvt_files:\r\n        doc = app.OpenDocumentFile(os.path.join(path_dir, rvt_file))\r\n        walltype_list = FilteredElementCollector(doc).OfClass(WallType).ToElements()\r\n        t = Transaction(doc, '{}'.format(rvt_file))\r\n        t.Start()\r\n        for wall_type in walltype_list:\r\n            t_name = wall_type.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM).AsString()\r\n            if t_name == type_name:\r\n                param = wall_type.LookupParameter(param_name)\r\n                if param:\r\n                    param.Set(value)\r\n        t.Commit()\r\n        doc.Close(True)\r\n\r\n\r\nrvt_files = get_all_rvt_files(path_dir)\r\nset_value_to_file(rvt_files, type_name, param_name, value)\r\ndelete_file(path_dir)\r\n\r\nOUT = rvt_files\r\n",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "731d82af4abf4087a92069c667c2f11c",
+      "Inputs": [
+        {
+          "Id": "80eafc77869b4e4ba699ced6438a3ca6",
+          "Name": "directory_path",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fbb6fed928c44022977c59db7729b361",
+          "Name": "type_name",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a218764e0bf641d08c7918fbbe6c5704",
+          "Name": "param_name",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ff49618ed5514c87825497e6f7a7c049",
+          "Name": "value",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3ecbd06cc5d94b9d809d0d3d4a466d1e",
+          "Name": "repeat",
+          "Description": "Input #4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "97eb11da944b4e938aeaceb94c137ff7",
+          "Name": "rvt_files",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "305af6aedcbf457f9f7b6ad8fb84d302",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "11fff68a8d0c4b8fbd175664f8a2012c",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selection between a true and false."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "564044c818d94ad79abb0e7d52971b28",
+      "End": "80eafc77869b4e4ba699ced6438a3ca6",
+      "Id": "038effef0a7547ba9aba1f06fa508af4"
+    },
+    {
+      "Start": "8f905d0d3afb4bd0b40e739f65367d2c",
+      "End": "fbb6fed928c44022977c59db7729b361",
+      "Id": "e6882b02280843389dbb9e5af2c7e477"
+    },
+    {
+      "Start": "51066d50168249439976f5b1e12a4f33",
+      "End": "a218764e0bf641d08c7918fbbe6c5704",
+      "Id": "f59885462e3842d98d459041deab1fba"
+    },
+    {
+      "Start": "f8fb8ca7af904ce8a48c9c7262e23f41",
+      "End": "ff49618ed5514c87825497e6f7a7c049",
+      "Id": "994064229e0c4fd9a6c03e7f12500ce5"
+    },
+    {
+      "Start": "11fff68a8d0c4b8fbd175664f8a2012c",
+      "End": "3ecbd06cc5d94b9d809d0d3d4a466d1e",
+      "Id": "b9f4a7d8dce448cb8bb129e25c5bffab"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.10.1.3976",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Directory Path",
+        "Id": "740c68eb232f436ab52bdf3e0a62661f",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 595.625613152694,
+        "Y": 387.979548432181
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Wall type name",
+        "Id": "d847378ed3034b99847b1a6a44dc0c98",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 663.625613152694,
+        "Y": 478.048314418827
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Parameter name",
+        "Id": "ca73e0cbd3f34e6bb1dc0c36b93a51c6",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 654.625613152694,
+        "Y": 542.117080405473
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Parameter value",
+        "Id": "11b0cedaad8549e892c96b9d0490d772",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 656.625613152694,
+        "Y": 606.185846392119
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "731d82af4abf4087a92069c667c2f11c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 918.44282412815437,
+        "Y": 443.28031051597958
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "repeat",
+        "Id": "305af6aedcbf457f9f7b6ad8fb84d302",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 673.57321224595262,
+        "Y": 675.87882181464988
+      }
+    ],
+    "Annotations": [],
+    "X": -350.713149165262,
+    "Y": -32.587945630824947,
+    "Zoom": 0.81314568217310057
+  }
+}

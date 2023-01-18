@@ -1,0 +1,316 @@
+{
+  "Uuid": "50ea8bb8-d989-4dd6-a7a7-579bffd5b937",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "UNI_GetAllWallTypesFromFiles",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "DesignScript.Builtin.Dictionary": {
+        "Key": "DesignScript.Builtin.Dictionary",
+        "Value": "DesignScriptBuiltin.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": true,
+      "Id": "d4ec6850e0994fdf9ef36858f0f7ddde",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "498ba89e287e49cbad795f32b38198b6",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selection between a true and false."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSOffice.Data.ExportCSV@string,var[][]",
+      "Id": "1653008b9ab6451aa2f150f8acd1a699",
+      "Inputs": [
+        {
+          "Id": "5ccdb7a22af44a88bb3a59871f6af6c5",
+          "Name": "filePath",
+          "Description": "Path to write to\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "feeaa810bc4a49d48cdf5d429206bcc2",
+          "Name": "data",
+          "Description": "List of lists to write into CSV\n\nvar[][]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9b57382309cb45c38aca7173e6ea15bf",
+          "Name": "void",
+          "Description": "void",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Write a list of lists into a file using a comma-separated values format. Outer list represents rows, inner lists represent columns.\n\nData.ExportCSV (filePath: string, data: var[][]): void"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
+      "HintPath": "C:\\Users\\s.shvydko\\Desktop\\New Text Document.txt",
+      "InputValue": ".\\New Text Document.txt",
+      "NodeType": "ExtensionNode",
+      "Id": "40c8464d379c43e5be09ae296fd2a717",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c263d216cd68460f8a05001f3c15a53f",
+          "Name": "",
+          "Description": "Filename",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows you to select a file on the system to get its filename"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# -*- coding: utf-8 -*-\r\nfrom datetime import datetime\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\n\r\n\r\ndef create_path(server_folder, file_name):\r\n    import os\r\n    from Autodesk.Revit.DB import ModelPathUtils\r\n    return ModelPathUtils.ConvertUserVisiblePathToModelPath(os.path.join(server_folder, file_name) + '.rvt')\r\n\r\n\r\ndef synchronize_with_central(document, name):\r\n    from Autodesk.Revit.DB import TransactWithCentralOptions, SynchronizeWithCentralOptions, RelinquishOptions\r\n    r_opt = RelinquishOptions(True)\r\n    r_opt.UserWorksets = True\r\n    r_opt.CheckedOutElements = True\r\n    r_opt.StandardWorksets = True\r\n    trans_opt = TransactWithCentralOptions()\r\n    synchro_opt = SynchronizeWithCentralOptions()\r\n    synchro_opt.Comment = name\r\n    synchro_opt.SetRelinquishOptions(r_opt)\r\n    document.SynchronizeWithCentral(trans_opt, synchro_opt)\r\n\r\n\r\ndef do_something(document):\r\n    result = []\r\n    from Autodesk.Revit.DB import WallType, FilteredElementCollector, BuiltInParameter\r\n    wall_types = FilteredElementCollector(document).OfClass(WallType).ToElements()\r\n    for w_type in wall_types:\r\n        param_name = w_type.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM).AsString()\r\n        if param_name not in result:\r\n            result.append(param_name)\r\n    return result\r\n\r\n\r\ndef open_and_change_document(server_folder, file_name):\r\n    from Autodesk.Revit.DB import OpenOptions\r\n    o_opt = OpenOptions()\r\n    path = create_path(server_folder, file_name)\r\n    time_start = datetime.now()\r\n    document = app.OpenDocumentFile(path, o_opt)\r\n\r\n    result = do_something(document)\r\n    time_end = datetime.now() - time_start\r\n    synchronize_with_central(document, 'Time spent - {}'.format(time_end))\r\n\r\n    document.Close(False)\r\n    return result\r\n\r\n\r\nfiles = IN[1]\r\n\r\ninfo = []\r\ntime_start = datetime.now()\r\nfor key, value in files.items():\r\n    wtypes_name = open_and_change_document(value, key)\r\n    for wname in wtypes_name:\r\n        if wname not in info:\r\n            info.append(wname)\r\ntime_end = datetime.now() - time_start\r\nOUT = time_end, info\r\n",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "58dc7932afe147c2a568227d90e8c864",
+      "Inputs": [
+        {
+          "Id": "ec30ceade54a4973a4f2daf593af0f61",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "89e2c399df504adeb0087520c471b2b6",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4b448bf30ba54a228b3d7fe36142c0c2",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "{\n\"_ThePilotProject\": \"RSN:\\\\\\\\srv-eh\\\\_PilotProject\\\\01_WIP\",\n\"911CH_ARCH_ECOHOUSE\": \"RSN:\\\\\\\\srv-eh\\\\2202_911Church\\\\01_WIP\"\n};",
+      "Id": "51ea5b39dd3547c78427134ef190427c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "451bd7611b2c49ae95e38933fd1e1b14",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Flatten@var[]..[],int",
+      "Id": "4fe77e9dcdb444af8ad6b67b34e37034",
+      "Inputs": [
+        {
+          "Id": "3e39b733662c423aa96569a1fcfcf448",
+          "Name": "list",
+          "Description": "List to flatten.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "88b7e083b6b04335b44b88ff9a28a0c8",
+          "Name": "amt",
+          "Description": "Layers of nesting to remove.\n\nint\nDefault value : -1",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "aeafac8aa75d429b94c33e5a5b827076",
+          "Name": "var[]..[]",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Flattens a nested list of lists by a certain amount.\n\nList.Flatten (list: var[]..[], amt: int = -1): var[]..[]"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "498ba89e287e49cbad795f32b38198b6",
+      "End": "ec30ceade54a4973a4f2daf593af0f61",
+      "Id": "0a517edf7642467da02f8ad4e6b049f8"
+    },
+    {
+      "Start": "c263d216cd68460f8a05001f3c15a53f",
+      "End": "5ccdb7a22af44a88bb3a59871f6af6c5",
+      "Id": "88de92f115e446579c6d827c49315746"
+    },
+    {
+      "Start": "4b448bf30ba54a228b3d7fe36142c0c2",
+      "End": "3e39b733662c423aa96569a1fcfcf448",
+      "Id": "a330527016304ac5984848a8a355a1b3"
+    },
+    {
+      "Start": "451bd7611b2c49ae95e38933fd1e1b14",
+      "End": "89e2c399df504adeb0087520c471b2b6",
+      "Id": "3774306f45ef4fbda57029e4f951c53c"
+    },
+    {
+      "Start": "aeafac8aa75d429b94c33e5a5b827076",
+      "End": "feeaa810bc4a49d48cdf5d429206bcc2",
+      "Id": "6925627511be4089ab88c1f864af21c8"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.10.1.3976",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "d4ec6850e0994fdf9ef36858f0f7ddde",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 316.03927930573,
+        "Y": 745.38710616036656
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Data.ExportCSV",
+        "Id": "1653008b9ab6451aa2f150f8acd1a699",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 919.36592611167578,
+        "Y": 650.9193802656705
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "File Path",
+        "Id": "40c8464d379c43e5be09ae296fd2a717",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 289.03927930573,
+        "Y": 644.78960587092831
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "58dc7932afe147c2a568227d90e8c864",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 518.314561000028,
+        "Y": 756.88620090358279
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "51ea5b39dd3547c78427134ef190427c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -119.96072069426998,
+        "Y": 819.98460644980469
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.Flatten",
+        "Id": "4fe77e9dcdb444af8ad6b67b34e37034",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 692.82280877828373,
+        "Y": 754.05881431131343
+      }
+    ],
+    "Annotations": [],
+    "X": -161.96225889929661,
+    "Y": -546.56165231231546,
+    "Zoom": 1.093193434965323
+  }
+}

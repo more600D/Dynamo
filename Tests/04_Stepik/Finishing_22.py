@@ -9,10 +9,10 @@ clr.AddReference("RevitServices")
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
-version = int(doc.Application.VersionNumber)
 
 
 def get_dut_square_meters():
+    version = int(doc.Application.VersionNumber)
     if version > 2021:
         from Autodesk.Revit.DB import UnitTypeId
         return UnitTypeId.SquareMeters
@@ -52,15 +52,8 @@ def get_inserts_in_room(wall_list, room):
                 element_in_room = wall.Document.GetElement(i)
                 status = element_in_room.GetPhaseStatus(phase.Id)
                 if status == ElementOnPhaseStatus.New or status == ElementOnPhaseStatus.Existing:
-                    if version > 2021:
-                        to_room = element_in_room.ToRoom
-                    else:
-                        to_room = element_in_room.ToRoom[phase]
-                    if version > 2021:
-                        from_room = element_in_room.FromRoom
-                    else:
-                        from_room = element_in_room.FromRoom[phase]
-                    
+                    to_room = element_in_room.ToRoom[phase]
+                    from_room = element_in_room.FromRoom[phase]
                     if to_room and to_room.Number == room.Number:
                         inserts_in_room.append(element_in_room)
                     elif from_room and from_room.Number == room.Number:

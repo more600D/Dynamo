@@ -1,0 +1,265 @@
+{
+  "Uuid": "922b5e59-a390-4b0a-9d5b-a7caac8c3de9",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "UNI_RenameWallType",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [
+    {
+      "Id": "45abe6a6acd14efa9c305527ab845446",
+      "Name": "Старое имя типа",
+      "Type": "string",
+      "Value": "Generic - 200mm",
+      "Description": "Creates a string."
+    },
+    {
+      "Id": "17094fc5aebe4515be58e8fd04137541",
+      "Name": "Новое имя типа",
+      "Type": "string",
+      "Value": "Generic - 222mm",
+      "Description": "Creates a string."
+    }
+  ],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "a.Name;",
+      "Id": "6866a1c6244746b992823c7278917b11",
+      "Inputs": [
+        {
+          "Id": "a663b7745844493dba9ba3607e14f6e4",
+          "Name": "a",
+          "Description": "a",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6fefb5cffaa84711b881c29823dd0845",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import WallType, FilteredElementCollector, BuiltInParameter\r\n\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\ndef rename_walltype(walltype_name, new_name):\r\n    result = 'Undone :('\r\n    wall_types = FilteredElementCollector(doc).OfClass(WallType).ToElements()\r\n    for wtype in wall_types:\r\n        param = wtype.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM)\r\n        if param.AsString() == walltype_name:\r\n            wtype.Name = new_name\r\n            result = 'Done! :)'\r\n    return result\r\n\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\ninfo = rename_walltype(IN[0], IN[1])\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = info\r\n",
+      "VariableInputPorts": true,
+      "Id": "0b2bb19971dc4639ae7b574b58fd339d",
+      "Inputs": [
+        {
+          "Id": "d19450ffd7064eb4a6f05514e1bc4aba",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c7998c35737647ccb1714090f318c6b9",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f1dca3eb86ba41129101eab4673cb682",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "50784bdc8ed3465e9f055823fc727821",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": true,
+      "Id": "adc312e3228b4e99ba3d476065a2cbad",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c812f182e2cf4064868f98a1cd91bdbf",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selection between a true and false."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "Generic - 200mm",
+      "Id": "45abe6a6acd14efa9c305527ab845446",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7b0ad33f6cbc45369ac82acf70c903f4",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a string."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "Generic - 222mm",
+      "Id": "17094fc5aebe4515be58e8fd04137541",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "2f9093adc8554a0fabb6d55eb4423b26",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a string."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "c812f182e2cf4064868f98a1cd91bdbf",
+      "End": "f1dca3eb86ba41129101eab4673cb682",
+      "Id": "ffd38cf301a34c6a93937963bc5809c7"
+    },
+    {
+      "Start": "7b0ad33f6cbc45369ac82acf70c903f4",
+      "End": "d19450ffd7064eb4a6f05514e1bc4aba",
+      "Id": "17c5ad3f0e334563944685721ebab491"
+    },
+    {
+      "Start": "2f9093adc8554a0fabb6d55eb4423b26",
+      "End": "c7998c35737647ccb1714090f318c6b9",
+      "Id": "1e774f5730d64da5ba73bbd6a14a8fe4"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.2.15696",
+      "RunType": "Automatic",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "6866a1c6244746b992823c7278917b11",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 689.97204425882012,
+        "Y": -65.82963736399978
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "0b2bb19971dc4639ae7b574b58fd339d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 570.50602196864088,
+        "Y": 643.56906990534821
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "adc312e3228b4e99ba3d476065a2cbad",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 369.456444445813,
+        "Y": 759.918657924836
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Старое имя типа",
+        "Id": "45abe6a6acd14efa9c305527ab845446",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 377.456444445813,
+        "Y": 594.708368026418
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Новое имя типа",
+        "Id": "17094fc5aebe4515be58e8fd04137541",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 377.456444445813,
+        "Y": 677.313512975627
+      }
+    ],
+    "Annotations": [],
+    "X": -187.08502236528793,
+    "Y": -455.53432977552927,
+    "Zoom": 1.0921896591619431
+  }
+}

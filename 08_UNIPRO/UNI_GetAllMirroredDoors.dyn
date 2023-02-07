@@ -1,0 +1,122 @@
+{
+  "Uuid": "92e00ba7-1b94-417c-8338-bd09e272a885",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "UNI_GetAllMirroredDoors",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import ElementId, TemporaryViewMode\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\ndef doors_getAll(document):\r\n    from Autodesk.Revit.DB import FilteredElementCollector, FamilyInstance, BuiltInCategory\r\n    doors = FilteredElementCollector(document).OfClass(FamilyInstance).OfCategory(BuiltInCategory.OST_Doors)\r\n    return doors.ToElements()\r\n\r\n\r\ndef doors_isMirrored(doors):\r\n    from System.Collections.Generic import List\r\n    elems = List[ElementId]()\r\n    for door in doors:\r\n        if door.Mirrored:\r\n            elems.Add(door.Id)\r\n    return elems\r\n\r\n\r\nview = doc.ActiveView\r\nm_doors = doors_isMirrored(doors_getAll(doc))\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nmode = TemporaryViewMode.TemporaryHideIsolate\r\nif m_doors:\r\n    if view.IsInTemporaryViewMode(mode):\r\n        view.DisableTemporaryViewMode(mode)\r\n        view.IsolateElementsTemporary(m_doors)\r\n    else:\r\n        view.IsolateElementsTemporary(m_doors)\r\n    OUT = [doc.GetElement(d) for d in m_doors]\r\nelse:\r\n    if view.IsInTemporaryViewMode(mode):\r\n        view.DisableTemporaryViewMode(mode)\r\n    OUT = \"Нет зеркальных дверей\"\r\nTransactionManager.Instance.TransactionTaskDone()\r\n",
+      "VariableInputPorts": true,
+      "Id": "88d32acdff9646e8b89c24585e132c3d",
+      "Inputs": [
+        {
+          "Id": "6e1000a71d4948338c80953f80546d0d",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a8afd62f279645a2acaec6543903ef87",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": true,
+      "Id": "4e3c597fcb004b8fad23916853c17c53",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "869ffec59ff246699eef9a3f16f05847",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selection between a true and false."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "869ffec59ff246699eef9a3f16f05847",
+      "End": "6e1000a71d4948338c80953f80546d0d",
+      "Id": "b510c2342ba84cafa07de7ab2a9955ef"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.2.15696",
+      "RunType": "Automatic",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "88d32acdff9646e8b89c24585e132c3d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 394.0,
+        "Y": 218.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "4e3c597fcb004b8fad23916853c17c53",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 230.0,
+        "Y": 219.0
+      }
+    ],
+    "Annotations": [],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 1.0
+  }
+}

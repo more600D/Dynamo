@@ -53,7 +53,7 @@ def open_and_change_document(server_folder, file_name):
 
 
 server_folder = 'RSN:\\\\srv-eh\\_PilotProject\\01_WIP'
-file_name = '_ThePilotProject'
+file_name = IN[0]
 
 result = open_and_change_document(server_folder, file_name)
 

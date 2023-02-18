@@ -1,0 +1,423 @@
+{
+  "Uuid": "ebfc6604-5bf1-4980-9f62-f39e014bf214",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "UNI_AssemblyCodeFromExcel",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Category": {
+        "Key": "Revit.Elements.Category",
+        "Value": "RevitNodes.dll"
+      },
+      "List": {
+        "Key": "List",
+        "Value": "BuiltIn.ds"
+      },
+      "DSOffice.Data": {
+        "Key": "DSOffice.Data",
+        "Value": "DSOffice.dll"
+      },
+      "Dictionary": {
+        "Key": "DesignScript.Builtin.Dictionary",
+        "Value": "DesignScriptBuiltin.dll"
+      },
+      "String": {
+        "Key": "DSCore.String",
+        "Value": "DSCoreNodes.dll"
+      }
+    }
+  },
+  "Inputs": [
+    {
+      "Id": "0f4cfd90dfa444d8a8d456fc10862f1d",
+      "Name": "Sheet name",
+      "Type": "string",
+      "Value": "Стены",
+      "Description": "Creates a string."
+    },
+    {
+      "Id": "aa4d7eb04cbb4412bbdd16acfc90dbba",
+      "Name": "Path to excel",
+      "Type": "string",
+      "Value": ".\\Коды по классификатору.xls",
+      "Description": "Allows you to select a file on the system to get its file path."
+    }
+  ],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Input.FileObject, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "3c3db2708dcf434991e207eba3dd6ec9",
+      "Inputs": [
+        {
+          "Id": "b39285c3e7ba4a2fa795a549ee995a11",
+          "Name": "path",
+          "Description": "Path to the file.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c728e972a7de4ad893602852e82111f1",
+          "Name": "file",
+          "Description": "File object",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a file object from a path."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "Стены",
+      "Id": "0f4cfd90dfa444d8a8d456fc10862f1d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "324c674ad9a045398e1c42b6be306919",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a string."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "file = DSOffice.Data.ImportExcel(filePath, sheetName, false, true);\ndata = List.Transpose(file);\ncodes = data[0];\ntypes = data[2];\nmask = codes != null;\nf_codes = List.FilterByBoolMask(codes, mask)[\"in\"];\nf_types = List.FilterByBoolMask(types, mask)[\"in\"];\nDictionary.ByKeysValues(f_types, f_codes);",
+      "Id": "c78d7e567a224481a56c4a5e89c997e8",
+      "Inputs": [
+        {
+          "Id": "9385f6e12be64f9da811fa96fc9ffd31",
+          "Name": "filePath",
+          "Description": "filePath",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d7e3a5e6fd8b4158b72bdf029534d871",
+          "Name": "sheetName",
+          "Description": "sheetName",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d2bf12a3b6e7421599817a3aaf1acc08",
+          "Name": "",
+          "Description": "file",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "692d4a49001d41d990afe255ad1db892",
+          "Name": "",
+          "Description": "data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "59c909f2224d468aba6ef6059c16a508",
+          "Name": "",
+          "Description": "codes",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c711c0e88c624454896f1fe6554f8644",
+          "Name": "",
+          "Description": "types",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1674afd4920b426a8cefd7c8dcb0e3a3",
+          "Name": "",
+          "Description": "mask",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1b2f0815dfb84b2da5de8f4655087af4",
+          "Name": "",
+          "Description": "f_codes",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "75439642135548e68b3c5f0f14525356",
+          "Name": "",
+          "Description": "f_types",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b1256fb295c64bf1885c096a8136b12c",
+          "Name": "",
+          "Description": "Значение выражения в строке 8",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
+      "HintPath": "C:\\Users\\Bim_20.LAN\\Desktop\\Коды по классификатору.xls",
+      "InputValue": ".\\Коды по классификатору.xls",
+      "NodeType": "ExtensionNode",
+      "Id": "aa4d7eb04cbb4412bbdd16acfc90dbba",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "cd8fa40990b84d6fa3e7aa5eaa1508d9",
+          "Name": "",
+          "Description": "File Path",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows you to select a file on the system to get its file path."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# -*- coding: utf-8 -*-\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, WallType, FloorType, CeilingType\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ndata = IN[0]\r\nsheet_name = IN[1]\r\n\r\n\r\ndef get_all_types(document, elemType):\r\n    return FilteredElementCollector(document).OfClass(elemType).ToElements()\r\n\r\n\r\ndef set_assembly_code(type_list, data):\r\n    from Autodesk.Revit.DB import BuiltInParameter\r\n    info = \"UNDONE:(\"\r\n    result = []\r\n    for elem in type_list:\r\n        name = elem.get_Parameter(BuiltInParameter.ALL_MODEL_TYPE_NAME).AsString()\r\n        assembly_param = elem.get_Parameter(BuiltInParameter.UNIFORMAT_CODE)\r\n        for key in data.keys():\r\n            if name == key:\r\n                value = data[key]\r\n                if value == 999:\r\n                    assembly_param.Set(\"999\")\r\n                else:\r\n                    assembly_param.Set(value)\r\n                info = \"DONE:)\"\r\n        result.append(\"{} - {}\".format(name, info))\r\n    return result\r\n\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif sheet_name == \"Стены\":\r\n    result = set_assembly_code(get_all_types(doc, WallType), data)\r\nelif sheet_name == \"Перекрытия\":\r\n    result = set_assembly_code(get_all_types(doc, FloorType), data)\r\nelif sheet_name == \"Потолок\":\r\n    result = set_assembly_code(get_all_types(doc, CeilingType), data)\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = result\r\n",
+      "VariableInputPorts": true,
+      "Id": "4dbb5642e60640c88bc6c4ca33931ced",
+      "Inputs": [
+        {
+          "Id": "bfff9ec529c245e797a88240c1d51b70",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3ac8660c51d1494c955449531691e9d7",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f64d8de7d92a4e638dce95b49d71cedd",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "mask = String.Contains(result, \":(\", false);\nList.FilterByBoolMask(result, mask)[\"in\"];",
+      "Id": "73012cc856bf48a9a736aba8f4732175",
+      "Inputs": [
+        {
+          "Id": "0b75637708f84bc4bb3a8dcb04bb0be0",
+          "Name": "result",
+          "Description": "result",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "188ca77681df4e7fb40138e58cecb0bc",
+          "Name": "",
+          "Description": "mask",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ba74dc51914b4de9826b1e027e888e74",
+          "Name": "",
+          "Description": "Значение выражения в строке 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "c728e972a7de4ad893602852e82111f1",
+      "End": "9385f6e12be64f9da811fa96fc9ffd31",
+      "Id": "1ad9274e46754c198beb031a926824e4"
+    },
+    {
+      "Start": "324c674ad9a045398e1c42b6be306919",
+      "End": "d7e3a5e6fd8b4158b72bdf029534d871",
+      "Id": "971c307569284a2b8e23e75e6e9b8ca2"
+    },
+    {
+      "Start": "324c674ad9a045398e1c42b6be306919",
+      "End": "3ac8660c51d1494c955449531691e9d7",
+      "Id": "b4f015dac085449192eaa0ea684e8f1c"
+    },
+    {
+      "Start": "b1256fb295c64bf1885c096a8136b12c",
+      "End": "bfff9ec529c245e797a88240c1d51b70",
+      "Id": "c234ca29c96a44abb0214823d6ad5246"
+    },
+    {
+      "Start": "cd8fa40990b84d6fa3e7aa5eaa1508d9",
+      "End": "b39285c3e7ba4a2fa795a549ee995a11",
+      "Id": "b78800035fcc424ea817ec66a7c72b62"
+    },
+    {
+      "Start": "f64d8de7d92a4e638dce95b49d71cedd",
+      "End": "0b75637708f84bc4bb3a8dcb04bb0be0",
+      "Id": "a78e85631a5d40189af0637ab92a1762"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.2.15696",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "File From Path",
+        "Id": "3c3db2708dcf434991e207eba3dd6ec9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 103.79848801361192,
+        "Y": 480.35173585653092
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Sheet name",
+        "Id": "0f4cfd90dfa444d8a8d456fc10862f1d",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -110.01657849185,
+        "Y": 623.35173585653092
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "c78d7e567a224481a56c4a5e89c997e8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 342.61355451907383,
+        "Y": 480.35173585653092
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Path to excel",
+        "Id": "aa4d7eb04cbb4412bbdd16acfc90dbba",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -220.01657849185,
+        "Y": 480.35173585653092
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "4dbb5642e60640c88bc6c4ca33931ced",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1136.4286210245357,
+        "Y": 480.35173585653092
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "73012cc856bf48a9a736aba8f4732175",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1389.2436875299977,
+        "Y": 480.35173585653092
+      }
+    ],
+    "Annotations": [],
+    "X": 534.50492919303042,
+    "Y": -559.98846716665332,
+    "Zoom": 1.1324163370281706
+  }
+}

@@ -16,20 +16,19 @@ def get_all_types(document, elemType):
 
 def set_assembly_code(type_list, data):
     from Autodesk.Revit.DB import BuiltInParameter
-    info = ":("
     result = []
     for elem in type_list:
         name = elem.get_Parameter(BuiltInParameter.ALL_MODEL_TYPE_NAME).AsString()
         assembly_param = elem.get_Parameter(BuiltInParameter.UNIFORMAT_CODE)
-        for key in data.keys():
-            if name == key:
-                value = data[key]
-                if value == 999:
-                    assembly_param.Set("999")
-                else:
-                    assembly_param.Set(value)
-                info = ":)"
-        result.append("{} - {}".format(name, info))
+        try:
+            value = data[name]
+            if value == 999:
+                assembly_param.Set("999")
+            else:
+                assembly_param.Set(value)
+            result.append("{} - DONE".format(name))
+        except KeyError as e:
+            result.append("{} - UNDONE".format(name))
     return result
 
 

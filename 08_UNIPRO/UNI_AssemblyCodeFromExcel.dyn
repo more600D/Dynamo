@@ -32,7 +32,7 @@
       "Id": "0f4cfd90dfa444d8a8d456fc10862f1d",
       "Name": "Sheet name",
       "Type": "string",
-      "Value": "Стены",
+      "Value": "Потолок",
       "Description": "Creates a string."
     },
     {
@@ -77,7 +77,7 @@
     {
       "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
       "NodeType": "StringInputNode",
-      "InputValue": "Стены",
+      "InputValue": "Потолок",
       "Id": "0f4cfd90dfa444d8a8d456fc10862f1d",
       "Inputs": [],
       "Outputs": [
@@ -220,7 +220,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# -*- coding: utf-8 -*-\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, WallType, FloorType, CeilingType\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ndata = IN[0]\r\nsheet_name = IN[1]\r\n\r\n\r\ndef get_all_types(document, elemType):\r\n    return FilteredElementCollector(document).OfClass(elemType).ToElements()\r\n\r\n\r\ndef set_assembly_code(type_list, data):\r\n    from Autodesk.Revit.DB import BuiltInParameter\r\n    info = \"UNDONE:(\"\r\n    result = []\r\n    for elem in type_list:\r\n        name = elem.get_Parameter(BuiltInParameter.ALL_MODEL_TYPE_NAME).AsString()\r\n        assembly_param = elem.get_Parameter(BuiltInParameter.UNIFORMAT_CODE)\r\n        for key in data.keys():\r\n            if name == key:\r\n                value = data[key]\r\n                if value == 999:\r\n                    assembly_param.Set(\"999\")\r\n                else:\r\n                    assembly_param.Set(value)\r\n                info = \"DONE:)\"\r\n        result.append(\"{} - {}\".format(name, info))\r\n    return result\r\n\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif sheet_name == \"Стены\":\r\n    result = set_assembly_code(get_all_types(doc, WallType), data)\r\nelif sheet_name == \"Перекрытия\":\r\n    result = set_assembly_code(get_all_types(doc, FloorType), data)\r\nelif sheet_name == \"Потолок\":\r\n    result = set_assembly_code(get_all_types(doc, CeilingType), data)\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = result\r\n",
+      "Code": "# -*- coding: utf-8 -*-\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, WallType, FloorType, CeilingType\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ndata = IN[0]\r\nsheet_name = IN[1]\r\n\r\n\r\ndef get_all_types(document, elemType):\r\n    return FilteredElementCollector(document).OfClass(elemType).ToElements()\r\n\r\n\r\ndef set_assembly_code(type_list, data):\r\n    from Autodesk.Revit.DB import BuiltInParameter\r\n    result = []\r\n    for elem in type_list:\r\n        name = elem.get_Parameter(BuiltInParameter.ALL_MODEL_TYPE_NAME).AsString()\r\n        assembly_param = elem.get_Parameter(BuiltInParameter.UNIFORMAT_CODE)\r\n        try:\r\n            value = data[name]\r\n            if value == 999:\r\n                assembly_param.Set(\"999\")\r\n            else:\r\n                assembly_param.Set(value)\r\n            result.append(\"{} - DONE\".format(name))\r\n        except KeyError as e:\r\n            result.append(\"{} - UNDONE\".format(name))\r\n    return result\r\n\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif sheet_name == \"Стены\":\r\n    result = set_assembly_code(get_all_types(doc, WallType), data)\r\nelif sheet_name == \"Перекрытия\":\r\n    result = set_assembly_code(get_all_types(doc, FloorType), data)\r\nelif sheet_name == \"Потолок\":\r\n    result = set_assembly_code(get_all_types(doc, CeilingType), data)\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = result\r\n",
       "VariableInputPorts": true,
       "Id": "4dbb5642e60640c88bc6c4ca33931ced",
       "Inputs": [
@@ -260,11 +260,11 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "mask = String.Contains(result, \":(\", false);\nList.FilterByBoolMask(result, mask)[\"in\"];",
+      "Code": "mask = String.Contains(result, \"UNDONE\", false);\ninfo = List.FilterByBoolMask(result, mask)[\"in\"];\nString.Remove(info, String.Length(info)-9,9);",
       "Id": "73012cc856bf48a9a736aba8f4732175",
       "Inputs": [
         {
-          "Id": "0b75637708f84bc4bb3a8dcb04bb0be0",
+          "Id": "ccba70a26f61434dbdb2732eb8d3f107",
           "Name": "result",
           "Description": "result",
           "UsingDefaultValue": false,
@@ -275,7 +275,7 @@
       ],
       "Outputs": [
         {
-          "Id": "188ca77681df4e7fb40138e58cecb0bc",
+          "Id": "b5392b2803a7479687707ae4371b5206",
           "Name": "",
           "Description": "mask",
           "UsingDefaultValue": false,
@@ -284,9 +284,18 @@
           "KeepListStructure": false
         },
         {
-          "Id": "ba74dc51914b4de9826b1e027e888e74",
+          "Id": "f6141d3814e54cd4aa4f46f764fda6a3",
           "Name": "",
-          "Description": "Значение выражения в строке 2",
+          "Description": "info",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a403647832974502a5eb549958a0f7d1",
+          "Name": "",
+          "Description": "Значение выражения в строке 3",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -295,6 +304,66 @@
       ],
       "Replication": "Disabled",
       "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"2.8_плитка Тех.пом._по внутренним стенам по бетону\";",
+      "Id": "1fb877ea3720401289e03451631f644b",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a997e789440c49c1a4315b5f652bf47f",
+          "Name": "",
+          "Description": "Значение выражения в строке 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Обеспечивает возможность непосредственного авторства кода DesignScript"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import os\r\nimport clr\r\nfrom io import open\r\ndata = IN[0]\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nhomedir = os.path.expanduser('~') + r'\\\\Desktop\\\\{}_{}.txt'.format(doc.Title, IN[1])\r\nwith open(homedir, 'w', newline='') as file:\r\n    for d in data:\r\n        file.write(d + '\\n')\r\n    file.close()\r\n\r\nOUT = data\r\n",
+      "VariableInputPorts": true,
+      "Id": "e50284a1ea554ec6a54b8221bc43e8b3",
+      "Inputs": [
+        {
+          "Id": "1030126fc6de44e18132db07a4da27d3",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "70796a73810e4d5fab128fe30da2a4d9",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "708a3914c86541dfb62b8e926826e365",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария IronPython."
     }
   ],
   "Connectors": [
@@ -314,6 +383,11 @@
       "Id": "b4f015dac085449192eaa0ea684e8f1c"
     },
     {
+      "Start": "324c674ad9a045398e1c42b6be306919",
+      "End": "70796a73810e4d5fab128fe30da2a4d9",
+      "Id": "e47bfb16be1f4240914fb8a6da79fe17"
+    },
+    {
       "Start": "b1256fb295c64bf1885c096a8136b12c",
       "End": "bfff9ec529c245e797a88240c1d51b70",
       "Id": "c234ca29c96a44abb0214823d6ad5246"
@@ -321,12 +395,17 @@
     {
       "Start": "cd8fa40990b84d6fa3e7aa5eaa1508d9",
       "End": "b39285c3e7ba4a2fa795a549ee995a11",
-      "Id": "b78800035fcc424ea817ec66a7c72b62"
+      "Id": "37c17ede43054b68b9bd9f13bbc238ae"
     },
     {
       "Start": "f64d8de7d92a4e638dce95b49d71cedd",
-      "End": "0b75637708f84bc4bb3a8dcb04bb0be0",
-      "Id": "a78e85631a5d40189af0637ab92a1762"
+      "End": "ccba70a26f61434dbdb2732eb8d3f107",
+      "Id": "c1fc8237e25b45a6b3f15b10d5c0db95"
+    },
+    {
+      "Start": "a403647832974502a5eb549958a0f7d1",
+      "End": "1030126fc6de44e18132db07a4da27d3",
+      "Id": "1567098ad784435abb3758bac2c95d52"
     }
   ],
   "Dependencies": [],
@@ -402,7 +481,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 1136.4286210245357,
-        "Y": 480.35173585653092
+        "Y": 484.04849314636817
       },
       {
         "ShowGeometry": true,
@@ -411,13 +490,33 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1389.2436875299977,
-        "Y": 480.35173585653092
+        "X": 1385.0070304039887,
+        "Y": 488.59047836597944
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "1fb877ea3720401289e03451631f644b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 524.82330100227432,
+        "Y": 804.18923850591443
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "e50284a1ea554ec6a54b8221bc43e8b3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1942.4148940038981,
+        "Y": 519.6453927605553
       }
     ],
     "Annotations": [],
-    "X": 534.50492919303042,
-    "Y": -559.98846716665332,
-    "Zoom": 1.1324163370281706
+    "X": -2206.4301364759172,
+    "Y": -429.7205728063492,
+    "Zoom": 1.4104123024985609
   }
 }

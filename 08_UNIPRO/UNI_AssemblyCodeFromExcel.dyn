@@ -32,7 +32,7 @@
       "Id": "0f4cfd90dfa444d8a8d456fc10862f1d",
       "Name": "Sheet name",
       "Type": "string",
-      "Value": "Потолок",
+      "Value": "Стены",
       "Description": "Creates a string."
     },
     {
@@ -77,7 +77,7 @@
     {
       "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
       "NodeType": "StringInputNode",
-      "InputValue": "Потолок",
+      "InputValue": "Стены",
       "Id": "0f4cfd90dfa444d8a8d456fc10862f1d",
       "Inputs": [],
       "Outputs": [
@@ -328,7 +328,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import os\r\nimport clr\r\nfrom io import open\r\ndata = IN[0]\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nhomedir = os.path.expanduser('~') + r'\\\\Desktop\\\\{}_{}.txt'.format(doc.Title, IN[1])\r\nwith open(homedir, 'w', newline='') as file:\r\n    for d in data:\r\n        file.write(d + '\\n')\r\n    file.close()\r\n\r\nOUT = data\r\n",
+      "Code": "import os\r\nimport clr\r\nfrom io import open\r\nfrom datetime import datetime\r\ndata = IN[0]\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ndate = datetime.now()\r\nhomedir = os.path.expanduser('~') + r'\\\\Desktop\\\\{}_{}_{}.txt'.format(doc.Title, IN[1], date.strftime(\"%Y%m%d_%H%M%S\"))\r\nwith open(homedir, 'w', newline='') as file:\r\n    for d in data:\r\n        file.write(d + '\\n')\r\n    file.close()\r\n\r\nOUT = data\r\n",
       "VariableInputPorts": true,
       "Id": "e50284a1ea554ec6a54b8221bc43e8b3",
       "Inputs": [
@@ -395,7 +395,7 @@
     {
       "Start": "cd8fa40990b84d6fa3e7aa5eaa1508d9",
       "End": "b39285c3e7ba4a2fa795a549ee995a11",
-      "Id": "37c17ede43054b68b9bd9f13bbc238ae"
+      "Id": "c6b5c40638e945ff8fc20687e405644c"
     },
     {
       "Start": "f64d8de7d92a4e638dce95b49d71cedd",
@@ -510,13 +510,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1942.4148940038981,
+        "X": 1942.9030507010552,
         "Y": 519.6453927605553
       }
     ],
     "Annotations": [],
-    "X": -2206.4301364759172,
-    "Y": -429.7205728063492,
-    "Zoom": 1.4104123024985609
+    "X": 141.69576943951762,
+    "Y": 57.139557192684663,
+    "Zoom": 0.507669786545904
   }
 }

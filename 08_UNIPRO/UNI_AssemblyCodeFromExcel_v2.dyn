@@ -2,7 +2,7 @@
   "Uuid": "ebfc6604-5bf1-4980-9f62-f39e014bf214",
   "IsCustomNode": false,
   "Description": "",
-  "Name": "UNI_AssemblyCodeFromExcel",
+  "Name": "UNI_AssemblyCodeFromExcel_v2",
   "ElementResolver": {
     "ResolutionMap": {
       "Category": {
@@ -39,7 +39,7 @@
       "Id": "aa4d7eb04cbb4412bbdd16acfc90dbba",
       "Name": "Path to excel",
       "Type": "string",
-      "Value": ".\\Коды по классификатору.xls",
+      "Value": ".\\Коды по классификатору (2).xlsx",
       "Description": "Allows you to select a file on the system to get its file path."
     }
   ],
@@ -198,8 +198,8 @@
     },
     {
       "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
-      "HintPath": "C:\\Users\\Bim_20.LAN\\Desktop\\Коды по классификатору.xls",
-      "InputValue": ".\\Коды по классификатору.xls",
+      "HintPath": "C:\\Users\\Bim_20.LAN\\Desktop\\Коды по классификатору (2).xlsx",
+      "InputValue": ".\\Коды по классификатору (2).xlsx",
       "NodeType": "ExtensionNode",
       "Id": "aa4d7eb04cbb4412bbdd16acfc90dbba",
       "Inputs": [],
@@ -220,7 +220,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# -*- coding: utf-8 -*-\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, WallType, FloorType, CeilingType\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ndata = IN[0]\r\nsheet_name = IN[1]\r\n\r\n\r\ndef get_all_types(document, elemType):\r\n    return FilteredElementCollector(document).OfClass(elemType).ToElements()\r\n\r\n\r\ndef set_assembly_code(type_list, data):\r\n    from Autodesk.Revit.DB import BuiltInParameter\r\n    result = []\r\n    for elem in type_list:\r\n        name = elem.get_Parameter(BuiltInParameter.ALL_MODEL_TYPE_NAME).AsString()\r\n        assembly_param = elem.get_Parameter(BuiltInParameter.UNIFORMAT_CODE)\r\n        try:\r\n            value = data[name]\r\n            if value == 999:\r\n                assembly_param.Set(\"999\")\r\n            else:\r\n                assembly_param.Set(value)\r\n            result.append(\"{} - DONE\".format(name))\r\n        except KeyError as e:\r\n            result.append(\"{} - UNDONE\".format(name))\r\n    return result\r\n\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif sheet_name == \"Стены\":\r\n    result = set_assembly_code(get_all_types(doc, WallType), data)\r\nelif sheet_name == \"Перекрытия\":\r\n    result = set_assembly_code(get_all_types(doc, FloorType), data)\r\nelif sheet_name == \"Потолок\":\r\n    result = set_assembly_code(get_all_types(doc, CeilingType), data)\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = result\r\n",
+      "Code": "# -*- coding: utf-8 -*-\r\nimport clr\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, WallType, FloorType, CeilingType, SlabEdgeType\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ndata = IN[0]\r\nsheet_name = IN[1]\r\n\r\n\r\ndef get_all_types(document, elemType):\r\n    return FilteredElementCollector(document).OfClass(elemType).ToElements()\r\n\r\n\r\ndef set_assembly_code(type_list, data):\r\n    from Autodesk.Revit.DB import BuiltInParameter\r\n    result = []\r\n    for elem in type_list:\r\n        name = elem.get_Parameter(BuiltInParameter.ALL_MODEL_TYPE_NAME).AsString()\r\n        assembly_param = elem.get_Parameter(BuiltInParameter.UNIFORMAT_CODE)\r\n        for key in data.keys():\r\n            if key in name:\r\n                value = data[key]\r\n                if value == 999:\r\n                    assembly_param.Set(\"999\")\r\n                else:\r\n                    assembly_param.Set(value)\r\n                info = 'DONE'\r\n                break\r\n            else:\r\n                info = 'UNDONE'\r\n        result.append(\"{} - {}\".format(name, info))\r\n    return result\r\n\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif sheet_name == \"Стены\":\r\n    result = set_assembly_code(get_all_types(doc, WallType), data)\r\nelif sheet_name == \"Перекрытия\":\r\n    result = set_assembly_code(get_all_types(doc, FloorType), data)\r\nelif sheet_name == \"Потолок\":\r\n    result = set_assembly_code(get_all_types(doc, CeilingType), data)\r\nelif sheet_name == \"Ребра плит\":\r\n    result = set_assembly_code(get_all_types(doc, SlabEdgeType), data)\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = result\r\n",
       "VariableInputPorts": true,
       "Id": "4dbb5642e60640c88bc6c4ca33931ced",
       "Inputs": [
@@ -368,13 +368,13 @@
     },
     {
       "Start": "324c674ad9a045398e1c42b6be306919",
-      "End": "3ac8660c51d1494c955449531691e9d7",
-      "Id": "b4f015dac085449192eaa0ea684e8f1c"
+      "End": "70796a73810e4d5fab128fe30da2a4d9",
+      "Id": "e47bfb16be1f4240914fb8a6da79fe17"
     },
     {
       "Start": "324c674ad9a045398e1c42b6be306919",
-      "End": "70796a73810e4d5fab128fe30da2a4d9",
-      "Id": "e47bfb16be1f4240914fb8a6da79fe17"
+      "End": "3ac8660c51d1494c955449531691e9d7",
+      "Id": "d161e47fcb6f45a1864e2ddcffc42c57"
     },
     {
       "Start": "b1256fb295c64bf1885c096a8136b12c",
@@ -439,7 +439,7 @@
         "IsSetAsInput": true,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -110.01657849185,
+        "X": -124.95259924401461,
         "Y": 623.35173585653092
       },
       {
@@ -470,7 +470,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 1136.4286210245357,
-        "Y": 484.04849314636817
+        "Y": 483.45180890676318
       },
       {
         "ShowGeometry": true,
@@ -494,8 +494,8 @@
       }
     ],
     "Annotations": [],
-    "X": 156.15360913057668,
-    "Y": -46.749000770512083,
-    "Zoom": 0.50149845820480332
+    "X": -302.7964893387898,
+    "Y": -148.4656001373213,
+    "Zoom": 0.7650170933128343
   }
 }

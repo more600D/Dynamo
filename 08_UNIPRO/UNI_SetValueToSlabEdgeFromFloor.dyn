@@ -1,0 +1,268 @@
+{
+  "Uuid": "ebfc6604-5bf1-4980-9f62-f39e014bf214",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "UNI_SetValueToSlabEdgeFromFloor",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Category": {
+        "Key": "Revit.Elements.Category",
+        "Value": "RevitNodes.dll"
+      },
+      "List": {
+        "Key": "List",
+        "Value": "BuiltIn.ds"
+      },
+      "DSOffice.Data": {
+        "Key": "DSOffice.Data",
+        "Value": "DSOffice.dll"
+      },
+      "Dictionary": {
+        "Key": "DesignScript.Builtin.Dictionary",
+        "Value": "DesignScriptBuiltin.dll"
+      }
+    }
+  },
+  "Inputs": [
+    {
+      "Id": "d2054fabbdfd43a3b5a67bbc7f6354c8",
+      "Name": "Floor parameter",
+      "Type": "string",
+      "Value": "Comments",
+      "Description": "Creates a string.",
+      "SelectedIndex": 0
+    },
+    {
+      "Id": "757295d577444da59d3c79ee0a0f54fa",
+      "Name": "Slab parameter",
+      "Type": "string",
+      "Value": "Comments",
+      "Description": "Creates a string.",
+      "SelectedIndex": 0
+    }
+  ],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "Comments",
+      "Id": "d2054fabbdfd43a3b5a67bbc7f6354c8",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8b83e8715bd84fb38c82c64bae7cd035",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a string."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "Comments",
+      "Id": "757295d577444da59d3c79ee0a0f54fa",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "32eb30405ce4485f88c87e63698fde45",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a string."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "921e1e894a4048648ad55272169fae8f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f16fc8171e7e4ff592d41aee922a5714",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Selection between a true and false."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nfloor_param_name = IN[1]\r\nslab_param_name = IN[2]\r\n\r\n\r\ndef get_floors(doc, floor_param_name, slab_param_name):\r\n    from Autodesk.Revit.DB import FilteredElementCollector, Floor, ElementClassFilter, HostedSweep\r\n    all_floors = FilteredElementCollector(doc).OfClass(Floor).ToElements()\r\n    result = []\r\n    filter = ElementClassFilter(HostedSweep)\r\n    for floor in all_floors:\r\n        param = floor.LookupParameter(floor_param_name)\r\n        if param:\r\n            value = param.AsString()\r\n            slabs = floor.GetDependentElements(filter)\r\n            if slabs:\r\n                for s in slabs:\r\n                    elem = doc.GetElement(s)\r\n                    slab_param = elem.LookupParameter(slab_param_name)\r\n                    if slab_param:\r\n                        slab_param.Set(value)\r\n                        result.append(elem)\r\n                    else:\r\n                        result.append('There is no such slab parameter')\r\n        else:\r\n            return 'There is no such floor parameter'\r\n    return result\r\n\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nresult = get_floors(doc, floor_param_name, slab_param_name)\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = result",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "c5378806e1254405a82102b5c913c1eb",
+      "Inputs": [
+        {
+          "Id": "941f0bd807ae48909a815a34d1f61d50",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ef96a9b0d1b84d439cb02d06af501a08",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a340ac1e617e4644a24c2a224e70206d",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "370c44355f1d4498b8ab1a60d53c7864",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "8b83e8715bd84fb38c82c64bae7cd035",
+      "End": "ef96a9b0d1b84d439cb02d06af501a08",
+      "Id": "d34bdbb1be6b4aabb5b8d19a46875b5b"
+    },
+    {
+      "Start": "32eb30405ce4485f88c87e63698fde45",
+      "End": "a340ac1e617e4644a24c2a224e70206d",
+      "Id": "1f0317b7c24d42c7ac732df99f84539e"
+    },
+    {
+      "Start": "f16fc8171e7e4ff592d41aee922a5714",
+      "End": "941f0bd807ae48909a815a34d1f61d50",
+      "Id": "88b176dd70f0492db922a5a4b7fcf34f"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Properties",
+      "Version": "2.12",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "1.10",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "None",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Floor parameter",
+        "Id": "d2054fabbdfd43a3b5a67bbc7f6354c8",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 330.50991305274459,
+        "Y": 432.95176993336077
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Slab parameter",
+        "Id": "757295d577444da59d3c79ee0a0f54fa",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 330.50991305274459,
+        "Y": 494.30042443703587
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "921e1e894a4048648ad55272169fae8f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 330.50991305274459,
+        "Y": 371.60311542968572
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "c5378806e1254405a82102b5c913c1eb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 588.01405908498464,
+        "Y": 386.61644912034643
+      }
+    ],
+    "Annotations": [],
+    "X": -3.1047685262102789,
+    "Y": -152.54744794430798,
+    "Zoom": 1.1649636962770216
+  }
+}

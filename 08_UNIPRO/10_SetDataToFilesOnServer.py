@@ -15,15 +15,7 @@ def create_path(server_folder, file_name):
 
 def synchronize_with_central(document, name):
     from Autodesk.Revit.DB import TransactWithCentralOptions, SynchronizeWithCentralOptions, RelinquishOptions
-    r_opt = RelinquishOptions(True)
-    r_opt.UserWorksets = True
-    r_opt.CheckedOutElements = True
-    r_opt.StandardWorksets = True
-    trans_opt = TransactWithCentralOptions()
-    synchro_opt = SynchronizeWithCentralOptions()
-    synchro_opt.Comment = name
-    synchro_opt.SetRelinquishOptions(r_opt)
-    document.SynchronizeWithCentral(trans_opt, synchro_opt)
+    r_opd
 
 
 def set_data_to_parameter(document, elem, param_name, data):

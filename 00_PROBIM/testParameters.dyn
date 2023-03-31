@@ -1,0 +1,341 @@
+{
+  "Uuid": "ebfc6604-5bf1-4980-9f62-f39e014bf214",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "testParameters",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Category": {
+        "Key": "Revit.Elements.Category",
+        "Value": "RevitNodes.dll"
+      },
+      "List": {
+        "Key": "List",
+        "Value": "BuiltIn.ds"
+      },
+      "DSOffice.Data": {
+        "Key": "DSOffice.Data",
+        "Value": "DSOffice.dll"
+      },
+      "Dictionary": {
+        "Key": "DesignScript.Builtin.Dictionary",
+        "Value": "DesignScriptBuiltin.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
+      "HintPath": "C:\\Users\\s.shvydko\\Documents\\04_Dynamo\\Dynamo\\00_PROBIM\\03_checkparameters_v2.py",
+      "InputValue": ".\\03_checkparameters_v2.py",
+      "NodeType": "ExtensionNode",
+      "Id": "e7ce5b3b9fc145e8ada028560fed1d74",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "06ff26998f0d4b678b307cb9948017ce",
+          "Name": "",
+          "Description": "File Path",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Возможность выбрать файл в системе и получить путь к нему."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.FileObject, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "b930dfd3e3474be583b0a0f8d7365c00",
+      "Inputs": [
+        {
+          "Id": "45a069997ea14c04938d2db1770045e7",
+          "Name": "path",
+          "Description": "Path to the file.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "eda74bf239cf459a97cc8d84b77e1fb1",
+          "Name": "file",
+          "Description": "File object",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Создание нового объекта на основе пути."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.IO.FileSystem.ReadText@var",
+      "Id": "030fb16a18874a9a9fd5b10ed6094205",
+      "Inputs": [
+        {
+          "Id": "5f248bb5341a446993d6a639573c0ce4",
+          "Name": "file",
+          "Description": "Файловый объект с текстом для чтения\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "790e44341f0e450e8eee7f00639f2054",
+          "Name": "string",
+          "Description": "Содержимое текстового файла.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Чтение текстового файла с выводом содержимого в виде строки.\n\nFileSystem.ReadText (file: var): string"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonStringNode, PythonNodeModels",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "NodeType": "ExtensionNode",
+      "Id": "06beead47eb746738317fd0242f06d01",
+      "Inputs": [
+        {
+          "Id": "34e91b7a923a4269b29dae24217c6f38",
+          "Name": "script",
+          "Description": "Python script to run.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "63b8b1d8cf2b4ddb96e2d8ff793ad53b",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2bfceefa06174956a4b84067cb042530",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение сценария Python из строки."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "b324e1a2b968456aac4118e80ca84d33",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "52172e3e014c4f5d9da7177ad1aa3f71",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.Object.Type@var",
+      "Id": "efea87ff76eb47b6a9c1b9159b076214",
+      "Inputs": [
+        {
+          "Id": "f986b70ee679432b98218190d9cdb01a",
+          "Name": "object",
+          "Description": "Объект для запроса типа\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ac2201ea9674493d81a4b79f0bb2dc60",
+          "Name": "string",
+          "Description": "Тип объекта.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Возврат типа объекта, представленного в виде строки.\n\nObject.Type (object: var): string"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "06ff26998f0d4b678b307cb9948017ce",
+      "End": "45a069997ea14c04938d2db1770045e7",
+      "Id": "277cc0c43d8447a198fef46deda10559"
+    },
+    {
+      "Start": "eda74bf239cf459a97cc8d84b77e1fb1",
+      "End": "5f248bb5341a446993d6a639573c0ce4",
+      "Id": "6e2967f15438435e8c2fe540e0f35166"
+    },
+    {
+      "Start": "790e44341f0e450e8eee7f00639f2054",
+      "End": "34e91b7a923a4269b29dae24217c6f38",
+      "Id": "c652dcc0be1f4d9eb5d7b98cc5768413"
+    },
+    {
+      "Start": "2bfceefa06174956a4b84067cb042530",
+      "End": "f986b70ee679432b98218190d9cdb01a",
+      "Id": "1bfd5835f9894ba186701a1c5e83bd26"
+    },
+    {
+      "Start": "52172e3e014c4f5d9da7177ad1aa3f71",
+      "End": "63b8b1d8cf2b4ddb96e2d8ff793ad53b",
+      "Id": "1c9cb5a0f6b243e1a14a5676139d96e6"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Properties",
+      "Version": "2.12",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "1.10",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "Нет",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "File Path",
+        "Id": "e7ce5b3b9fc145e8ada028560fed1d74",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 59.957748395354145,
+        "Y": 274.57953628576985
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "File From Path",
+        "Id": "b930dfd3e3474be583b0a0f8d7365c00",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 295.40596178460089,
+        "Y": 274.89810535672478
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "FileSystem.ReadText",
+        "Id": "030fb16a18874a9a9fd5b10ed6094205",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 439.8558931270768,
+        "Y": 275.60822350453776
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script From String",
+        "Id": "06beead47eb746738317fd0242f06d01",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 732.92720759575366,
+        "Y": 301.67957338148074
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "b324e1a2b968456aac4118e80ca84d33",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 470.65954001672355,
+        "Y": 397.24005075261596
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Object.Type",
+        "Id": "efea87ff76eb47b6a9c1b9159b076214",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1425.9236190995123,
+        "Y": -85.938692161158656
+      }
+    ],
+    "Annotations": [],
+    "X": -451.49745665603092,
+    "Y": 41.168487732686287,
+    "Zoom": 0.95012236879669787
+  }
+}

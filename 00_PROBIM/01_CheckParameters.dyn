@@ -1,0 +1,305 @@
+{
+  "Uuid": "ebfc6604-5bf1-4980-9f62-f39e014bf214",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "01_CheckParameters",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Category": {
+        "Key": "Revit.Elements.Category",
+        "Value": "RevitNodes.dll"
+      },
+      "List": {
+        "Key": "List",
+        "Value": "BuiltIn.ds"
+      },
+      "DSOffice.Data": {
+        "Key": "DSOffice.Data",
+        "Value": "DSOffice.dll"
+      },
+      "Dictionary": {
+        "Key": "DesignScript.Builtin.Dictionary",
+        "Value": "DesignScriptBuiltin.dll"
+      },
+      "DesignScript.Builtin.Dictionary": {
+        "Key": "DesignScript.Builtin.Dictionary",
+        "Value": "DesignScriptBuiltin.dll"
+      }
+    }
+  },
+  "Inputs": [
+    {
+      "Id": "e7ce5b3b9fc145e8ada028560fed1d74",
+      "Name": "File Path",
+      "Type": "string",
+      "Value": "..\\..\\..\\..\\Desktop\\тест1.xlsx",
+      "Description": "Возможность выбрать файл в системе и получить путь к нему.",
+      "SelectedIndex": 0
+    }
+  ],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
+      "HintPath": "C:\\Users\\s.shvydko\\Desktop\\тест1.xlsx",
+      "InputValue": "..\\..\\..\\..\\Desktop\\тест1.xlsx",
+      "NodeType": "ExtensionNode",
+      "Id": "e7ce5b3b9fc145e8ada028560fed1d74",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "06ff26998f0d4b678b307cb9948017ce",
+          "Name": "",
+          "Description": "File Path",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Возможность выбрать файл в системе и получить путь к нему."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": false,
+      "Id": "b324e1a2b968456aac4118e80ca84d33",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "52172e3e014c4f5d9da7177ad1aa3f71",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выбор между значениями true и false."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.Object.Type@var",
+      "Id": "efea87ff76eb47b6a9c1b9159b076214",
+      "Inputs": [
+        {
+          "Id": "f986b70ee679432b98218190d9cdb01a",
+          "Name": "object",
+          "Description": "Объект для запроса типа\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ac2201ea9674493d81a4b79f0bb2dc60",
+          "Name": "string",
+          "Description": "Тип объекта.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Возврат типа объекта, представленного в виде строки.\n\nObject.Type (object: var): string"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# -*- coding: utf-8 -*-\r\nimport sys\r\nimport openpyxl\r\nimport clr\r\npyt_path = r'C:\\Python27\\Lib\\site-packages'\r\nsys.path.append(pyt_path)\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import BuiltInCategory, FilteredElementCollector\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\ndef check_parameter(elem, param_name):\r\n    document = elem.Document\r\n    result = False\r\n    param = elem.LookupParameter(param_name)\r\n    if param:\r\n        value = param.AsValueString()\r\n        if value is None or value == \"\":\r\n            result = True\r\n    else:\r\n        elem_type = document.GetElement(elem.GetTypeId())\r\n        elem_type_param = elem_type.LookupParameter(param_name)\r\n        if elem_type_param:\r\n            value = elem_type_param.AsValueString()\r\n            if value is None or value == \"\":\r\n                result = True\r\n        else:\r\n            result = 'NP'\r\n    return result\r\n\r\n\r\ndef write_data(data, document=doc):\r\n    import os\r\n    from io import open\r\n    from datetime import datetime\r\n    date = datetime.now()\r\n    current_date = date.strftime(\"%Y%m%d_%H%M%S\")\r\n    homedir = os.path.expanduser('~') + f\"\\\\Desktop\\\\{document.Title}_{current_date}.txt\"\r\n    with open(homedir, 'w', newline='') as file:\r\n        for row in data:\r\n            for r in row:\r\n                file.write(r + '\\n')\r\n        file.close()\r\n    return data\r\n\r\n\r\ncategories = {\r\n    'Стены': BuiltInCategory.OST_Walls,\r\n    'Перекрытия': BuiltInCategory.OST_Floors\r\n}\r\n\r\nxpath = IN[1]\r\nworkbook = openpyxl.load_workbook(xpath)\r\nsheet = workbook[IN[2]]\r\nmax_column = sheet.max_column\r\nmax_row = sheet.max_row\r\n\r\nerror = []\r\nresult = []\r\nfor y in range(2, max_column + 1):\r\n    info = []\r\n    cell_param_name = sheet.cell(row=1, column=y).value\r\n    info.append(cell_param_name)\r\n    for i in range(2, max_row + 1):\r\n        cell_cat = sheet.cell(row=i, column=1).value\r\n        cell_param_value = sheet.cell(row=i, column=y).value\r\n        try:\r\n            cat = categories[cell_cat]\r\n            elems = FilteredElementCollector(doc).OfCategory(cat).WhereElementIsNotElementType().ToElements()\r\n            for elem in elems:\r\n                if cell_param_value is not None:\r\n                    check_value = check_parameter(elem, cell_param_name)\r\n                    if check_value is True:\r\n                        info.append(f\"Not filled | {elem.Name:^15} | {elem.Id}\")\r\n                    elif check_value == \"NP\":\r\n                        info.append(f'No paramater | {elem.Name:^15} | {elem.Id}')\r\n        except KeyError:\r\n            error.append(cell_cat)\r\n    if len(info) > 1:\r\n        result.append(info)\r\n\r\nif not error:\r\n    error.append(\"No errors\")\r\n\r\nOUT = write_data(result), error\r\n",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "b2d981d5cfaa4435ac2c7e04c2cb62ac",
+      "Inputs": [
+        {
+          "Id": "31dbd97478d845f79d79187215e42ffe",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7a567d0dacbc4e19b90ef548c6997f88",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2334b13db7a740849a7c5138929c0866",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "99e5cccbb8bd45d2a6e80118042d754f",
+          "Name": "OUT",
+          "Description": "Результат сценария Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Выполнение встроенного сценария Python."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "Лист1",
+      "Id": "449da3fea76242ffbb73e9833abec8b1",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "aa536c73a7ec4ecf922aa7f9b0672f3f",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Создание строки."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "06ff26998f0d4b678b307cb9948017ce",
+      "End": "7a567d0dacbc4e19b90ef548c6997f88",
+      "Id": "460d01f865e54b279c8aee9480b69dc4"
+    },
+    {
+      "Start": "52172e3e014c4f5d9da7177ad1aa3f71",
+      "End": "31dbd97478d845f79d79187215e42ffe",
+      "Id": "e1c8995ecb7f403a9b5916448db90f05"
+    },
+    {
+      "Start": "aa536c73a7ec4ecf922aa7f9b0672f3f",
+      "End": "2334b13db7a740849a7c5138929c0866",
+      "Id": "d4286d53620d4aa6b57d4ddcdfcb09d1"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Properties",
+      "Version": "2.12",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "1.10",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "Нет",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Фоновый просмотр",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "File Path",
+        "Id": "e7ce5b3b9fc145e8ada028560fed1d74",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 316.72834727467449,
+        "Y": 729.28969275004988
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "b324e1a2b968456aac4118e80ca84d33",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 342.81066800248118,
+        "Y": 658.04696242858881
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Object.Type",
+        "Id": "efea87ff76eb47b6a9c1b9159b076214",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1425.9236190995123,
+        "Y": -85.938692161158656
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "b2d981d5cfaa4435ac2c7e04c2cb62ac",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 559.92408156270767,
+        "Y": 701.00321506834939
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Sheet",
+        "Id": "449da3fea76242ffbb73e9833abec8b1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 338.5364317546759,
+        "Y": 822.75772041486925
+      }
+    ],
+    "Annotations": [],
+    "X": -136.20188787795036,
+    "Y": -319.76909376497224,
+    "Zoom": 0.880200679428539
+  }
+}
